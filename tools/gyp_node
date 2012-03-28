@@ -14,6 +14,7 @@ import gyp
 # Directory within which we want all generated files (including Makefiles)
 # to be written.
 output_dir = os.path.join(os.path.abspath(root_dir), 'out')
+build_dir = os.path.join('..', 'out')
 
 def run_gyp(args):
   rc = gyp.main(args)
@@ -51,7 +52,7 @@ if __name__ == '__main__':
     args.extend(['--generator-output', output_dir])
 
     # Tell make to write its output into the same dir
-    args.extend(['-Goutput_dir=' + output_dir])
+    args.extend(['-Goutput_dir=' + build_dir])
 
   args.append('-Dcomponent=static_library')
   args.append('-Dlibrary=static_library')
