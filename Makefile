@@ -6,30 +6,30 @@ PYTHON ?= python
 # BUILDTYPE=Debug builds both release and debug builds. If you want to compile
 # just the debug build, run `make -C out BUILDTYPE=Debug` instead.
 ifeq ($(BUILDTYPE),Release)
-all: deps/node/out/Makefile deps/node/node
+all: out/Makefile node
 else
-all: deps/node/out/Makefile deps/node/node deps/node/node_g
+all: out/Makefile node node_g
 endif
 
 # The .PHONY is needed to ensure that we recursively use the out/Makefile
 # to check for changes.
-.PHONY: deps/node/node deps/node/node_g
+.PHONY: node node_g
 
-deps/node/node: deps/node/config.gypi
-	$(MAKE) -C deps/node/out BUILDTYPE=Release
-	ln -fs deps/node/out/Release/node node
+node: deps/node/config.gypi
+	$(MAKE) -C out BUILDTYPE=Release
+	ln -fs out/Release/node node
 
-deps/node/node_g: deps/node/config.gypi
-	$(MAKE) -C deps/node/out BUILDTYPE=Debug
-	ln -fs deps/node/out/Debug/node node_g
+node_g: deps/node/config.gypi
+	$(MAKE) -C out BUILDTYPE=Debug
+	ln -fs out/Debug/node node_g
 
 deps/node/config.gypi: configure
 	./configure
 
-deps/node/out/Debug/node:
-	$(MAKE) -C deps/node/out BUILDTYPE=Debug
+out/Debug/node:
+	$(MAKE) -C out BUILDTYPE=Debug
 
-deps/node/out/Makefile: deps/node/common.gypi deps/node/deps/uv/uv.gyp deps/node/deps/http_parser/http_parser.gyp deps/node/deps/zlib/zlib.gyp deps/node/deps/v8/build/common.gypi deps/node/deps/v8/tools/gyp/v8.gyp node.gyp deps/node/config.gypi
+out/Makefile: deps/node/common.gypi deps/node/deps/uv/uv.gyp deps/node/deps/http_parser/http_parser.gyp deps/node/deps/zlib/zlib.gyp deps/node/deps/v8/build/common.gypi deps/node/deps/v8/tools/gyp/v8.gyp node.gyp deps/node/config.gypi
 	tools/gyp_node -f make
 
 install: all
@@ -43,7 +43,7 @@ clean:
 	-find out/ -name '*.o' -o -name '*.a' | xargs rm -rf
 
 distclean:
-	-rm -rf deps/node/out
+	-rm -rf out
 	-rm -f deps/node/config.gypi
 	-rm -f deps/node/config.mk
 

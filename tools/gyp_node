@@ -13,8 +13,7 @@ import gyp
 
 # Directory within which we want all generated files (including Makefiles)
 # to be written.
-output_dir = os.path.join(os.path.abspath(node_root), 'out')
-#output_dir = os.path.join(node_root, 'out')
+output_dir = os.path.join(os.path.abspath(root_dir), 'out')
 
 def run_gyp(args):
   rc = gyp.main(args)
@@ -43,8 +42,7 @@ if __name__ == '__main__':
   if os.path.exists(options_fn):
     args.extend(['-I', options_fn])
 
-  args.append('--depth=' + '.')#+ node_root)
-
+  args.append('--depth=' + '.')# node_root)
 
   # There's a bug with windows which doesn't allow this feature.
   if sys.platform != 'win32':
