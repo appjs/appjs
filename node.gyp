@@ -41,6 +41,7 @@
       'lib/zip/adm_zip_methods.js',
       'lib/zip/adm_zip_methods_inflater.js',
       'lib/zip/adm_zip_methods_deflater.js',
+      'lib/archive.js',
       'lib/vfs.js',
       'deps/node/lib/http.js',
       'deps/node/lib/https.js',
