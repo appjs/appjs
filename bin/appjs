@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var path = require('path');
+var nopt = require('nopt');
+var util = require('../cli/util');
+var config = require('../cli/config');
+var command = require('../cli/command');
+
+process.title = "appjs"
+process.on("uncaughtException", util.errorHandler);
+
+util.log('Parsing arguments...');
+
+var conf = nopt(config.arg_types,config.arg_shorts);
+var argv = conf.argv.remain;
+
+util.log.setLevel(conf.log || 'info');
+
+if( command[argv[0]] ){
+    command[argv.shift()].apply(conf,argv);
+}
