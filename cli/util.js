@@ -35,7 +35,7 @@ function MyError(msg) {
 
 inherits(MyError, Error);
 
-var l = 0, COLOR = [], LEVEL = {
+var l = 1, COLOR = [], LEVEL = {
   verbose : l++,
   info:     l++,
   warn:     l++,
@@ -54,14 +54,14 @@ function colorize (msg, color) {
   return msg ? "\033["+color+"m"+msg+"\033[0m" : "";
 }
 
-var logLevel = 'info';
+var logLevel = LEVEL['info'];
 
 var log = function(msg,level){
 
   if(!level || !LEVEL[level]){
     level = 'info';
   }
-  
+
   if (msg instanceof MyError) {
 
     msg = msg.toString();

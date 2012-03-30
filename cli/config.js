@@ -66,3 +66,18 @@ exports.manifest = {
 exports.ERROR = {
     tooMuchArguments: 'Too much arguments, needs one.'
 };
+
+exports.HELP = "\n\
+Welcome to AppJS!\n\
+\n\
+\n\
+Usage: appjs <command>\n\
+\n\
+where <command> is one of:\n\
+\n\
+    init : To initialize a new project. it creates a manifest file for you.\n\
+    \n\
+    package: It packages your file according to settings in manifest file.\n\
+    \n\
+    build: It builds your project according to settings in manifest file.\n\
+";
