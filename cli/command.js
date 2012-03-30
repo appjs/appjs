@@ -232,9 +232,16 @@ var build = exports.build = function(){
         mkdir.sync(output_dir);
         fs.writeFileSync(resource_path,content);
 
-        util.log('Done.','success');
+        exec('cp node ' + path.join(output_dir,manifest.appname),{
+            cwd: path.resolve(__dirname,'../')
+        },function(error){
+            util.log('Done.','success');
+        });
+        
     }
-
-    //@TODO copy the binary file to build dir.
     
+}
+
+var help = exports.help = function(){
+  console.log(config.HELP);
 }
