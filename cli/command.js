@@ -54,9 +54,10 @@ var init = exports.init = function(){
     manifest.extra = this.extra || manifest.extra;
 
     util.log('generating manifest file...');
-    //@TODO generate a human-readable output!
+
     input_dir = path.join(input_dir,'manifest.json');
-    fs.writeFileSync(input_dir,JSON.stringify(config.manifest),'utf-8');
+    fs.writeFileSync(input_dir,JSON.stringify(config.manifest,null,4),'utf-8');
+
     util.log('OK',util.log.success);
 }
 
@@ -150,11 +151,29 @@ var build = exports.build = function(){
         output_dir = path.resolve(input_dir,manifest.build_dir);
     }
 
+    var needs_compile = false;
+    if(manifest.compile || manifest.embed || manifest.entry_point != config.manifest.entry_point ){
+        needs_compile = true;
+    }
+
     util.log('Generating package...');
 
-    var content = JSON.stringify(pack.generate(input_dir,manifest.entry_point,manifest.extra));
+    var content = JSON.stringify(pack.generate(input_dir,manifest));
+
+    if(needs_compile){
+        content = 'exports = ' + content;
+    }
 
     var resource_path = path.resolve(output_dir,'resources.json');
+
+    if(needs_compile){
+        //@TODO this way single quoted json files like node's node.gyp can not be parsed
+        var node_gyp = fs.readFileSync(path.join(__dirname,'../node.gyp'));
+        node_gyp = node_gyp.toString().replace(/\#.+\n/, '');
+        node_gyp = JSON.parse(node_gyp);
+        node_gyp.variables.library_files.push(resource_path);
+        //console.log(node_gyp);
+    }
 
     mkdir.sync(output_dir);
     fs.writeFileSync(resource_path,content);

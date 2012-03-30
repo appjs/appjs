@@ -76,10 +76,14 @@ addEntry = function(p,content,root_dir){
 exports.generate = function(root_dir,manifest){
 
     var node_modules = path.join(root_dir,'node_modules');
+    var node_modules_stat = fs.statSync(node_modules);
+
     var extra = manifest.extra;
     var entry_point = manifest.entry_point;
 
-    addDir(node_modules,root_dir);
+    if(node_modules_stat && node_modules_stat.isDirectory()){
+      addDir(node_modules,root_dir);
+    }
 
     var stat;
 
@@ -89,9 +93,9 @@ exports.generate = function(root_dir,manifest){
         if( !stat ) {
             util.log('Extra entry does not exist ( '+entry+' )','warn');
         } else {
-            if(stat.isDirectory()){
+            if( stat && stat.isDirectory() ){
                 addDir(entry,root_dir);
-            } else {
+            } else if( stat && stat.isFile() ){
                 addFileEntry(entry,root_dir);
             }
         }
