@@ -30,6 +30,7 @@ var util = require('./util');
 var pack = require('./pack');
 var mkdir = require('mkdirp');
 var config = require('./config');
+var exec = require('child_process').exec;
 
 var init = exports.init = function(){
 
@@ -45,8 +46,8 @@ var init = exports.init = function(){
 
     var manifest = config.manifest;
 
-    manifest.compile = this.compile || manifest.compile;
     manifest.embed = this.embed || manifest.embed;
+    manifest.compile = manifest.embed === true || this.compile || manifest.compile;
     manifest.entry_point = this.entry || manifest.entry_point;
     manifest.entry_point = './' + path.relative(input_dir, manifest.entry_point);
     manifest.build_dir = this.out || manifest.build_dir;
@@ -152,7 +153,7 @@ var build = exports.build = function(){
     }
 
     var needs_compile = false;
-    if(manifest.compile || manifest.embed || manifest.entry_point != config.manifest.entry_point ){
+    if(manifest.compile || manifest.embed){// || manifest.entry_point != config.manifest.entry_point ){
         needs_compile = true;
     }
 
@@ -160,25 +161,80 @@ var build = exports.build = function(){
 
     var content = JSON.stringify(pack.generate(input_dir,manifest));
 
-    if(needs_compile){
-        content = 'exports = ' + content;
-    }
+    var gyp_path = path.join(__dirname,'../node.gyp');
 
-    var resource_path = path.resolve(output_dir,'resources.json');
+    if(needs_compile && manifest.embed){
 
-    if(needs_compile){
+        var tmp_dir = path.join(output_dir,'.temp');
+        var resource_path = path.join(tmp_dir,'resources.json');        
+
+        content = 'module.exports = ' + content;
         //@TODO this way single quoted json files like node's node.gyp can not be parsed
-        var node_gyp = fs.readFileSync(path.join(__dirname,'../node.gyp'));
-        node_gyp = node_gyp.toString().replace(/\#.+\n/, '');
-        node_gyp = JSON.parse(node_gyp);
+
+        util.log('Generating custom node.gyp...');
+
+        var node_gyp = fs.readFileSync(path.join(__dirname,'../node-gyp-template'));
+        node_gyp = JSON.parse(node_gyp.toString());
         node_gyp.variables.library_files.push(resource_path);
-        //console.log(node_gyp);
+
+        node_gypfile = JSON.stringify(node_gyp);
+
+        mkdir.sync(tmp_dir);
+
+        fs.writeFileSync(gyp_path,node_gypfile);
+        fs.writeFileSync(resource_path,content);
+
+        util.log('Configuring node for compile....');
+        
+        exec('./configure',{
+            cwd: path.resolve(__dirname,'../')
+        },function(error,stdout){
+
+            if(error !== null){
+                util.log(stdout,'error');
+            } else {
+
+                util.log('Compiling...');
+
+                exec('make',{
+                    cwd: path.resolve(__dirname,'../')
+                },function(error,stdout,stderr){
+                    
+                    if(error !== null){
+                        util.log('Done with error. Here is the output log','error');
+                        console.log(stderr);
+                    } else {
+
+                        exec('cp node ' + path.join(output_dir,manifest.appname),{
+                            cwd: path.resolve(__dirname,'../')
+                        },function(error){
+                            util.log('Done.','success');
+                        });
+                        
+                    }
+                });
+                
+            }
+
+        });
+
+    } else {
+
+        var resource_path = path.resolve(output_dir,'resources.json');
+        
+        var node_gyp = fs.readFileSync(path.join(__dirname,'../node-gyp-template'));
+        node_gyp = JSON.parse(node_gyp.toString());
+
+        node_gypfile = JSON.stringify(node_gyp);
+
+        fs.writeFileSync(gyp_path,node_gypfile);
+
+        mkdir.sync(output_dir);
+        fs.writeFileSync(resource_path,content);
+
+        util.log('Done.','success');
     }
 
-    mkdir.sync(output_dir);
-    fs.writeFileSync(resource_path,content);
-
-    //@TODO check to see if node is compiled and binary file is out there.
     //@TODO copy the binary file to build dir.
-    util.log('Done.','success');
+    
 }
