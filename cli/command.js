@@ -22,6 +22,7 @@ var init = exports.init = function(){
     manifest.compile = this.compile || manifest.compile;
     manifest.embed = this.embed || manifest.embed;
     manifest.entry_point = this.entry || manifest.entry_point;
+    manifest.entry_point = './' + path.relative(input_dir, manifest.entry_point);
     manifest.build_dir = this.out || manifest.build_dir;
     manifest.build_dir = path.relative(input_dir,manifest.build_dir);
     manifest.extra = this.extra || manifest.extra;
@@ -74,7 +75,7 @@ var packageF = exports.package = function(){
 
     util.log('Generating package...');
 
-    var content = JSON.stringify(pack.generate(input_dir,manifest.entry_point,manifest.extra));
+    var content = JSON.stringify(pack.generate(input_dir,manifest));
 
     var resource_path = path.resolve(output_dir,'resources.json');
 

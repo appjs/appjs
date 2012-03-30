@@ -32,7 +32,7 @@ var addDir = function(dir,root_dir) {
 
 }
 
-addEntry = function(entry_path,root_dir){
+addFileEntry = function(entry_path,root_dir){
 
     var entry = path.join(root_dir,entry_path);
     var rentry = path.relative(root_dir,entry);
@@ -40,9 +40,18 @@ addEntry = function(entry_path,root_dir){
     packageObj[rentry] = fs.readFileSync(entry).toString();
 }
 
-exports.generate = function(root_dir,entry_point,extra){
+addEntry = function(p,content,root_dir){
+
+    var rentry = path.relative(root_dir,p);
+    packageObj[rentry] = content.toString();
+
+}
+
+exports.generate = function(root_dir,manifest){
 
     var node_modules = path.join(root_dir,'node_modules');
+    var extra = manifest.extra;
+    var entry_point = manifest.entry_point;
 
     addDir(node_modules,root_dir);
 
@@ -57,13 +66,14 @@ exports.generate = function(root_dir,entry_point,extra){
             if(stat.isDirectory()){
                 addDir(entry,root_dir);
             } else {
-                addEntry(entry,root_dir);
+                addFileEntry(entry,root_dir);
             }
         }
         
     })
 
-    addEntry(entry_point,root_dir);
-    
+    addFileEntry(entry_point,root_dir);
+    addEntry('manifest.json',JSON.stringify(manifest),root_dir);
+
     return packageObj;
 }

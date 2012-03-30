@@ -26,9 +26,12 @@ exports.arg_shorts = {
 };
 
 exports.manifest = {
+    appname: 'appjs',
+    title: 'Application',
+    version: '0.0.1',
     compile: false,
     embed: false,
-    entry_point: "app.js",
+    entry_point: "./app.js",
     build_dir: './build',
     extra: [
     ]
