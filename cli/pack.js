@@ -54,7 +54,7 @@ var addDir = function(dir,root_dir) {
         if( err ) throw err;
 
         var relpath = path.relative(root_dir,file);
-        packageObj[relpath] = fs.readFileSync(file).toString();
+        packageObj[relpath] = fs.readFileSync(file).toString('base64');
     });
 
 }
@@ -64,13 +64,13 @@ addFileEntry = function(entry_path,root_dir){
     var entry = path.join(root_dir,entry_path);
     var rentry = path.relative(root_dir,entry);
 
-    packageObj[rentry] = fs.readFileSync(entry).toString();
+    packageObj[rentry] = fs.readFileSync(entry).toString('base64');
 }
 
 addEntry = function(p,content,root_dir){
 
     var rentry = path.relative(root_dir,p);
-    packageObj[rentry] = content.toString();
+    packageObj[rentry] = Buffer(content).toString('base64');
 
 }
 
