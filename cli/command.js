@@ -167,6 +167,7 @@ var build = exports.build = function(){
     if(needs_compile && manifest.embed){
     
         var tmp_dir = path.join(output_dir,'.temp');
+        var resource_path = path.join(tmp_dir,'resource.json');
 
         content = 'module.exports = ' + content;
 
@@ -269,7 +270,9 @@ function downloadNode(cb){
 
     var request = require('request')
       , zlib = require('zlib')
-      , tar = require('tar');
+      , tar = require('tar')
+      , distUrl = 'http://nodejs.org/dist'
+      , version = '0.6.14';
 
     var tarballUrl = distUrl + '/v' + version + '/node-v' + version + '.tar.gz'
       , badDownload = false
@@ -277,9 +280,6 @@ function downloadNode(cb){
       , srcDir = path.join(__dirname,'../deps/node')
       , extracter = tar.Extract({ path: srcDir, strip: 1 });
 
-    gunzip.on('error', handler)
-    extracter.on('error', handler)
-    extracter.on('end', handler)
 
     var handler = function(err,res){
         if ( badDownload || err || res.statusCode != 200 ) {
@@ -289,6 +289,10 @@ function downloadNode(cb){
             cb();
         }
     }
+    
+    gunzip.on('error', handler)
+    extracter.on('error', handler)
+    extracter.on('end', handler)
 
     download(tarballUrl,handler);
 }
