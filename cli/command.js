@@ -162,7 +162,6 @@ var build = exports.build = function(){
     util.log('Generating package...');
 
     var content = JSON.stringify(pack.generate(input_dir,manifest));
-    var gyp_path = path.join(__dirname,'../node.gyp');
 
     if(needs_compile && manifest.embed){
     
@@ -171,7 +170,7 @@ var build = exports.build = function(){
 
         content = 'module.exports = ' + content;
 
-        generate_node_gyp(gyp_path,[resource_path]);
+        generate_node_gyp([resource_path]);
         generate_resource(tmp_dir,content);
 
         compile_node(function(){
@@ -180,7 +179,7 @@ var build = exports.build = function(){
 
     } else {
 
-        generate_node_gyp(gyp_path);
+        generate_node_gyp();
         generate_resource(resource_path,content);
 
         copy_binary(output_dir,manifest.appname);
@@ -199,7 +198,7 @@ function generate_resource(output_dir,content){
     fs.writeFileSync(resource_path,content);
 }
 
-function generate_node_gyp(out_dir,extraLibraries){
+function generate_node_gyp(extraLibraries){
 
     var node_gyp = fs.readFileSync(path.join(__dirname,'../node-gyp-template'));
 
@@ -214,8 +213,7 @@ function generate_node_gyp(out_dir,extraLibraries){
 
     node_gypfile = JSON.stringify(node_gyp);
 
-    gyp_path = path.join(out_dir,'node.gyp');
-    mkdir.sync(out_dir);
+    gyp_path = path.join(__dirname,'../node.gyp');
     fs.writeFileSync(gyp_path,node_gypfile);
 
     return node_gyp;
@@ -228,9 +226,14 @@ function copy_binary(output_dir,to_name){
 }
 
 function compile_node(cb){
-    var src_dir = path.resolve(__dirname,'../deps/node');
+    var src_dir = path.resolve(__dirname,'../deps/node/src');
 
-    var make = function (){
+    var make = function (err){
+
+        if( err ){
+            util.abort(err);
+        }
+
         exec('./configure',{
             cwd: path.resolve(__dirname,'../')
         },function(error,stdout){
@@ -281,20 +284,20 @@ function downloadNode(cb){
       , extracter = tar.Extract({ path: srcDir, strip: 1 });
 
 
-    var handler = function(err,res){
-        if ( badDownload || err || res.statusCode != 200 ) {
+    var errorHandler = function(err,res){
+        if ( err || res.statusCode != 200 ) {
             badDownload = true;
             cb(err || new Error(res.statusCode + ' status code downloading tarball'));
-        } else {
-            cb();
         }
     }
-    
-    gunzip.on('error', handler)
-    extracter.on('error', handler)
-    extracter.on('end', handler)
 
-    download(tarballUrl,handler);
+    gunzip.on('error', errorHandler)
+    extracter.on('error', errorHandler)
+    extracter.on('end', cb)
+
+    download(tarballUrl,errorHandler)
+      .pipe(gunzip)
+      .pipe(extracter);
 }
 
 function download(url,onError) {
