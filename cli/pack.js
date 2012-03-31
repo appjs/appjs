@@ -35,7 +35,8 @@ var filter = function( fpath, dir) {
 
     if(dir) return true;
     
-    if ( path.extname(fpath) == '.js') {
+    var extname = path.extname(fpath);
+    if ( extname == '.js' || extname == '.json' || extname == '.node' ) {
         return true;
     }
 
@@ -76,12 +77,13 @@ addEntry = function(p,content,root_dir){
 exports.generate = function(root_dir,manifest){
 
     var node_modules = path.join(root_dir,'node_modules');
-    var node_modules_stat = fs.statSync(node_modules);
+    var node_modules_stat =    path.existsSync(node_modules)
+                            && fs.statSync(node_modules).isDirectory();
 
     var extra = manifest.extra;
     var entry_point = manifest.entry_point;
 
-    if(node_modules_stat && node_modules_stat.isDirectory()){
+    if( node_modules_stat ){
       addDir(node_modules,root_dir);
     }
 
