@@ -252,14 +252,12 @@ function compile_node(cb){
 
 function downloadNode(cb){
 
-    var request = require('request')
-      , zlib = require('zlib')
+    var zlib = require('zlib')
       , tar = require('tar')
       , distUrl = 'http://nodejs.org/dist'
       , version = '0.6.14';
 
     var tarballUrl = distUrl + '/v' + version + '/node-v' + version + '.tar.gz'
-      , badDownload = false
       , gunzip = zlib.createGunzip()
       , srcDir = path.join(__dirname,'../deps/node')
       , extracter = tar.Extract({ path: srcDir, strip: 1 });
@@ -267,7 +265,6 @@ function downloadNode(cb){
 
     var errorHandler = function(err,res){
         if ( err || res.statusCode != 200 ) {
-            badDownload = true;
             cb(err || new Error(res.statusCode + ' status code downloading tarball'));
         }
     }
