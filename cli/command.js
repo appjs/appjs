@@ -291,8 +291,7 @@ function checkNode(cb){
             if(err) cb(err);
 
             var tar = require('tar')
-              , zlib = require('zlib')
-              , request = require('request');
+              , zlib = require('zlib');
 
             // now download the node tarball
             var tarballUrl = distUrl + '/v' + version + '/node-v' + version + '.tar.gz'
@@ -302,7 +301,7 @@ function checkNode(cb){
 
             gunzip.on('error', cb)
             extracter.on('error', cb)
-            extracter.on('end', afterTarball)
+            extracter.on('end', cb)
 
             // download the tarball, gunzip and extract!
             var req = download(tarballUrl, downloadError)
@@ -324,6 +323,8 @@ function checkNode(cb){
 }
 
 function download(url,onError) {
+    var request = require('request');
+    
     util.log('Downloading node tarball...');
 
     var requestOpts = {
