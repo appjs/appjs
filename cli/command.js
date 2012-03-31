@@ -139,7 +139,16 @@ var build = exports.build = function(){
 
         generate_resource(input_dir, output_dir, manifest);
         generate_node_gyp();
-        copy_binary(output_dir,manifest.appname);
+        
+        //@TODO we won't need compile after adding precompiled binary files.
+        //      for the time being, we compile node from source but we don't
+        //      need to.
+        compile_node(function(){
+            if (manifest.embed) {
+                fs.unlink(resource_path);
+            }
+            copy_binary(output_dir, manifest.appname);
+        });
         
     }
 
