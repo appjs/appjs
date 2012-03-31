@@ -4,7 +4,8 @@
   "version": "0.0.2",
   "author": "Morteza Milani <mrtz.milani@gmail.com>",
   "contributors": [ 
-    { "name": "Morteza Milani", "email": "brandon@brandonbenvie.com" }
+    { "name": "Morteza Milani", "email":"mrtz.milani@gmail.com"},
+    { "name": "Ali Farhadi", "email": "a.farhadi@gmail.com"},
   ],
   "dependencies": {
     "nopt": ">= 1.0.10",
