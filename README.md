@@ -3,6 +3,9 @@
 AppJS is an SDK to develop desktop applications using node. Or at least
 it is going to be!
 
+*Attention:* Actually you should not use AppJS before we bump version to 
+v0.1.0, it is under heavy development.
+
 The goal is to facilitate native app development using web tools like
 nodejs, html, css. This is going to be clean and easy to use.
 
