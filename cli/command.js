@@ -148,7 +148,7 @@ var build = exports.build = function(){
     //manifest.build_dir = output_dir || this.out || manifest.build_dir;
     manifest.extra = this.extra || manifest.extra;
 
-    if( typeof output_dir == 'undefined'){
+    if( typeof output_dir == 'undefined' ){
         output_dir = path.resolve(input_dir,manifest.build_dir);
     }
 
@@ -157,45 +157,32 @@ var build = exports.build = function(){
         needs_compile = true;
     }
 
+    mkdir.sync(output_dir);
+
     util.log('Generating package...');
 
     var content = JSON.stringify(pack.generate(input_dir,manifest));
-
     var gyp_path = path.join(__dirname,'../node.gyp');
 
     if(needs_compile && manifest.embed){
+    
+        var tmp_dir = path.join(output_dir,'.temp');
 
-        checkNode(buildPackage);
+        content = 'module.exports = ' + content;
 
+        generate_node_gyp(gyp_path,[resource_path]);
+        generate_resource(tmp_dir,content);
+
+        compile_node(function(){
+            copy_binary();
+        });
 
     } else {
 
-        checkNode(function(){
-            
-            var resource_path = path.resolve(output_dir,'resources.json');
+        generate_node_gyp(gyp_path);
+        generate_resource(resource_path,content);
 
-            var node_gyp = fs.readFileSync(path.join(__dirname,'../node-gyp-template'));
-            node_gyp = JSON.parse(node_gyp.toString());
-
-            node_gypfile = JSON.stringify(node_gyp);
-
-            fs.writeFileSync(gyp_path,node_gypfile);
-
-            mkdir.sync(output_dir);
-            fs.writeFileSync(resource_path,content);
-            exec('cp node ' + path.join(output_dir,manifest.appname),{
-                cwd: path.resolve(__dirname,'../')
-            },function(error){
-
-                if(error !== null){
-                    util.log('Could not copy generated executable file to build directory','error');
-                    util.log(error.Error ,'error');
-                }else{
-                    util.log('Done.','success');
-                }
-
-            });
-        });
+        copy_binary(output_dir,manifest.appname);
         
     }
 
@@ -205,126 +192,110 @@ var help = exports.help = function(){
   console.log(config.HELP);
 }
 
-function buildPacakge(err){
 
-    if(err) {
+function generate_resource(output_dir,content){
+    var resource_path = path.resolve(output_dir,'resources.json');
+    fs.writeFileSync(resource_path,content);
+}
 
-    }
-
-    throw new Error(err);
-
-    var tmp_dir = path.join(output_dir,'.temp');
-    var resource_path = path.join(tmp_dir,'resources.json');
-
-    content = 'module.exports = ' + content;
-    //@TODO this way single quoted json files like node's node.gyp can not be parsed
-
-    util.log('Generating custom node.gyp...');
+function generate_node_gyp(out_dir,extraLibraries){
 
     var node_gyp = fs.readFileSync(path.join(__dirname,'../node-gyp-template'));
-    node_gyp = JSON.parse(node_gyp.toString());
-    node_gyp.variables.library_files.push(resource_path);
+
+    if( extraLibraries && extraLibraries.length ){
+
+        node_gyp = JSON.parse(node_gyp.toString());
+
+        extraLibraries.forEach(function(resource_file){
+            node_gyp.variables.library_files.push(resource_file);
+        });
+    }
 
     node_gypfile = JSON.stringify(node_gyp);
 
-    mkdir.sync(tmp_dir);
-
+    gyp_path = path.join(out_dir,'node.gyp');
+    mkdir.sync(out_dir);
     fs.writeFileSync(gyp_path,node_gypfile);
-    fs.writeFileSync(resource_path,content);
 
-    util.log('Configuring node for compile....');
-
-    exec('./configure',{
-        cwd: path.resolve(__dirname,'../')
-    },function(error,stdout){
-
-        if(error !== null){
-            util.log(error,'error');
-        } else {
-
-            util.log('Compiling...');
-
-            exec('make',{
-                cwd: path.resolve(__dirname,'../')
-            },function(error,stdout,stderr){
-
-                if(error !== null){
-                    util.log(error,'error');
-                } else {
-
-                    exec('cp node ' + path.join(output_dir,manifest.appname),{
-                        cwd: path.resolve(__dirname,'../')
-                    },function(error){
-
-                        if(error !== null){
-                          util.log('Could not copy generated executable file to build directory','error');
-                          util.log(error.Error ,'error');
-                        }else{
-                          util.log('Done.','success');
-                        }
-
-                    });
-
-                }
-            });
-
-        }
-
-    });
+    return node_gyp;
 }
 
-function checkNode(cb){
-    var src_dir = path.resolve(__dirname,'../deps/node')
-      , distUrl = 'http://nodejs.org/dist'
-      , version = '0.6.14';
+function copy_binary(output_dir,to_name){
 
-    
-    var src_dir = fs.existsSync(src_dir);
+    //@TODO copy binary
 
-    if(!src_dir) {
+}
 
-        util.log('Node source code not found.','warn');
-        util.log('Trying to install ( abort using ^c ) ...','warn');
+function compile_node(cb){
+    var src_dir = path.resolve(__dirname,'../deps/node');
 
-        mkdir(src_dir,function(err){
+    var make = function (){
+        exec('./configure',{
+            cwd: path.resolve(__dirname,'../')
+        },function(error,stdout){
 
-            if(err) cb(err);
+            if(error !== null){
+                util.log(error,'error');
+            } else {
 
-            var tar = require('tar')
-              , zlib = require('zlib');
+                util.log('Compiling...');
 
-            // now download the node tarball
-            var tarballUrl = distUrl + '/v' + version + '/node-v' + version + '.tar.gz'
-              , badDownload = false
-              , gunzip = zlib.createGunzip()
-              , extracter = tar.Extract({ path: src_dir, strip: 1 })
+                exec('make',{
+                    cwd: path.resolve(__dirname,'../')
+                },function(error,stdout,stderr){
 
-            gunzip.on('error', cb)
-            extracter.on('error', cb)
-            extracter.on('end', cb)
+                    if(error !== null){
+                        util.log(error,'error');
+                    } else {
 
-            // download the tarball, gunzip and extract!
-            var req = download(tarballUrl, downloadError)
-              .pipe(gunzip)
-              .pipe(extracter)
+                        cb();
 
-            // something went wrong downloading the tarball?
-            function downloadError (err, res) {
-              if (err || res.statusCode != 200) {
-                badDownload = true
-                cb(err || new Error(res.statusCode + ' status code downloading tarball'))
-              }
+                    }
+                });
+
             }
-        });
-    } else {
-        cb();
+
+        }); 
     }
 
+    if ( !fs.existsSync(src_dir) ){
+        downloadNode(make);
+    } else {
+        make();
+    }
+}
+
+function downloadNode(cb){
+
+    var request = require('request')
+      , zlib = require('zlib')
+      , tar = require('tar');
+
+    var tarballUrl = distUrl + '/v' + version + '/node-v' + version + '.tar.gz'
+      , badDownload = false
+      , gunzip = zlib.createGunzip()
+      , srcDir = path.join(__dirname,'../deps/node')
+      , extracter = tar.Extract({ path: srcDir, strip: 1 });
+
+    gunzip.on('error', handler)
+    extracter.on('error', handler)
+    extracter.on('end', handler)
+
+    var handler = function(err,res){
+        if ( badDownload || err || res.statusCode != 200 ) {
+            badDownload = true;
+            cb(err || new Error(res.statusCode + ' status code downloading tarball'));
+        } else {
+            cb();
+        }
+    }
+
+    download(tarballUrl,handler);
 }
 
 function download(url,onError) {
     var request = require('request');
-    
+
     util.log('Downloading node tarball...');
 
     var requestOpts = {
@@ -341,4 +312,4 @@ function download(url,onError) {
       requestOpts.proxy = proxyUrl
     }
     return request(requestOpts, onError)
-  }
+}
