@@ -168,7 +168,9 @@ function loadManifest(manifest_path, conf) {
 
 function generate_resource(input_dir, output_dir, manifest){
     util.log('Generating package...');
-    var content = JSON.stringify(pack.generate(input_dir,manifest));
+    var content = JSON.stringify(pack.generate(input_dir,manifest)).replace(/[^\x00-\x7F]/g, function(chr) {
+        return '\\u' + ('000' + chr.charCodeAt(0)).substr(-4);
+    });
     var resource_path = path.resolve(output_dir,'resources.json');
     if (manifest.embed) {
         content = 'module.exports = ' + content;
