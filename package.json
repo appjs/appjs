@@ -1,7 +1,7 @@
 {
   "name": "appjs",
   "description": "Application packager for nodejs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Morteza Milani <mrtz.milani@gmail.com>",
   "contributors": [ 
     { "name": "Morteza Milani", "email": "brandon@brandonbenvie.com" }
@@ -9,7 +9,9 @@
   "dependencies": {
     "nopt": ">= 1.0.10",
     "mkdirp": ">= 0.3.0",
-    "diveSync": ">= 0.2.0"
+    "diveSync": ">= 0.2.0",
+    "tar": "~0.1.12",
+    "request": "2.9.x"
   },
   "keywords": ["sdk", "package", "gui", "desktop"],
   "repository": "git://github.com/milani/appjs",
