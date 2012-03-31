@@ -68,14 +68,13 @@ var packageF = exports.package = function(){
         util.abort(config.ERROR.tooMuchArguments);
     }
 
-    var input_dir  = process.cwd();
+    var output_dir, input_dir  = process.cwd();
 
-    if( arguments.length == 1 ) {
+    if( arguments.length ) {
         input_dir = fs.realpathSync(arguments[0]);
     }
 
     if( arguments.length == 2 ) {
-        input_dir  = fs.realpathSync(arguments[0]);
         output_dir = path.resolve(arguments[1]);
 
         if( output_dir == input_dir ){
@@ -83,32 +82,14 @@ var packageF = exports.package = function(){
         }
     }
 
-    util.log('Reading manifest file...');
-
-    try {
-        var manifest = JSON.parse(fs.readFileSync(path.join(input_dir,'manifest.json')));
-    } catch (e) {
-        util.abort('Manifest file not found.');
-    }
-    
-    manifest.compile = this.compile || manifest.compile;
-    manifest.embed = this.embed || manifest.embed;
-    manifest.entry_point = this.entry || manifest.entry_point;
-    //manifest.build_dir = output_dir || this.out || manifest.build_dir;
-    manifest.extra = this.extra || manifest.extra;
+    var manifest = loadManifest(input_dir, this);
 
     if( typeof output_dir == 'undefined'){
         output_dir = path.resolve(input_dir,manifest.build_dir);
     }
 
-    util.log('Generating package...');
-
-    var content = JSON.stringify(pack.generate(input_dir,manifest));
-
-    var resource_path = path.resolve(output_dir,'resources.json');
-
     mkdir.sync(output_dir);
-    fs.writeFileSync(resource_path,content);
+    generate_resource(input_dir, output_dir, manifest);
 
     util.log('Done.','success');
 }
@@ -119,14 +100,13 @@ var build = exports.build = function(){
         util.abort(config.ERROR.tooMuchArguments);
     }
 
-    var input_dir  = process.cwd();
+    var output_dir, input_dir  = process.cwd();
 
-    if( arguments.length == 1 ) {
+    if( arguments.length ) {
         input_dir = fs.realpathSync(arguments[0]);
     }
 
     if( arguments.length == 2 ) {
-        input_dir  = fs.realpathSync(arguments[0]);
         output_dir = path.resolve(arguments[1]);
 
         if( output_dir == input_dir ){
@@ -134,54 +114,31 @@ var build = exports.build = function(){
         }
     }
 
-    util.log('Reading manifest file...');
-
-    try {
-        var manifest = JSON.parse(fs.readFileSync(path.join(input_dir,'manifest.json')));
-    } catch (e) {
-        util.abort('Manifest file not found.');
-    }
-    
-    manifest.compile = this.compile || manifest.compile;
-    manifest.embed = this.embed || manifest.embed;
-    manifest.entry_point = this.entry || manifest.entry_point;
-    //manifest.build_dir = output_dir || this.out || manifest.build_dir;
-    manifest.extra = this.extra || manifest.extra;
+    var manifest = loadManifest(input_dir, this);
 
     if( typeof output_dir == 'undefined' ){
         output_dir = path.resolve(input_dir,manifest.build_dir);
     }
 
-    var needs_compile = false;
-    if(manifest.compile || manifest.embed){// || manifest.entry_point != config.manifest.entry_point ){
-        needs_compile = true;
-    }
+    var needs_compile = manifest.compile || manifest.embed; // || manifest.entry_point != config.manifest.entry_point 
 
     mkdir.sync(output_dir);
 
-    util.log('Generating package...');
-
-    var content = JSON.stringify(pack.generate(input_dir,manifest));
-
-    if(needs_compile && manifest.embed){
+    if(needs_compile){
     
-        var tmp_dir = path.join(output_dir,'.temp');
-        var resource_path = path.join(tmp_dir,'resource.json');
-
-        content = 'module.exports = ' + content;
-
+        var resource_path = generate_resource(input_dir, output_dir, manifest);
         generate_node_gyp([resource_path]);
-        generate_resource(tmp_dir,content);
-
         compile_node(function(){
-            copy_binary();
+            if (manifest.embed) {
+                fs.unlink(resource_path);
+            }
+            copy_binary(output_dir, manifest.appname);
         });
 
     } else {
 
+        generate_resource(input_dir, output_dir, manifest);
         generate_node_gyp();
-        generate_resource(resource_path,content);
-
         copy_binary(output_dir,manifest.appname);
         
     }
@@ -192,10 +149,32 @@ var help = exports.help = function(){
   console.log(config.HELP);
 }
 
+function loadManifest(manifest_path, conf) {
+    util.log('Reading manifest file...');
 
-function generate_resource(output_dir,content){
+    try {
+        var manifest = JSON.parse(fs.readFileSync(path.join(manifest_path,'manifest.json')));
+    } catch (e) {
+        util.abort('Manifest file not found.');
+    }
+    
+    manifest.compile = conf.compile || manifest.compile;
+    manifest.embed = conf.embed || manifest.embed;
+    manifest.entry_point = conf.entry || manifest.entry_point;
+    //manifest.build_dir = output_dir || conf.out || manifest.build_dir;
+    manifest.extra = conf.extra || manifest.extra;
+    return manifest;
+}
+
+function generate_resource(input_dir, output_dir, manifest){
+    util.log('Generating package...');
+    var content = JSON.stringify(pack.generate(input_dir,manifest));
     var resource_path = path.resolve(output_dir,'resources.json');
+    if (manifest.embed) {
+        content = 'module.exports = ' + content;
+    }
     fs.writeFileSync(resource_path,content);
+    return resource_path;
 }
 
 function generate_node_gyp(extraLibraries){
@@ -220,9 +199,11 @@ function generate_node_gyp(extraLibraries){
 }
 
 function copy_binary(output_dir,to_name){
-
-    //@TODO copy binary
-
+    var from = fs.createReadStream(path.join(__dirname, '../node'));
+    var to = fs.createWriteStream(path.join(output_dir, to_name));
+    from.pipe(to).on('close', function() {
+        util.log('Binary file created.');
+    });
 }
 
 function compile_node(cb){
@@ -262,7 +243,7 @@ function compile_node(cb){
         }); 
     }
 
-    if ( !fs.existsSync(src_dir) ){
+    if ( !path.existsSync(src_dir) ){
         downloadNode(make);
     } else {
         make();
