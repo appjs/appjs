@@ -1,0 +1,48 @@
+{
+  "name": "appjs",
+  "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS",
+  "version": "0.0.1",
+  "keywords": [
+    "app",
+    "webkit",
+    "desktop",
+    "sdk"
+  ],
+  "homepage": "http://github.com/milani/appjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/isaacs/npm"
+  },
+  "author": {
+    "name": "Morteza Milani",
+    "email": "mrtz.milani@gmail.com"
+  },
+  "contributors": [
+    {
+        "name": "Ali Farhadi",
+        "email": "a.farhadi@gmail.com"
+    }
+  ],
+  "directories": {
+    "doc": "./doc",
+    "lib": "./lib",
+    "bin": "./bin",
+    "test": "./test"
+  },
+  "bin": {
+    "appjs": "./bin/appjs"
+  },
+  "main": "./index.js",
+  "engines": {
+    "node": "0.6 || 0.7 || 0.8",
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/milani/appjs/blob/master/LICENSE"
+    }
+  ]
+}
