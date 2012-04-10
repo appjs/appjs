@@ -1,6 +1,6 @@
 # AppJS
 
-AppJS is an SDK to develop desktop applications using node. Or at least
+![AppJS](https://github.com/milani/appjs/blob/master/appjs.png "AppJS") AppJS is an SDK to develop desktop applications using node. Or at least
 it is going to be!
 
 The goal is to facilitate native app development using
