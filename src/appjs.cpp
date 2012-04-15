@@ -1,16 +1,23 @@
 #include "appjs.h"
-#include "appjs_window.h"
+#include "appjs_app.h"
 
 namespace appjs {
 
 using namespace v8;
 
-void Init (Handle<v8::Object> target) {
-  HandleScope scope;
+Handle<Value> InitApp(const Arguments& args) {
 
-  appjs::Window::Init (target);
-//  appjs::Menu::Init (target);
-//  appjs::StatusIcon::Init (target);
+  HandleScope scope;
+  return scope.Close(App::NewInstance(args));
+}
+
+void Init(Handle<v8::Object> target) {
+
+  App::Init();
+  
+  target->Set(String::NewSymbol("init"),
+      FunctionTemplate::New(InitApp)->GetFunction());
+
 }
 
 } /* appjs */

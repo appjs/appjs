@@ -11,32 +11,44 @@
 #define THROW_BAD_ARGS \
   ThrowException(Exception::TypeError(String::New("Bad argument")))
 
+// Easy method definition
+#define DEFINE_CPP_METHOD(Method) \
+    static v8::Handle<v8::Value> Method (const v8::Arguments& args)
+
 // Better node prototype method
-#define DEFINE_NODE_METHOD(Name, Method) \
-    NODE_SET_PROTOTYPE_METHOD (constructor_template, Name, Method)
+#define DEFINE_PROTOTYPE_METHOD(Name, Method) \
+    NODE_SET_PROTOTYPE_METHOD (tpl, Name, Method)
 
 // Must have fields for object wrapper
-#define DECLARE_NODE_OBJECT(Class) \
-    public:\
-        static void Init (Handle<v8::Object> target);\
-        static Persistent<FunctionTemplate> constructor_template;\
+#define DECLARE_NODE_OBJECT_FACTORY(Class) \
+  public:\
+    static void Init ();\
+    static Local<FunctionTemplate> Init(bool);\
+    static Handle<Value> NewInstance(const Arguments& args);\
 \
-    private:\
-        Class (const Class&);\
-        Class& operator= (const Class&);\
-        static Handle<Value> New (const Arguments& args);
+  public:\
+    Class ();\
+    ~Class ();\
+\
+    static Handle<Value> New (const Arguments& args);\
+    static Persistent<Function> constructor
 
 // Ease the 'Init' implementation
-#define CREATE_NODE_CONSTRUCTOR(Name, Type) \
-    HandleScope scope;\
-    Local<String> symbol = String::NewSymbol(Name);\
-    Local<FunctionTemplate> t = FunctionTemplate::New (New);\
-    constructor_template = Persistent<FunctionTemplate>::New(t);\
-    constructor_template->InstanceTemplate()->SetInternalFieldCount(1);\
-    constructor_template->SetClassName(symbol)
+#define CREATE_NODE_CONSTRUCTOR(Name) \
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);\
+  tpl->SetClassName(String::NewSymbol("Name"));\
+  tpl->InstanceTemplate()->SetInternalFieldCount(1)
 
 #define END_CONSTRUCTOR() \
-    target->Set (symbol, t->GetFunction ())
+    constructor = Persistent<Function>::New(tpl->GetFunction())
+    
+#define INHERIT_FROM(name) \
+  Local<FunctionTemplate> super_tpl = FunctionTemplate::New(name::New);\
+  tpl->Inherit(super_tpl); \
+  tpl->InstanceTemplate()->SetInternalFieldCount(2)
+
+#define END_INHERIT() \
+  super_constructor = Persistent<Function>::New(super_tpl->GetFunction())
 
 namespace appjs {
 

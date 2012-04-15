@@ -10,10 +10,9 @@ public:
   MainWindow();
   ~MainWindow();
   void Show();
-  static void Stop();
-  
-private:
-  static void Run(uv_timer_t* handle, int status);
+  void Stop();
+  static void Stop(int);
+
 };
 
 } /* appjs */

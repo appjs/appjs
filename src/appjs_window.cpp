@@ -5,29 +5,58 @@
 namespace appjs {
 
 using namespace v8;
-using namespace node;
 
-Persistent<FunctionTemplate> Window::constructor_template;
+Window::Window() {};
+Window::~Window() {};
 
-void Window::Init (Handle<v8::Object> target) {
+Persistent<Function> Window::constructor;
 
-  CREATE_NODE_CONSTRUCTOR ("Window", Window);
-  DEFINE_NODE_METHOD("show", Show);
-  DEFINE_NODE_METHOD("hide", Hide);
-  END_CONSTRUCTOR ();
+void Window::Init () {
 
+  /*CREATE_NODE_CONSTRUCTOR(Window);
+
+  DEFINE_PROTOTYPE_METHOD("show",Show);
+
+  END_CONSTRUCTOR();*/
+  Window::Init(false);
+}
+
+Local<FunctionTemplate> Window::Init(bool) {
+  CREATE_NODE_CONSTRUCTOR(Window);
+
+  DEFINE_PROTOTYPE_METHOD("show",Show);
+
+  END_CONSTRUCTOR();
+  
+  return tpl;
 }
 
 Handle<Value> Window::New(const Arguments& args) {
   HandleScope scope;
   
-  uv_ref (uv_default_loop ());
   auto self = Persistent<v8::Object>::New (args.This ());
   
   MainWindow* obj = new MainWindow();
   self->SetPointerInInternalField (0, obj);
   
   return args.This();
+/*  HandleScope scope;
+
+  Window* obj = new Window();
+  //obj->counter_ = args[0]->IsUndefined() ? 0 : args[0]->NumberValue();
+  obj->Wrap(args.This());
+  
+  return args.This();*/
+}
+
+Handle<Value> Window::NewInstance(const Arguments& args) {
+  HandleScope scope;
+
+  const unsigned argc = 1;
+  Handle<Value> argv[argc] = { args[0] };
+  Local<Object> instance = constructor->NewInstance(argc, argv);
+
+  return scope.Close(instance);
 }
 
 Handle<Value> Window::Show(const Arguments& args) {
@@ -35,7 +64,6 @@ Handle<Value> Window::Show(const Arguments& args) {
   
   MainWindow *obj = ObjectWrap::Unwrap<MainWindow> (args.This());
 
-//  MainWindow* obj = self->GetPointerInInternalField(0);
   obj->Show();
 
   return args.This();

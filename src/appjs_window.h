@@ -8,8 +8,6 @@
 #if defined(__linux__)
 
 #include "linux/mainwindow.h"
-//#include "linux/appjs_menu.h"
-//#include "linux/appjs_status_icon.h"
 
 #endif /* end of linux */
 
@@ -17,12 +15,12 @@ namespace appjs {
 
 using namespace v8;
 
-class Window {
+class Window : public node::ObjectWrap {
 
-  DECLARE_NODE_OBJECT (Window)
-
-  static Handle<Value> Show (const Arguments& args);
-  static Handle<Value> Hide (const Arguments& args);
+  DECLARE_NODE_OBJECT_FACTORY(Window);
+  
+  DEFINE_CPP_METHOD(Show);
+  DEFINE_CPP_METHOD(Hide);
 
 };
 
