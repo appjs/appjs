@@ -6,29 +6,56 @@ namespace appjs {
 
 uv_timer_t CefLoop::timer;
 
+bool CefLoop::initialized_ = false;
+bool CefLoop::running_ = false;
+
 void CefLoop::Init() {
+
+  if( CefLoop::initialized_ ) return;
+
   uv_timer_init(uv_default_loop(),&timer);
+
+  CefLoop::initialized_ = true;
 }
 
 void CefLoop::Run() {
+
+  if( !CefLoop::initialized_ || CefLoop::running_ ) return;
+
   uv_ref(uv_default_loop());
-  uv_timer_start(&timer,Start,1,1);
+  uv_timer_start(&timer,RunLoop,1,1);
+
+  CefLoop::running_ = true;
 }
 
 void CefLoop::Pause() {
+
+  if( !CefLoop::initialized_ || !CefLoop::running_ ) return;
+
   uv_timer_stop(&timer);
+  uv_unref(uv_default_loop());
+  
+  CefLoop::running_ = false;
 }
 
 void CefLoop::Shutdown() {
-  uv_close((uv_handle_t*)&timer, Stop);
+
+  if( !CefLoop::initialized_ ) return;
+
+
+  CefLoop::initialized_ = false;
+  CefLoop::running_ = false;
+
+  uv_close((uv_handle_t*)&timer, StopLoop);
+
 }
 
-void CefLoop::Stop(uv_handle_t* handle) {
-   CefShutdown();
-   uv_unref(uv_default_loop());
+void CefLoop::StopLoop(uv_handle_t* handle) {
+  CefShutdown();
+  uv_unref(uv_default_loop());
 }
 
-void CefLoop::Start(uv_timer_t* handle, int status) {
+void CefLoop::RunLoop(uv_timer_t* handle, int status) {
   CefDoMessageLoopWork();  
 }
 

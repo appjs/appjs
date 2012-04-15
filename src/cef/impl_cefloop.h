@@ -18,8 +18,10 @@ public:
 protected:
   CefLoop (const CefLoop&);
   CefLoop& operator= (const CefLoop&);
-  static void Stop(uv_handle_t* handle);
-  static void Start(uv_timer_t* handle, int status);
+  static void StopLoop(uv_handle_t* handle);
+  static void RunLoop(uv_timer_t* handle, int status);
+  static bool running_;
+  static bool initialized_;
 
 };
 
