@@ -11,12 +11,12 @@
 
 #endif /* end of linux */
 
-// GTK+ binding for linux
+// Windows necessary files
 #if defined(__WIN__)
 
-#include "linux/mainwindow.h"
+#include "windows/mainwindow.h"
 
-#endif /* end of linux */
+#endif /* end of windows */
 
 
 namespace appjs {
