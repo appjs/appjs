@@ -5,11 +5,19 @@
 #include "appjs.h"
 
 // GTK+ binding for linux
-#if defined(__linux__)
+#if defined(__LINUX__)
 
 #include "linux/mainwindow.h"
 
 #endif /* end of linux */
+
+// GTK+ binding for linux
+#if defined(__WIN__)
+
+#include "linux/mainwindow.h"
+
+#endif /* end of linux */
+
 
 namespace appjs {
 

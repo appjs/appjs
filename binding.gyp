@@ -32,6 +32,9 @@
         		'src/linux/cef.cpp',
         		'src/linux/mainwindow.cpp'
         	],
+        	'defines': [
+		        '__LINUX__',
+		    ],
         	'cflags': [
         		'<!@(pkg-config --cflags gtk+-2.0)',
         	],
@@ -47,7 +50,19 @@
 	        },
         }],
         ['OS=="win"', {
-
+        	'sources': [
+        		'src/windows/cef.cpp',
+        		'src/windows/mainwindow.cpp'
+        	],
+        	'defines': [
+		        '__WIN__',
+		    ],
+			'link_settings': {
+	            'libraries': [
+	              '<(module_root_dir)/deps/cef/Debug/lib.target/libcef.lib',
+	      		  '<(module_root_dir)/build/Release/obj.target/deps/cef/cef_dll_wrapper.node'
+	            ],
+	        },
         }]
       ]
     }
