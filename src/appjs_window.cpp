@@ -25,6 +25,7 @@ Local<FunctionTemplate> Window::Init(bool) {
   CREATE_NODE_CONSTRUCTOR(Window);
 
   DEFINE_PROTOTYPE_METHOD("show",Show);
+  DEFINE_PROTOTYPE_METHOD("hide",Hide);
 
   END_CONSTRUCTOR();
   
@@ -36,7 +37,10 @@ Handle<Value> Window::New(const Arguments& args) {
   
   auto self = Persistent<v8::Object>::New (args.This ());
   
-  MainWindow* obj = new MainWindow();
+  Local<Object> settings = (args[0]->IsObject()) ? args[0]->ToObject() : Object::New();
+    
+  MainWindow* obj = new MainWindow(settings);
+  
   self->SetPointerInInternalField (0, obj);
   
   return args.This();
