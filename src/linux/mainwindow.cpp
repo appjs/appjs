@@ -1,5 +1,4 @@
 #include <node.h>
-#include <node_buffer.h>
 #include <gtk/gtk.h>
 #include "linux/cef.h"
 #include "linux/mainwindow.h"
