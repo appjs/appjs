@@ -1,14 +1,15 @@
 var appjs = require('./build/Release/appjs.node');
 var EventEmitter = require('events').EventEmitter;
-var Extend = require('util')._extend;
 
 var Init = appjs.init;
 
 appjs.init = function(){
 
-  var obj = Init(arguments);
+  var obj = Init.apply(this,arguments);
 
-  
+  for (var k in EventEmitter.prototype)
+    obj.__proto__[k] = EventEmitter.prototype[k];
+
   return obj;
 
 }

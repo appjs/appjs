@@ -46,7 +46,7 @@
 	            ],
 	            'libraries': [
 	              '<!@(pkg-config --libs-only-l gtk+-2.0 gthread-2.0)',
-	              '<(module_root_dir)/deps/cef/Debug/lib.target/libcef.so',
+	              '<(module_root_dir)/deps/cef/Release/lib.target/libcef.so',
                 '<(module_root_dir)/build/Release/obj.target/deps/cef/cef_dll_wrapper.node'
 	            ],
 	        },
