@@ -9,14 +9,12 @@
 
 #include "linux/mainwindow.h"
 
-#endif /* end of linux */
-
 // Windows necessary files
-#if defined(__WIN__)
+#elif defined(__WIN__)
 
 #include "windows/mainwindow.h"
 
-#endif /* end of windows */
+#endif
 
 
 namespace appjs {
@@ -26,9 +24,10 @@ using namespace v8;
 class Window : public node::ObjectWrap {
 
   DECLARE_NODE_OBJECT_FACTORY(Window);
-  
+
   DEFINE_CPP_METHOD(Show);
   DEFINE_CPP_METHOD(Hide);
+  DEFINE_CPP_METHOD(On);
 
 };
 

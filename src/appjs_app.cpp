@@ -19,8 +19,8 @@ void App::Init () {
   CREATE_NODE_CONSTRUCTOR(App);
   
   tpl->Inherit(super);
-
-  DEFINE_PROTOTYPE_METHOD("createWindow",CreateWindow);
+// TODO Should we allow more than one window?
+//  DEFINE_PROTOTYPE_METHOD("createWindow",CreateWindow);
   
   END_CONSTRUCTOR();
 }

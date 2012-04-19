@@ -1,19 +1,16 @@
-//module.exports = require('./build/Release/appjs.node');
-
 var appjs = require('./build/Release/appjs.node');
+var EventEmitter = require('events').EventEmitter;
+var Extend = require('util')._extend;
 
-/*var init = appjs.init;
+var Init = appjs.init;
 
 appjs.init = function(){
 
-  var obj = init(arguments);
-  
-  var window = obj.createWindow();
-  
-//  obj.__proto__ = Object.create(window,obj.__proto__);
+  var obj = Init(arguments);
+
   
   return obj;
 
-}*/
+}
 
 module.exports = appjs;

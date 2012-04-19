@@ -1,36 +1,14 @@
 #include "include/cef_app.h"
 #include "include/cef_base.h"
 #include "include/cef_browser.h"
-#include "cef/client_handler.h"
-#include "windows/cef.h"
+#include "cef_handler.h"
+#include "cef_base_win.h"
 
 extern CefRefPtr<ClientHandler> g_handler;
 
 namespace appjs {
 
-bool Cef::initialized_;
-
-void Cef::Init() {
-
-  if( !Cef::initialized_ ) {
-    CefLoop::Init();
-        
-    g_thread_init (NULL);
-    gdk_threads_init ();
-    gtk_init(NULL,NULL);
-    
-    CefSettings settings;
-    CefRefPtr<CefApp> app;
-
-    settings.pack_loading_disabled = true;
-    settings.multi_threaded_message_loop = false;
-
-    g_handler = new ClientHandler();
-
-    CefInitialize(settings, app);
-      
-    Cef::initialized_ = true;
-  }
+void CefBase::Init() {
 
 };
 

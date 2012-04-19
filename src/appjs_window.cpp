@@ -1,6 +1,7 @@
 #include <node.h>
 #include "appjs.h"
 #include "appjs_window.h"
+#include "includes/util.h"
 
 namespace appjs {
 
@@ -12,12 +13,6 @@ Window::~Window() {};
 Persistent<Function> Window::constructor;
 
 void Window::Init () {
-
-  /*CREATE_NODE_CONSTRUCTOR(Window);
-
-  DEFINE_PROTOTYPE_METHOD("show",Show);
-
-  END_CONSTRUCTOR();*/
   Window::Init(false);
 }
 
@@ -26,6 +21,7 @@ Local<FunctionTemplate> Window::Init(bool) {
 
   DEFINE_PROTOTYPE_METHOD("show",Show);
   DEFINE_PROTOTYPE_METHOD("hide",Hide);
+  //DEFINE_PROTOTYPE_METHOD("onshow",On);
 
   END_CONSTRUCTOR();
   
@@ -34,23 +30,16 @@ Local<FunctionTemplate> Window::Init(bool) {
 
 Handle<Value> Window::New(const Arguments& args) {
   HandleScope scope;
-  
-  auto self = Persistent<v8::Object>::New (args.This ());
-  
-  Local<Object> settings = (args[0]->IsObject()) ? args[0]->ToObject() : Object::New();
-    
-  MainWindow* obj = new MainWindow(settings);
-  
-  self->SetPointerInInternalField (0, obj);
-  
-  return args.This();
-/*  HandleScope scope;
 
-  Window* obj = new Window();
-  //obj->counter_ = args[0]->IsUndefined() ? 0 : args[0]->NumberValue();
-  obj->Wrap(args.This());
-  
-  return args.This();*/
+  auto self = Persistent<v8::Object>::New (args.This ());
+
+  Local<Object> settings = (args[0]->IsObject()) ? args[0]->ToObject() : Object::New();
+
+  MainWindow* obj = new MainWindow(settings);
+
+  self->SetPointerInInternalField (0, obj);
+
+  return args.This();
 }
 
 Handle<Value> Window::NewInstance(const Arguments& args) {
@@ -65,10 +54,10 @@ Handle<Value> Window::NewInstance(const Arguments& args) {
 
 Handle<Value> Window::Show(const Arguments& args) {
   HandleScope scope;
-  
+
   MainWindow *obj = ObjectWrap::Unwrap<MainWindow> (args.This());
 
-  obj->Show();
+  obj->show();
 
   return args.This();
 }
@@ -78,7 +67,7 @@ Handle<Value> Window::Hide(const Arguments& args) {
   
   MainWindow *obj = ObjectWrap::Unwrap<MainWindow> (args.This());
 
-  obj->Stop();
+  obj->hide();
 
   return args.This();
 }

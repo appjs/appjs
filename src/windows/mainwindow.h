@@ -1,5 +1,5 @@
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef APPJS_MAIN_WINDOW_H
+#define APPJS_MAIN_WINDOW_H
 #pragma once
 
 #include <node.h>
@@ -17,5 +17,5 @@ public:
 };
 
 } /* appjs */
-#endif /* end of MAIN_WINDOW_H */
+#endif /* end of APPJS_MAIN_WINDOW_H */
 

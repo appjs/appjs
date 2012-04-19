@@ -1,8 +1,8 @@
-#include "appjs_util.h"
+#include "util.h"
 
 namespace appjs {
 
-char* StringToChar(v8::Handle<v8::String> str) {
+char* V8StringToChar(v8::Handle<v8::String> str) {
 
   int len = str->Utf8Length();
   char* buf = new char[len + 1];

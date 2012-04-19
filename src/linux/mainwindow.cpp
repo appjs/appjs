@@ -1,15 +1,19 @@
 #include <node.h>
 #include <gtk/gtk.h>
-#include "linux/cef.h"
 #include "linux/mainwindow.h"
-#include "appjs_util.h"
+#include "includes/cef.h"
+#include "includes/util.h"
+#include "includes/cef_handler.h"
+#include "appjs.h"
+
+extern CefRefPtr<ClientHandler> g_handler;
 
 namespace appjs {
 
 using namespace v8;
 
 static void destroy_handler (int status = 0) {
-  Cef::Shutdown();
+  g_handler->GetBrowser()->CloseBrowser();
 };
 
 
@@ -25,10 +29,11 @@ MainWindow::MainWindow (v8::Local<v8::Object> settings) {
   int max_height = settings->Get(String::New("maxHeight"))->NumberValue();
   int width = settings->Get(String::New("width"))->NumberValue();
   int height = settings->Get(String::New("height"))->NumberValue();
-  char* title = appjs::StringToChar(settings->Get(String::New("title"))->ToString());
+  /*char* title = appjs::StringToChar(settings->Get(String::New("title"))->ToString());*/
+  char* url = appjs::V8StringToChar(settings->Get(String::New("entryPoint"))->ToString());
   bool has_chrome = settings->Get(String::New("hasChrome"))->BooleanValue();
   bool resizable = settings->Get(String::New("resizable"))->BooleanValue();
-  bool scrollable = settings->Get(String::New("scrollable"))->BooleanValue();
+  /*bool scrollable = settings->Get(String::New("scrollable"))->BooleanValue();*/
   bool show_resize_grip = settings->Get(String::New("showResizeGrip"))->BooleanValue();
   bool fullscreen = settings->Get(String::New("fullscreen"))->BooleanValue();
   double opacity = settings->Get(String::New("opacity"))->NumberValue();
@@ -41,7 +46,7 @@ MainWindow::MainWindow (v8::Local<v8::Object> settings) {
 
   GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
-  gtk_window_set_title(GTK_WINDOW(window), title);
+  /*gtk_window_set_title(GTK_WINDOW(window), title);*/
   gtk_window_set_default_size(GTK_WINDOW(window), width, height);
   gtk_window_set_resizable(GTK_WINDOW(window), resizable);
   gtk_window_set_opacity(GTK_WINDOW(window), opacity);
@@ -63,28 +68,37 @@ MainWindow::MainWindow (v8::Local<v8::Object> settings) {
   }
 
   g_signal_connect(G_OBJECT(window), "destroy",
-                   G_CALLBACK(gtk_widget_destroyed), &window);
-  g_signal_connect(G_OBJECT(window), "destroy",
                    G_CALLBACK(&destroy_handler), NULL);
 
   GtkWidget* box = gtk_vbox_new(FALSE, 0);
   gtk_container_add(GTK_CONTAINER(window), box);
-  Cef::AddWebView(box);
-  
-  gtk_widget_show_all(GTK_WIDGET(window));
+  Cef::AddWebView(box,url);
 
   // Install an signal handler so we clean up after ourselves.
   signal(SIGINT, destroy_handler);
   signal(SIGTERM, destroy_handler);
-
-};
-
-void MainWindow::Show () {
   Cef::Run();
 };
 
-void MainWindow::Stop () {
-  Cef::Shutdown();
+void MainWindow::show() {
+  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
+    NODE_ERROR("Browser window not available or not ready.");
+
+  gtk_widget_show_all(GTK_WIDGET(g_handler->GetMainHwnd()));
+};
+
+void MainWindow::stop() {
+ if (!g_handler.get() || !g_handler->GetBrowserHwnd())
+    NODE_ERROR("Browser window not available or not ready.");
+  
+  gtk_widget_destroy(GTK_WIDGET(g_handler->GetMainHwnd()));
+};
+
+void MainWindow::hide() {
+  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
+    NODE_ERROR("Browser window not available or not ready.");
+  
+  gtk_widget_hide(GTK_WIDGET(g_handler->GetMainHwnd()));
 };
 
 } /* appjs */

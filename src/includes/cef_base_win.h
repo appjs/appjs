@@ -1,23 +1,23 @@
-#ifndef APPJS_CEF_H
-#define APPJS_CEF_H
+#ifndef APPJS_CEF_BASE_H
+#define APPJS_CEF_BASE_H
 #pragma once
 
 #include <windows.h>
 #include "include/cef_browser.h"
-#include "cef/cefbase.h"
 
 namespace appjs {
 
-class Cef : public CefBase {
+class CefBase {
 
 public:
-  static void Init();
   static void AddWebView(CefWindowHandle,RECT);
 
+protected:
+  static void Init();
+
 private:
-  Cef(const Cef&);
-  Cef& operator= (const Cef&);
-  static bool initialized_;
+  CefBase(const CefBase&);
+  CefBase& operator= (const CefBase&);
 
 };
 

@@ -1,5 +1,5 @@
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef APPJS_MAIN_WINDOW_H
+#define APPJS_MAIN_WINDOW_H
 #pragma once
 
 #include <node.h>
@@ -11,11 +11,10 @@ class MainWindow {
 public:
   MainWindow(v8::Local<v8::Object> settings);
   ~MainWindow();
-  void Show();
-  void Stop();
-
+  void show();
+  void hide();
+  void stop();
 };
 
 } /* appjs */
-#endif /* end of MAIN_WINDOW_H */
-
+#endif /* end of APPJS_MAIN_WINDOW_H */

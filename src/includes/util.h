@@ -5,7 +5,7 @@
 
 namespace appjs {
 
-char* StringToChar(v8::Handle<v8::String> str);
+char* V8StringToChar(v8::Handle<v8::String> str);
 
 }
 #endif

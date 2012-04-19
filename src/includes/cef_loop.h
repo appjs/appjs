@@ -1,5 +1,5 @@
-#ifndef IMPL_CEFLOOP_H
-#define IMPL_CEFLOOP_H
+#ifndef APPJS_CEF_LOOP_H
+#define APPJS_CEF_LOOP_H
 #pragma once
 
 #include <node.h>
@@ -26,5 +26,5 @@ protected:
 };
 
 } /* appjs */
-#endif /* end of MAIN_WINDOW_H */
+#endif /* end of APPJS_CEF_LOOP_H */
 
