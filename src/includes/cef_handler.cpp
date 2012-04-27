@@ -86,6 +86,27 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   }
 }
 
+void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
+                         CefRefPtr<CefFrame> frame,
+                         int httpStatusCode) 
+{
+  REQUIRE_UI_THREAD();
+
+  if (!m_Browser.get()) {
+    
+    Local<Object> global = Context::GetCurrent()->Global();
+    Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
+    Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
+
+    const int argc = 2;
+    Handle<Value> argv[argc] = {String::New("ready"),Number::New(httpStatusCode)};
+    node::MakeCallback(emitter,"emit",argc,argv);
+
+    DoClose(browser);
+  }
+}
+
+
 void ClientHandler::SetMainHwnd(CefWindowHandle hwnd) {
   AutoLock lock_scope(this);
   m_MainHwnd = hwnd;

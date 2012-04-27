@@ -13,10 +13,15 @@ class AppjsSchemeHandler
     public CefTask 
 {
 public:
-  AppjsSchemeHandler() {
-    AppjsSchemeHandler::me = this;
+
+  static AppjsSchemeHandler* GetInstance() {
+
+    if(instance_ == NULL){
+      instance_ = new AppjsSchemeHandler();
+    }
+
+    return instance_;
   };
-  ~AppjsSchemeHandler() {};
 
   virtual void Execute(CefThreadId) OVERRIDE;
   virtual bool ProcessRequest(CefRefPtr<CefRequest>,
@@ -39,11 +44,13 @@ protected:
   static std::string data_;
   static std::string mime_type_;
   static size_t offset_;
-  static AppjsSchemeHandler* me;
+  static AppjsSchemeHandler* instance_;
 
   IMPLEMENT_REFCOUNTING(AppjsSchemeHandler);
   IMPLEMENT_LOCKING(AppjsSchemeHandler);
-
+private:
+  AppjsSchemeHandler() {};
+  ~AppjsSchemeHandler() {};
 };
 
 class AppjsSchemeHandlerFactory : public CefSchemeHandlerFactory {

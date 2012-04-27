@@ -12,7 +12,7 @@ CefRefPtr<CefSchemeHandlerCallback> AppjsSchemeHandler::callback_;
 std::string AppjsSchemeHandler::data_;
 std::string AppjsSchemeHandler::mime_type_;
 size_t AppjsSchemeHandler::offset_;
-AppjsSchemeHandler* AppjsSchemeHandler::me = NULL;
+AppjsSchemeHandler* AppjsSchemeHandler::instance_ = NULL;
 
 // Implementation of the schema handler for appjs:// requests.
 void AppjsSchemeHandler::Execute(CefThreadId threadId) {
@@ -36,26 +36,27 @@ void AppjsSchemeHandler::Execute(CefThreadId threadId) {
     Handle<Value> argv[argc] = {String::New("route"),req,cb};
     node::MakeCallback(emitter,"emit",argc,argv);
 
-  } else if(CefCurrentlyOn(TID_IO)) {
-
-    callback_->HeadersAvailable();
-
   }
+
 }
 
-Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args){
+Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
   mime_type_ = appjs::V8StringToChar(args[0]->ToString());
   data_ = appjs::V8StringToChar(args[1]->ToString());
-  CefPostTask(TID_IO, me );
+  callback_->HeadersAvailable();
   return args.This();
 }
 
 bool AppjsSchemeHandler::ProcessRequest(CefRefPtr<CefRequest> request,
                               CefRefPtr<CefSchemeHandlerCallback> callback)
-                              OVERRIDE {
+{
 
   REQUIRE_IO_THREAD();
-  
+
+  AutoLock lock_scope(this);
+  data_ = "";
+  mime_type_ = "";
+  offset_ = 0;
   request_ = request;
   callback_ = callback;
 
@@ -66,14 +67,14 @@ bool AppjsSchemeHandler::ProcessRequest(CefRefPtr<CefRequest> request,
 
 void AppjsSchemeHandler::GetResponseHeaders(CefRefPtr<CefResponse> response,
                                   int64& response_length,
-                                  CefString& redirectUrl) OVERRIDE {
+                                  CefString& redirectUrl)
+{
   REQUIRE_IO_THREAD();
 
   ASSERT(!data_.empty());
 
   response->SetMimeType(mime_type_);
   response->SetStatus(200);
-
   // Set the resulting response length
   response_length = data_.length();
 }
@@ -86,7 +87,8 @@ bool AppjsSchemeHandler::ReadResponse(void* data_out,
                             int bytes_to_read,
                             int& bytes_read,
                             CefRefPtr<CefSchemeHandlerCallback> callback)
-                            OVERRIDE {
+{
+
   REQUIRE_IO_THREAD();
 
   bool has_data = false;
@@ -104,6 +106,7 @@ bool AppjsSchemeHandler::ReadResponse(void* data_out,
     bytes_read = transfer_size;
     has_data = true;
   }
+
   return has_data;
 }
 
@@ -112,9 +115,9 @@ bool AppjsSchemeHandler::ReadResponse(void* data_out,
 CefRefPtr<CefSchemeHandler> AppjsSchemeHandlerFactory::Create(CefRefPtr<CefBrowser> browser,
                                              const CefString& scheme_name,
                                              CefRefPtr<CefRequest> request)
-                                             OVERRIDE {
+{
   REQUIRE_IO_THREAD();
-  return new AppjsSchemeHandler();
+  return AppjsSchemeHandler::GetInstance();
 }
 
 } /* appjs */
