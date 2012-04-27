@@ -21,6 +21,49 @@ _libcef.so included in the repo is only tested under Ubuntu 11.10_
 
 There is an example in repo that shows all features implemented.
 
+Here is a simple one:
+
+	var appjs = require('appjs');
+
+	var window;
+
+	// Initialize appjs.
+    var app = appjs.init();
+
+    // Called when page load finishes.
+    app.on("ready",function(){
+	  console.log("Event Ready called");
+
+	  // Runs a script in browser context.
+	  window.runInBrowser(function(){
+	    var body = document.body;
+	    body.style.color="#f60";
+	  });
+
+	  // Show created window ( see below )
+	  window.show();
+	});
+
+	// Called when webview needs to load 
+	// a resource of type appjs://
+	app.on("route",function(req,callback){
+	  // req.url and req.method are available
+	  if(req.url == "appjs://app/") {
+	  	callback("text/html",
+	    	"<html>\
+	    		<head><title>Hello world</title></head>\
+	    		<body>Hello World</body>\
+	    	</html>");
+	  }
+	});
+
+	// Creates a new window. Its invisible until window.show() get called.
+    window = app.createWindow({entryPoint:"appjs://app/",autoResize:false});
+
+You should see something like:
+
+![Hello World](https://github.com/milani/appjs/raw/master/example/output.png "Hello World")
+
 ## Thanks to
 
 * Brandon Benvie: He helps me with CEF.
