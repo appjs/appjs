@@ -1,6 +1,6 @@
 # AppJS
 
-![AppJS](https://github.com/milani/appjs/blob/master/appjs.png "AppJS") AppJS is an SDK to develop desktop applications using node. Or at least
+![AppJS](https://github.com/milani/appjs/raw/master/appjs.png "AppJS") AppJS is an SDK to develop desktop applications using node. Or at least
 it is going to be!
 
 The goal is to facilitate native app development using
@@ -9,9 +9,20 @@ tools every developer is familiar with nowadays: HTML/CSS/JS
 _Attention:_ You should not use AppJS before we bump version to 
 v0.1.0, it is under heavy development.
 
+# How to install
+
+AppJS uses CEF shared library. You need to have CEF library in your
+library path. You need to change path to libcef in bindings.gyp to
+be able to compile and use appjs.
+
+_libcef.so included in the repo is only tested under Ubuntu 11.10_
+
+# How to use
+
+There is an example in repo that shows all features implemented.
+
 ## Thanks to
 
-* Zhao Cheng: I borrowed AppJS GUI core from his node-gui module.
 * Brandon Benvie: He helps me with CEF.
 * Ali Farhadi: He helps me with AppJS.
 
