@@ -10,6 +10,7 @@
       	'src/includes/cef_handler.cpp',
         'src/includes/cef.cpp',
       	'src/includes/cef_loop.cpp',
+        'src/includes/cef_scheme_handler.cpp',
         'src/includes/util.cpp',
       ],
       'dependencies': [
@@ -61,7 +62,7 @@
 		      ],
           'link_settings': {
 	            'libraries': [
-                '<(module_root_dir)/deps/cef/Debug/lib.target/libcef.lib',
+                '<(module_root_dir)/deps/cef/Release/lib.target/libcef.lib',
                 '<(module_root_dir)/build/Release/obj.target/deps/cef/cef_dll_wrapper.node'
 	            ],
 	        },

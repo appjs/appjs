@@ -27,6 +27,6 @@ protected:
 
 };
 
-}
+} /* appjs */
 
 #endif /* end of APPJS_CEF_H */

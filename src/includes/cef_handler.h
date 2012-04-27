@@ -2,10 +2,10 @@
 #define APPJS_CEF_CLIENT_HANDLER_H
 #pragma once
 
-#include "include/cef_client.h"
-#include "include/cef_scheme.h"
 #include "include/cef_task.h"
-#include <assert.h>  // NOLINT(build/include_order)
+#include "include/cef_client.h"
+#include <assert.h>
+#include <node.h>
 
 #ifndef NDEBUG
 #define ASSERT(condition) if (!(condition)) { assert(false); }
@@ -24,37 +24,24 @@ class ClientHandler : public CefClient,
                       public CefRequestHandler,
                       public CefDisplayHandler,
                       public CefFocusHandler,
-                      public CefKeyboardHandler
-                      //public CefSchemeHandler
+                      public CefKeyboardHandler,
+                      public CefV8ContextHandler
 {
 
 public:
   ClientHandler();
   virtual ~ClientHandler();
 
-  // CefClient methods
   virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE {
-    return this;
-  }
-  virtual CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE {
-    return this;
-  }
-  virtual CefRefPtr<CefRequestHandler> GetRequestHandler() OVERRIDE {
     return this;
   }
   virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE {
     return this;
   }
-  virtual CefRefPtr<CefFocusHandler> GetFocusHandler() OVERRIDE {
-    return this;
-  }
   virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() OVERRIDE {
     return this;
   }
-  virtual CefRefPtr<CefKeyboardHandler> GetSchemeHandler() OVERRIDE {
-    return this;
-  }
-  
+
   CefRefPtr<CefBrowser> GetBrowser() { return m_Browser; }
   CefWindowHandle GetBrowserHwnd() { return m_BrowserHwnd; }
   CefWindowHandle GetMainHwnd();
@@ -64,7 +51,18 @@ public:
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
-  virtual void OnTitleChange(CefRefPtr<CefBrowser> browser,const CefString& title) OVERRIDE;
+  virtual void OnTitleChange(CefRefPtr<CefBrowser> browser,
+                             const CefString& title) OVERRIDE;
+
+  virtual void OnContextCreated(CefRefPtr<CefBrowser> browser,
+                                CefRefPtr<CefFrame> frame,
+                                CefRefPtr<CefV8Context> context) OVERRIDE;
+
+  virtual void OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
+                                    CefRefPtr<CefFrame> frame, 
+                                    int width, 
+                                    int height) OVERRIDE;
+
 
   // The child browser window
   CefRefPtr<CefBrowser> m_Browser;

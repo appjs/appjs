@@ -1,8 +1,6 @@
 #include "include/cef_app.h"
-#include "include/cef_base.h"
-#include "include/cef_browser.h"
-#include "cef_handler.h"
-#include "cef_base_gtk.h"
+#include "includes/cef_handler.h"
+#include "includes/cef_base_gtk.h"
 
 extern CefRefPtr<ClientHandler> g_handler;
 
@@ -19,13 +17,14 @@ void CefBase::Init() {
 void CefBase::AddWebView(CefWindowHandle ParentWidget,char* url) {
 
   CefWindowInfo window_info;
-  CefBrowserSettings browserSettings;
+  CefBrowserSettings browser_settings;
 
   window_info.SetAsChild(ParentWidget);
 
-  CefBrowser::CreateBrowserSync(window_info,
+  CefBrowser::CreateBrowser(window_info,
                                 static_cast<CefRefPtr<CefClient> >(g_handler),
-                                url, browserSettings);
+                                url, browser_settings);
+
   g_handler->SetMainHwnd(ParentWidget);
 }
 

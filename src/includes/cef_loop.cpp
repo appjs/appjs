@@ -1,7 +1,6 @@
 #include "appjs.h"
 #include "include/cef_app.h"
 #include "cef_loop.h"
-#include <iostream>
 
 namespace appjs {
 
@@ -25,7 +24,7 @@ void CefLoop::Run() {
 
   uv_ref(uv_default_loop());
   uv_timer_start(&timer,RunLoop,1,1);
-
+  
   CefLoop::running_ = true;
 }
 
@@ -57,7 +56,7 @@ void CefLoop::StopLoop(uv_handle_t* handle) {
 }
 
 void CefLoop::RunLoop(uv_timer_t* handle, int status) {
-  CefDoMessageLoopWork();  
+  CefDoMessageLoopWork();
 }
 
 } /* appjs */

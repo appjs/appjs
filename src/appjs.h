@@ -23,7 +23,6 @@
 #define DECLARE_NODE_OBJECT_FACTORY(Class) \
   public:\
     static void Init ();\
-    static Local<FunctionTemplate> Init(bool);\
     static Handle<Value> NewInstance(const Arguments& args);\
 \
   public:\
@@ -36,19 +35,11 @@
 // Ease the 'Init' implementation
 #define CREATE_NODE_CONSTRUCTOR(Name) \
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);\
-  tpl->SetClassName(String::NewSymbol("Name"));\
+  tpl->SetClassName(String::NewSymbol(Name));\
   tpl->InstanceTemplate()->SetInternalFieldCount(1)
 
 #define END_CONSTRUCTOR() \
     constructor = Persistent<Function>::New(tpl->GetFunction())
-    
-#define INHERIT_FROM(name) \
-  Local<FunctionTemplate> super_tpl = FunctionTemplate::New(name::New);\
-  tpl->Inherit(super_tpl); \
-  tpl->InstanceTemplate()->SetInternalFieldCount(2)
-
-#define END_INHERIT() \
-  super_constructor = Persistent<Function>::New(super_tpl->GetFunction())
 
 namespace appjs {
 

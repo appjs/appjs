@@ -14,7 +14,8 @@ Handle<Value> InitApp(const Arguments& args) {
 void Init(Handle<v8::Object> target) {
 
   App::Init();
-  
+  Window::Init();
+
   target->Set(String::NewSymbol("init"),
       FunctionTemplate::New(InitApp)->GetFunction());
 
@@ -22,6 +23,4 @@ void Init(Handle<v8::Object> target) {
 
 } /* appjs */
 
-#ifdef WIN32
 NODE_MODULE(appjs, appjs::Init)
-#endif
