@@ -25,13 +25,13 @@ void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
 {
   REQUIRE_UI_THREAD();
 
+  if(this->m_AutoResize) {
+    GtkWidget* window =
+        gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()),
+                                GTK_TYPE_WINDOW);
 
-  GtkWidget* window =
-      gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()),
-                              GTK_TYPE_WINDOW);
-
-  gtk_window_resize(GTK_WINDOW(window),width,height);
-
+    gtk_window_resize(GTK_WINDOW(window),width,height);
+  }
 }
 void ClientHandler::CloseMainWindow() {
   

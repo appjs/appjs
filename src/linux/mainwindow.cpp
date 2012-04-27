@@ -26,6 +26,7 @@ MainWindow::MainWindow (Settings* settings) {
   bool show_chrome = settings->getBoolean("showChrome",true);
   bool resizable = settings->getBoolean("resizable",true);
   bool show_resize_grip = settings->getBoolean("showResizeGrip",false);
+  bool auto_resize = settings->getBoolean("autoResize",true);
   bool fullscreen = settings->getBoolean("fullscreen",false);
   char* url = settings->getString("entryPoint","/");
 
@@ -44,6 +45,8 @@ MainWindow::MainWindow (Settings* settings) {
   if( !resizable ) {
     gtk_widget_set_size_request(window,width,height);
   }
+
+  g_handler->SetAutoResize(auto_resize);
 
   g_signal_connect(G_OBJECT(window), "destroy",
                    G_CALLBACK(&destroy_handler), NULL);
