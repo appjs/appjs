@@ -13,7 +13,7 @@ class AppjsSchemeHandler
     public CefTask 
 {
 public:
-
+  ~AppjsSchemeHandler() {};
   static AppjsSchemeHandler* GetInstance() {
 
     if(instance_ == NULL){
@@ -39,18 +39,18 @@ public:
   static v8::Handle<v8::Value> NodeCallback(const v8::Arguments&);
 
 protected:
-  static CefRefPtr<CefRequest> request_;
-  static CefRefPtr<CefSchemeHandlerCallback> callback_;
-  static std::string data_;
-  static std::string mime_type_;
-  static size_t offset_;
+  CefRefPtr<CefRequest> request_;
+  CefRefPtr<CefSchemeHandlerCallback> callback_;
+  std::string data_;
+  std::string mime_type_;
+  size_t offset_;
   static AppjsSchemeHandler* instance_;
 
   IMPLEMENT_REFCOUNTING(AppjsSchemeHandler);
   IMPLEMENT_LOCKING(AppjsSchemeHandler);
+
 private:
   AppjsSchemeHandler() {};
-  ~AppjsSchemeHandler() {};
 };
 
 class AppjsSchemeHandlerFactory : public CefSchemeHandlerFactory {

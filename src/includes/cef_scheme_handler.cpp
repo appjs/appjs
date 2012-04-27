@@ -7,11 +7,6 @@ namespace appjs {
 
 using namespace v8;
 
-CefRefPtr<CefRequest> AppjsSchemeHandler::request_;
-CefRefPtr<CefSchemeHandlerCallback> AppjsSchemeHandler::callback_;
-std::string AppjsSchemeHandler::data_;
-std::string AppjsSchemeHandler::mime_type_;
-size_t AppjsSchemeHandler::offset_;
 AppjsSchemeHandler* AppjsSchemeHandler::instance_ = NULL;
 
 // Implementation of the schema handler for appjs:// requests.
@@ -41,9 +36,10 @@ void AppjsSchemeHandler::Execute(CefThreadId threadId) {
 }
 
 Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
-  mime_type_ = appjs::V8StringToChar(args[0]->ToString());
-  data_ = appjs::V8StringToChar(args[1]->ToString());
-  callback_->HeadersAvailable();
+  AppjsSchemeHandler* me = AppjsSchemeHandler::GetInstance();
+  me->mime_type_ = appjs::V8StringToChar(args[0]->ToString());
+  me->data_ = appjs::V8StringToChar(args[1]->ToString());
+  me->callback_->HeadersAvailable();
   return args.This();
 }
 

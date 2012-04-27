@@ -92,8 +92,8 @@ void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
 {
   REQUIRE_UI_THREAD();
 
-  if (!m_Browser.get()) {
-    
+  if (m_Browser.get()) {
+
     Local<Object> global = Context::GetCurrent()->Global();
     Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
     Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
@@ -102,7 +102,6 @@ void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
     Handle<Value> argv[argc] = {String::New("ready"),Number::New(httpStatusCode)};
     node::MakeCallback(emitter,"emit",argc,argv);
 
-    DoClose(browser);
   }
 }
 
