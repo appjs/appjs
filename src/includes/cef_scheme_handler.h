@@ -13,7 +13,7 @@ class AppjsSchemeHandler
     public CefTask 
 {
 public:
-  ~AppjsSchemeHandler() {};
+  ~AppjsSchemeHandler() { AppjsSchemeHandler::instance_ = NULL; };
   static AppjsSchemeHandler* GetInstance() {
 
     if(instance_ == NULL){
