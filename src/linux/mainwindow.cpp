@@ -16,7 +16,7 @@ static void destroy_handler (int status = 0) {
   g_handler->GetBrowser()->CloseBrowser();
 };
 
-MainWindow::MainWindow (Settings* settings) {
+MainWindow::MainWindow (char* url, Settings* settings) {
 
   Cef::Init();
 
@@ -28,7 +28,6 @@ MainWindow::MainWindow (Settings* settings) {
   bool show_resize_grip = settings->getBoolean("showResizeGrip",false);
   bool auto_resize = settings->getBoolean("autoResize",true);
   bool fullscreen = settings->getBoolean("fullscreen",false);
-  char* url = settings->getString("entryPoint","/");
 
   GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 

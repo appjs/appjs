@@ -58,7 +58,7 @@ Here is a simple one:
 	});
 
 	// Creates a new window. Its invisible until window.show() get called.
-    window = app.createWindow({entryPoint:"appjs://app/",autoResize:false});
+    window = app.createWindow("appjs://app/",{autoResize:false});
 
 You should see something like:
 

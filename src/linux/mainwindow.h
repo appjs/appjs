@@ -10,7 +10,7 @@ namespace appjs {
 class MainWindow {
 
 public:
-  MainWindow(Settings*);
+  MainWindow(char*,Settings*);
   ~MainWindow();
   void show();
   void hide();

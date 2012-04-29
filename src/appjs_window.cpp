@@ -31,10 +31,11 @@ Handle<Value> Window::New(const Arguments& args) {
 
   auto self = Persistent<v8::Object>::New(args.This());
 
-  Local<Object> v8settings = (args[0]->IsObject()) ? args[0]->ToObject() : Object::New();
+  char* url = (args[0]->IsString()) ? V8StringToChar(args[0]->ToString()) : (char*) "/";
+  Local<Object> v8settings = (args[1]->IsObject()) ? args[1]->ToObject() : Object::New();
 
   Settings* settings = new Settings(v8settings);
-  MainWindow* obj = new MainWindow(settings);
+  MainWindow* obj = new MainWindow(url,settings);
 
   self->SetPointerInInternalField (0, obj);
 
@@ -44,8 +45,8 @@ Handle<Value> Window::New(const Arguments& args) {
 Handle<Value> Window::NewInstance(const Arguments& args) {
   HandleScope scope;
 
-  const unsigned argc = 1;
-  Handle<Value> argv[argc] = { args[0] };
+  const unsigned argc = 2;
+  Handle<Value> argv[argc] = { args[0],args[1] };
   Local<Object> instance = constructor->NewInstance(argc, argv);
   return scope.Close(instance);
 }
@@ -90,7 +91,6 @@ Handle<Value> Window::RunInBrowser(const Arguments& args) {
   if(browser) {
     char* script = V8StringToFunctionChar(args[0]->ToString());
     g_handler->GetBrowser()->GetMainFrame()->ExecuteJavaScript(script,"",0);
-    //fprintf(stderr,"%s\n",script);
   }
 
   return scope.Close(args.This());
