@@ -41,9 +41,12 @@ public:
 protected:
   CefRefPtr<CefRequest> request_;
   CefRefPtr<CefSchemeHandlerCallback> callback_;
+  std::string status_text_;
   std::string data_;
   std::string mime_type_;
-  size_t offset_;
+  size_t      offset_;
+  int         status_;
+
   static AppjsSchemeHandler* instance_;
 
   IMPLEMENT_REFCOUNTING(AppjsSchemeHandler);

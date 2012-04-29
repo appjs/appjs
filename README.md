@@ -9,7 +9,7 @@ tools every developer is familiar with nowadays: HTML/CSS/JS
 _Attention:_ You should not use AppJS before we bump version to 
 v0.1.0, it is under heavy development.
 
-# How to install
+## How to install
 
 AppJS uses CEF shared library. You need to have CEF library in your
 library path. You need to change path to libcef in bindings.gyp to
@@ -17,7 +17,7 @@ be able to compile and use appjs.
 
 _libcef.so included in the repo is only tested under Ubuntu 11.10_
 
-# How to use
+## How to use
 
 There is an example in repo that shows all features implemented.
 
@@ -44,17 +44,19 @@ Here is a simple one:
 	  window.show();
 	});
 
-	// Called when webview needs to load 
-	// a resource of type appjs://
-	app.on("route",function(req,callback){
-	  // req.url and req.method are available
-	  if(req.url == "appjs://app/") {
-	  	callback("text/html",
-	    	"<html>\
-	    		<head><title>Hello world</title></head>\
-	    		<body>Hello World</body>\
-	    	</html>");
-	  }
+	// Routing:
+
+	// you can use a static router:
+	// app.use(app.staticRouter('./public'));
+
+	// or you can handle requests manually:
+	app.get("/",function(req,res,next){
+	  res.send("\
+	  	<html>\
+	  		<head><title>Hello World</title></head>\
+	  		<body>Hello World</body>\
+	  	</html>\
+	  ")
 	});
 
 	// Creates a new window. Its invisible until window.show() get called.
@@ -69,7 +71,8 @@ You should see something like:
 * Brandon Benvie: He helps me with CEF.
 * Ali Farhadi: He helps me with AppJS.
 
-# License
+## License
+( The MIT License )
 
 Copyright (c) 2012 Morteza Milani and other AppJS contributors
 
