@@ -3,9 +3,15 @@
   "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS",
   "version": "0.0.2",
   "keywords": [
-    "app",
+    "cef",
     "webkit",
+    "browser",
+    "canvas",
+    "html5",
     "desktop",
+    "native",
+    "gtk",
+    "ui",
     "sdk"
   ],
   "homepage": "http://github.com/milani/appjs",
