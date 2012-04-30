@@ -23,7 +23,7 @@ Using git:
 
     $ git clone https://github.com/milani/appjs
     $ cd appjs/bin
-    $ ./install
+    $ ./configure
 
 ## How to use
 

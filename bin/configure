@@ -4,7 +4,7 @@
  * Set the title.
  */
 
-process.title = 'appjs-installer'
+process.title = 'appjs-configure'
 
 /**
  * Necessary modules and variables

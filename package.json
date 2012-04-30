@@ -47,7 +47,7 @@
   "devDependencies": {},
   "optionalDependencies": {},
   "scripts": {
-    "preinstall": "./bin/installer || true; node-gyp rebuild"
+    "preinstall": "./bin/configure || true; node-gyp rebuild"
   },
   "licenses": [
     {
