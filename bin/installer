@@ -62,7 +62,10 @@ function downloadCef(version,cb){
     gunzip.on('error', errorHandler)
     extracter.on('error', errorHandler)
     extracter.on('end', function(){
-        fs.unlinkSync( path.join(depsDir,'cef') );
+        try {
+          fs.unlinkSync( path.join(depsDir,'cef') );
+        } catch(e) {};
+
         fs.symlink( path.join(depsDir,fileName.replace('.tar.gz','')), path.join(depsDir,'cef') ,cb);
     })
 
