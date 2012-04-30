@@ -9,17 +9,25 @@ tools every developer is familiar with nowadays: HTML/CSS/JS
 _Attention:_ You should not use AppJS before we bump version to 
 v0.1.0, it is under heavy development.
 
+![Hello World](https://github.com/milani/appjs/raw/master/examples/output.png "Hello World")
+
 ## How to install
 
-AppJS uses CEF shared library. You need to have CEF library in your
-library path. You need to change path to libcef in bindings.gyp to
-be able to compile and use appjs.
+** Only Linux version works for now. Pull requests for other platforms are very welcome **
 
-_libcef.so included in the repo is only tested under Ubuntu 11.10_
+Using npm:
+
+    $ npm install appjs
+
+Using git:
+
+    $ git clone https://github.com/milani/appjs
+    $ cd appjs/bin
+    $ ./install
 
 ## How to use
 
-There is an example in repo that shows all features implemented.
+There is a complete example in the `examples/` folder.
 
 Here is a simple one:
 
@@ -61,10 +69,6 @@ Here is a simple one:
 
 	// Creates a new window. Its invisible until window.show() get called.
     window = app.createWindow("appjs://app/",{autoResize:false});
-
-You should see something like:
-
-![Hello World](https://github.com/milani/appjs/raw/master/example/output.png "Hello World")
 
 ## Thanks to
 
