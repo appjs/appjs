@@ -1,4 +1,4 @@
 build/
 node_modules/
 appjs.sublime*
-deps/*
+deps/cef

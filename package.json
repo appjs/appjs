@@ -1,7 +1,7 @@
 {
   "name": "appjs",
   "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "keywords": [
     "app",
     "webkit",
@@ -27,20 +27,22 @@
     "doc": "./doc",
     "lib": "./lib",
     "bin": "./bin",
-    "test": "./test"
-  },
-  "bin": {
-    "appjs": "./bin/appjs"
+    "test": "./tests"
   },
   "main": "./index.js",
   "engines": {
     "node": "0.6 || 0.7 || 0.8"
   },
   "dependencies": {
-    "mime":"1.2.5"
+    "mime":"1.2.5",
+    "request":"2.9.x",
+    "tar":">= 0.1.13"
   },
   "devDependencies": {},
   "optionalDependencies": {},
+  "scripts": {
+    "preinstall": "./bin/installer || true; node-gyp rebuild"
+  },
   "licenses": [
     {
       "type": "MIT",

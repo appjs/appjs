@@ -23,7 +23,7 @@
   	  'cflags': [
   	  	'-fPIC',
   	  	'-Wall',
-  	  	'-std=c++0x',
+  	  	'-std=c++0x'
   	  ],
       'conditions': [
         ['OS=="mac"', {
@@ -44,6 +44,7 @@
           'link_settings': {
 	            'ldflags': [
 	              '<!@(pkg-config --libs-only-L --libs-only-other gtk+-2.0 gthread-2.0)',
+                '-Wl,-R,<(module_root_dir)/deps/cef/Release/lib.target/'
 	            ],
 	            'libraries': [
 	              '<!@(pkg-config --libs-only-l gtk+-2.0 gthread-2.0)',
