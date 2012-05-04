@@ -1,63 +1,242 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Appjs by milani</title>
-    
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>AppJS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/ico/appjs_144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/ico/appjs_114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/ico/appjs_72.png">
+    <link rel="apple-touch-icon-precomposed" href="img/ico/appjs_57.png">
   </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1>Appjs</h1>
-        <p>SDK on top of nodejs for building desktop apps.</p>
-        <p class="view"><a href="https://github.com/milani/appjs">View the Project on GitHub <small>milani/appjs</small></a></p>
-        <ul>
-          <li><a href="https://github.com/milani/appjs/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/milani/appjs/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/milani/appjs">Fork On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h3>Welcome to GitHub Pages.</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+  <body data-spy="scroll" data-target=".navbar" data-offset="160">
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
-
-<h3>Designer Templates</h3>
-
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact support@github.com and we’ll help you sort it out.</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/milani">milani</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#home"><img src="img/appjs.png"/></a>
+          <div class="nav-collapse pull-right">
+            <ul class="nav">
+              <li><a href="#why">Why AppJS?</a></li>
+              <li><a href="#guide">Guide</a></li>
+              <li><a href="#contribute">Contribute</a></li>
+              <li><a href="#download">Download</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
-    
+
+    <!-- Main hero unit for a primary marketing message or call to action -->
+    <header class="hero-unit">
+      <div class="inner">
+        <h1>Build Cross-Platform Applications</h1>
+        <p>for desktop using HTML, CSS, Javascript</p>
+        <p>
+          <a class="btn btn-warning btn-large disabled">Download AppJS (v0.0.2)</a>
+          <a class="btn btn-large disabled">Read Documentation</a>
+        </p>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="why">
+        <div class="page-header">
+          <h1>Why AppJS?</h1>
+        </div>
+        <div class="page-body">
+          <p>Because it is simple and yet powerful. Using AppJS you don't need to be worry about coding cross-platform or learning new languages and tools. You are already familiar with HTML, CSS and Javascript. What is better than this stack for application development? Beside, AppJS uses Chromium at the core so you get latest HTML 5 APIs working. So relax and focus on the task your application should do.</p>
+          <div class="row">
+            <div class="span4">
+              <h3>HTML 5</h3>
+              <p>AppJS allows you to use HTML 5 APIs to create attractive applications from Word Processors to 3D Games. You are no longer limited to default GUI widgets that plaforms force you to use. Creating custom UIs is now only limited to your imagination!</p>
+              <p><a class="btn" href="http://slides.html5rocks.com/" target="_blank">Learn more about HTML 5 &raquo;</a></p>
+            </div>
+            <div class="span4">
+              <h3>CSS 3</h3>
+               <p>Using CSS you can decorate widgets as you like. Create a custom widget in HTML and complete your work with decorating it. Adding shadows, animating elements and transforming objects in 3D space are a few examples of what you can do with CSS 3. </p>
+              <p><a class="btn" href="http://www.css3.info/preview/" target="_blank">Learn more about CSS 3 &raquo;</a></p>
+           </div>
+            <div class="span4">
+              <h3>Node.js</h3>
+              <p>The interesting part of AppJS is that it uses Node.js as the backbone. Node.js has been built to ease the process of developing scalable network applications. But today, you can see Node nearly everywhere! It has a nice API and lots of modules.</p>
+              <p><a class="btn" href="http://nodejs.org" target="_blank">Read more at nodejs.org &raquo;</a></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="guide">
+        <div class="page-header">
+          <h1>Getting Started Guide</h1>
+        </div>
+        <div class="page-body">
+          <p>Make sure you have the latest Node.js installed. Use npm (node's package manager) to install AppJS.</p>
+          <pre>$ npm install appjs</pre>
+          <p>AppJS tries to install dependencies based on the platform you are working with.</p>
+          <p>Now you are ready to develop your first desktop application with HTML/CSS/JS! Create a file named app.js. Open it with your favorite editor and start coding:</p>
+          <pre>
+/**
+ * Begin by requiring appjs. appjs object has only one funciton that initializes everything you need.
+ **/
+var appjs = require('appjs');
+
+/**
+ * We will use window and app variables later.
+ * settings is the object that you will use to set window properties like width or height.
+ * There are more options like disabling chrome (frame around the window) or enabling fullscreen
+ * mode but we don't need them.
+ **/
+var window,app,settings = {
+  width: 800,
+  height: 600,
+  autoResize: false
+};
+
+// Initialize application. It tells appjs that you are going to start desktop application.
+app = appjs.init();
+
+/**
+ * This event is fired when window is ready to show up. Calling window.show() before this event
+ * causes exception.
+ **/
+app.on("window_ready",function(){
+  console.log("Event WindowReady called");
+
+  window.show();
+
+});
+
+/**
+ * use a static router to serve html, css and javascript files that are in public folder.
+ * appjs uses your routers when you request a resource with appjs:// custom scheme.
+ **/
+app.use(app.staticRouter('./public'));
+
+/**
+ * There are other routing functions that you can use like `post`, `get` or `all`.
+ **/
+app.post('/',function(req,res,next){
+  res.send(200,'Hey! How are you '+req.post('firstname'));
+})
+
+/**
+ * Create a window and point it to appjs://app/.
+ **/
+window = app.createWindow("appjs://app/",settings);
+          </pre>
+          <p>Create a folder named <code>public</code> and create a html file named <code>index.html</code> inside it. Open <code>index.html</code> in the editor. We want to create a form to submit first name and last name.</p>
+          <pre>&lt;!doctype html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Hello World!&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;form action=&quot;/&quot; method=&quot;POST&quot;&gt;
+      &lt;input name=&quot;firstname&quot; type=&quot;text&quot; placeholder=&quot;Firstname&quot;/&gt;
+      &lt;input name=&quot;lastname&quot; type=&quot;text&quot; placeholder=&quot;Firstname&quot;/&gt;
+      &lt;input type=&quot;submit&quot;/&gt;
+    &lt;/form&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+          <p>Now everything is ready. Open terminal and navigate to your project directory.</p>
+          <pre>$ node app.js</pre>
+          <p>You will see a window that asks you for firstname and lastname! Fill the form and click submit. AppJS routes the request to post router at line 42 of <code>app.js</code>. We process the request and send response.</p>
+          <p>It was a simple application to show how AppJS works. For more detailed information read the documentation <href="/docs" title="Documentation">here</a>.</p>
+        </div>
+      </section>
+
+      <section id="contribute">
+        <div class="page-header">
+          <h1>We need your help!</h1>
+        </div>
+        <div class="page-body">
+          <p>AppJS is a work in progress and needs a lot of improvement. There are unimplemented stuff waiting for your help! You can find them at github <a href="https://github.com/milani/appjs/issues">issue tracker</a> or <a href="https://github.com/milani/appjs">read the code</a> and find <span class="label">@TODO</span> tags! You can also subscribe to <a href="https://groups.google.com/d/forum/appjs" title="AppJS Mailing list" target="_blank">the mailing list</a> where we talk about AppJS features.</p>
+          <p>There are two areas you can help. If you code in C++ try to implement features that are only supported in one platform or two. We need all three major platforms to work (Mac, Linux and Windows). If you are professional in Javascript and Node.js then you can help us by implementing JS wrappers for C++ APIs.</p>
+          <p>To start contributing, fork git repository from github, clone the forked repository and make your changes according to instructions below. Then send a pull request. We discuss changes you have made. After that you can see your changes merged in the main repository!</p>
+          <h2>Contribution guide line</h2>
+          <p>Please follow the guide lines below before making any change to source code. Otherwise we can not merge your pull request.</p>
+          <h3>Git</h3>
+          <ul>
+            <li>Use topic branches to add features. This way you can keep master branch up-to-date and reduce merge conflicts.</li>
+            <li>Use present tense commit messages. Always add describe what you did in this commit. Example:
+              <pre>Fixes #111
+
+Describe what changed in this commit here.</pre>
+            </li>
+          </ul>
+          <h3>Code</h3>
+          <ul>
+            <li>Remove trailing whitespaces.</li>
+            <li>Use two-space tab indention.</li>
+            <li>Use 80 characters line length.</li>
+            <li>Use single quotes in JS.</li>
+            <li>Use same line braces.</li>
+            <li>Use camelCase variables in JS, underline variables in C++.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="download">
+        <div class="page-header">
+          <h1>Download</h1>
+        </div>
+        <div class="page-body">
+          <p>AppJS should be used as a module for Nodejs. If you have <code>npm</code> installed then downloading AppJS is easy:</p>
+          <pre>$ npm install appjs</pre>
+          <p>There is no tarball at the time. We are working hard to make them available.</p>
+          <!--p>Here are compiled tarballs for different platforms. Remember that you should extract tarball in <code>your_project_root/node_modules</code>.</p-->
+        </div>
+      </section>
+
+      <hr>
+
+      <footer>
+        <p>&copy; Morteza Milani 2012</p>
+      </footer>
+
+    </div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap-transition.js"></script>
+    <script src="js/bootstrap-dropdown.js"></script>
+    <script src="js/bootstrap-scrollspy.js"></script>
+    <script src="js/bootstrap-tab.js"></script>
+    <script src="js/bootstrap-tooltip.js"></script>
+    <script src="js/bootstrap-popover.js"></script>
+    <script src="js/bootstrap-button.js"></script>
+    <script src="js/bootstrap-collapse.js"></script>
+    <script src="js/bootstrap-carousel.js"></script>
+    <script src="js/bootstrap-typeahead.js"></script>
+    <script src="js/smooth-scroll.js"></script>
+    <script>
+      // Google analytics goes here
+    </script>
   </body>
 </html>

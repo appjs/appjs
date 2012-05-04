@@ -1,0 +1,3 @@
+permalinks: /:title
+auto: true
+pygments: true
