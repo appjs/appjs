@@ -60,6 +60,8 @@
         	],
         	'defines': [
 		        '__WIN__',
+            'NOMINMAX',
+            '_WINSOCKAPI_'
 		      ],
           'link_settings': {
 	            'libraries': [
