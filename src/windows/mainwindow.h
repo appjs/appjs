@@ -3,17 +3,19 @@
 #pragma once
 
 #include <node.h>
+#include <Windows.h>
+#include "includes/util.h"
 
 namespace appjs {
 
 class MainWindow {
 
 public:
-  MainWindow(v8::Local<v8::Object> settings);
+  MainWindow(char*,Settings*);
   ~MainWindow();
-  void Show();
-  void Stop();
-
+  void show();
+  void hide();
+  void destroy();
 };
 
 } /* appjs */

@@ -34,7 +34,7 @@ void AppjsSchemeHandler::Execute(CefThreadId threadId) {
     if (headerMap.size() > 0) {
       CefRequest::HeaderMap::const_iterator it = headerMap.begin();
       for ( ; it != headerMap.end(); ++it) {
-        headers->Set(String::New((*it).first.c_str()),String::New((*it).second.c_str()));
+        headers->Set(String::New((uint16_t*)(*it).first.c_str()),String::New((uint16_t*)(*it).second.c_str()));
       }
     }
 
@@ -49,7 +49,7 @@ void AppjsSchemeHandler::Execute(CefThreadId threadId) {
       if (elements.size() > 0) {
         CefRefPtr<CefPostDataElement> element;
         CefPostData::ElementVector::const_iterator it = elements.begin();
-        uint counter = 0;
+
         for ( ; it != elements.end(); ++it) {
           element = (*it);
           if (element->GetType() == PDE_TYPE_BYTES && element->GetBytesCount()) {
@@ -63,15 +63,15 @@ void AppjsSchemeHandler::Execute(CefThreadId threadId) {
 
           } else if (element->GetType() == PDE_TYPE_FILE) {
             //TODO Needs testing
-            files = String::New(element->GetFile().c_str());
+            files = String::New((uint16_t*)element->GetFile().c_str());
           }
         }
 
       }
     }
 
-    Handle<Value> method = String::New(request_->GetMethod().c_str());
-    Handle<Value> url = String::New(request_->GetURL().c_str());
+    Handle<Value> method = String::New((uint16_t*)request_->GetMethod().c_str());
+    Handle<Value> url = String::New((uint16_t*)request_->GetURL().c_str());
 
     req->Set(String::NewSymbol("method"),method);
     req->Set(String::NewSymbol("url"),url);

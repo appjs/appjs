@@ -10,7 +10,7 @@ void CefBase::Init() {
 
 };
 
-void Cef::AddWebView(CefWindowHandle hWndParent,RECT windowRect) {
+void CefBase::AddWebView(CefWindowHandle hWndParent,RECT windowRect,char* url) {
 
   CefWindowInfo window_info;
   CefBrowserSettings browserSettings;
@@ -19,7 +19,7 @@ void Cef::AddWebView(CefWindowHandle hWndParent,RECT windowRect) {
 
   CefBrowser::CreateBrowserSync(window_info,
                                 static_cast<CefRefPtr<CefClient> >(g_handler),
-                                "http://www.google.com", browserSettings);
+                                url, browserSettings);
 
 }
 

@@ -18,10 +18,11 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 
   AutoLock lock_scope(this);
   if (!m_Browser.get())   {
-    // We need to keep the main child window, but not popup windows
 
     m_Browser = browser;
     m_BrowserHwnd = browser->GetWindowHandle();
+    // TODO we need to emit this event in two phase because sometimes it is emitted before
+    // returning from var window = app.createWindow() so window is undefined at the time.
 
     Local<Object> global = Context::GetCurrent()->Global();
     Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();

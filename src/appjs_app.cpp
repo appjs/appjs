@@ -18,8 +18,8 @@ void App::Init () {
 
   CREATE_NODE_CONSTRUCTOR("App");
   DEFINE_PROTOTYPE_METHOD("on",On);
-  DEFINE_PROTOTYPE_METHOD("createWindow",CreateWindow);
-  
+  DEFINE_PROTOTYPE_METHOD("createWindow",CreateWindow2);
+
   END_CONSTRUCTOR();
 }
 
@@ -27,7 +27,7 @@ Handle<Value> App::New(const Arguments& args) {
   HandleScope scope;
 
   App* obj = new App();
- 
+
   obj->Wrap(args.This());
 
   return scope.Close(args.This());
@@ -36,8 +36,8 @@ Handle<Value> App::New(const Arguments& args) {
 Handle<Value> App::NewInstance(const Arguments& args) {
   HandleScope scope;
 
-  const unsigned argc = 0;
-  Handle<Value> argv[argc] = NULL;
+  const unsigned argc = 1;
+  Handle<Value> argv[argc] = {args[0]};
   Local<Object> instance = constructor->NewInstance(argc,argv);
 
   // get the events.EventEmitter constructor
@@ -52,7 +52,7 @@ Handle<Value> App::NewInstance(const Arguments& args) {
   return scope.Close(instance);
 }
 
-Handle<Value> App::CreateWindow(const Arguments& args) {
+Handle<Value> App::CreateWindow2(const Arguments& args) {
 
   HandleScope scope;
 
