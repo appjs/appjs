@@ -37,6 +37,7 @@
         	],
         	'defines': [
   		      '__LINUX__',
+            '<!@(dpkg-vendor --is Ubuntu && echo __UBUNTU__ || echo __NOT_UBUNTU__)'
   		    ],
         	'cflags': [
         		'<!@(pkg-config --cflags gtk+-2.0)',
