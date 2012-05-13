@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * Set the title.
  */
@@ -62,11 +60,23 @@ function downloadCef(version,cb){
     gunzip.on('error', errorHandler)
     extracter.on('error', errorHandler)
     extracter.on('end', function(){
-        try {
-          fs.unlinkSync( path.join(depsDir,'cef') );
-        } catch(e) {};
 
-        fs.symlink( path.join(depsDir,fileName.replace('.tar.gz','')), path.join(depsDir,'cef') ,cb);
+        
+        if(platform == 'win32') {
+          
+          try {
+            fs.rmdirSync( path.join(depsDir,'cef') );
+          } catch(e) {};
+
+          fs.rename(path.join(depsDir,fileName.replace('.tar.gz','')), path.join(depsDir,'cef'),cb);
+        } else {
+          
+          try {
+            fs.unlinkSync( path.join(depsDir,'cef') );
+          } catch(e) {};
+
+          fs.symlink( path.join(depsDir,fileName.replace('.tar.gz','')), path.join(depsDir,'cef') ,cb);
+        }
     })
 
     download(tarballUrl,errorHandler)

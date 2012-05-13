@@ -1,7 +1,7 @@
 {
   "name": "appjs",
   "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "keywords": [
     "cef",
     "webkit",
@@ -47,7 +47,7 @@
   "devDependencies": {},
   "optionalDependencies": {},
   "scripts": {
-    "preinstall": "./bin/configure || true; node-gyp rebuild"
+    "install": "node cli/configure.js && node-gyp rebuild"
   },
   "licenses": [
     {
