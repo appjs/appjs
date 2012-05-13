@@ -1,19 +1,18 @@
 # AppJS
 
-![AppJS](https://github.com/milani/appjs/raw/master/appjs.png "AppJS") AppJS is an SDK to develop desktop applications using node. Or at least
+AppJS is an SDK to develop desktop applications using node. Or at least
 it is going to be!
 
 The goal is to facilitate native app development using
 tools every developer is familiar with nowadays: HTML/CSS/JS
 
-_Attention:_ You should not use AppJS before we bump version to 
-v0.1.0, it is under heavy development.
+**Attention:** AppJS is under heavy development. API changes a lot until we bump version to v0.1.0
 
 ![Hello World](https://github.com/milani/appjs/raw/master/examples/output.png "Hello World")
 
 ## How to install
 
-** Only Linux version works for now. Pull requests for other platforms are very welcome **
+** Only Linux and Windows ports work for now. Pull requests for Mac OS are very welcome **
 
 Using npm:
 
@@ -22,8 +21,13 @@ Using npm:
 Using git:
 
     $ git clone https://github.com/milani/appjs
-    $ cd appjs/bin
-    $ ./configure
+    $ cd appjs
+    $ node cli/configure.js
+
+### Windows users
+
+You should copy all shared libraries ( .dll files ) located at `appjs/deps/cef/Release`
+to current working directory or AppJS fails to run with error: module not found.
 
 ## How to use
 
