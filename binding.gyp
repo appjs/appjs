@@ -61,13 +61,12 @@
         	],
         	'defines': [
 		        '__WIN__',
-            'NOMINMAX',
             '_WINSOCKAPI_'
 		      ],
           'link_settings': {
 	            'libraries': [
-                '<(module_root_dir)/deps/cef/Release/lib.target/libcef.lib',
-                '<(module_root_dir)/build/Release/obj.target/deps/cef/cef_dll_wrapper.node'
+                '<(module_root_dir)/deps/cef/lib/Release/libcef.lib',
+                '<(module_root_dir)/build/Release/lib/libcef_dll_wrapper.node'
 	            ],
 	        },
         }]
