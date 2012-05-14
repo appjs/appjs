@@ -22,7 +22,7 @@ Using git:
 
     $ git clone https://github.com/milani/appjs
     $ cd appjs
-    $ node cli/configure.js
+    $ npm install -d
 
 ### Windows users
 
