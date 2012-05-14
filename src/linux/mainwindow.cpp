@@ -36,7 +36,7 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   gtk_window_set_opacity(GTK_WINDOW(window), opacity);
   gtk_window_set_decorated(GTK_WINDOW(window), show_chrome);
 
-  #ifdef __UBUNTU__
+  #if defined(__UBUNTU__) && !GTK_CHECK_VERSION(2, 24, 10)
     if(gtk_check_version(2, 24, 10))
       gtk_window_set_has_resize_grip(GTK_WINDOW(window), show_resize_grip);
   #endif
