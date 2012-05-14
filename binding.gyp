@@ -2,6 +2,7 @@
   'targets': [
     {
       'target_name': 'appjs',
+      'msvs_guid': 'A9D6DC71-C0DC-4549-AEB1-3B15B44E86A9',
       'sources': [ 
       	'src/main.cpp',
       	'src/appjs.cpp',
@@ -57,6 +58,7 @@
         ['OS=="win"', {
         	'sources': [
         		'src/includes/cef_base_win.cpp',
+            'src/includes/cef_handler_win.cpp',
         		'src/windows/mainwindow.cpp'
         	],
         	'defines': [
