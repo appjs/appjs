@@ -29,6 +29,10 @@ Using git:
 You should copy all shared libraries ( .dll files ) located at `appjs/deps/cef/Release`
 to current working directory or AppJS fails to run with error: module not found.
 
+### Ubuntu users
+
+If `npm install appjs` fails with `Package ... was not found`, please `apt-get install libgtk2.0-dev` first.
+
 ## How to use
 
 There is a complete example in the `examples/` folder.
