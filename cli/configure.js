@@ -25,6 +25,7 @@ function install(cef_version) {
   downloadCef(cef_version,function(err){
 
     if(err) {
+      util.log('Failed to add dependencies','error');
       throw err;
     }
 
@@ -61,7 +62,6 @@ function downloadCef(version,cb){
     extracter.on('error', errorHandler)
     extracter.on('end', function(){
 
-        
         if(platform == 'win32') {
           
           try {
@@ -106,7 +106,7 @@ function download(url,onError) {
       util.log('using proxy: ' + proxyUrl,'verbose');
       requestOpts.proxy = proxyUrl
     }
-    return request(requestOpts).on('error',onError);
+    return request(requestOpts).on('error',onError).on('response',function(res){onError(null,res)});
 }
 
 /**
