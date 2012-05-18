@@ -13,15 +13,8 @@ class AppjsSchemeHandler
     public CefTask 
 {
 public:
-  ~AppjsSchemeHandler() { AppjsSchemeHandler::instance_ = NULL; };
-  static AppjsSchemeHandler* GetInstance() {
-
-    if(instance_ == NULL){
-      instance_ = new AppjsSchemeHandler();
-    }
-
-    return instance_;
-  };
+  AppjsSchemeHandler() {}
+  ~AppjsSchemeHandler() {};
 
   virtual void Execute(CefThreadId) OVERRIDE;
   virtual bool ProcessRequest(CefRefPtr<CefRequest>,
@@ -47,13 +40,9 @@ protected:
   size_t      offset_;
   int         status_;
 
-  static AppjsSchemeHandler* instance_;
-
   IMPLEMENT_REFCOUNTING(AppjsSchemeHandler);
   IMPLEMENT_LOCKING(AppjsSchemeHandler);
 
-private:
-  AppjsSchemeHandler() {};
 };
 
 class AppjsSchemeHandlerFactory : public CefSchemeHandlerFactory {

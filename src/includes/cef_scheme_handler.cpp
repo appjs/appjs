@@ -7,87 +7,106 @@ namespace appjs {
 
 using namespace v8;
 
-AppjsSchemeHandler* AppjsSchemeHandler::instance_ = NULL;
+Handle<Value> WrapObject(void* obj) {
+
+  HandleScope scope;
+
+  Persistent<ObjectTemplate> obj_template = Persistent<ObjectTemplate>::New(ObjectTemplate::New());
+  obj_template->SetInternalFieldCount(1);
+
+  Handle<Object> self = obj_template->NewInstance();
+
+  self->SetInternalField(0, External::New(obj));
+
+  return scope.Close(self);
+}
+
+void *UnwrapObject(Handle<Value> data) {
+  v8::Handle<v8::Object> obj = data->ToObject();
+  v8::Handle<v8::External> obj2 = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
+
+  return obj2->Value();
+}
 
 // Implementation of the schema handler for appjs:// requests.
 void AppjsSchemeHandler::Execute(CefThreadId threadId) {
 
-  if(CefCurrentlyOn(TID_UI)){
+  REQUIRE_UI_THREAD();
 
-    HandleScope scope;
+  HandleScope scope;
 
-    Local<Object>  global = Context::GetCurrent()->Global();
-    Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
-    Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
+  Local<Object>  global = Context::GetCurrent()->Global();
+  Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
+  Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
 
-    const int argc = 3;
+  const int argc = 3;
 
-    Local<Function>    cb = FunctionTemplate::New(NodeCallback)->GetFunction();
-    Local<Object>     req = Object::New();
-    Local<String>    post = String::New("");
-    Local<Object> headers = Object::New();
-    Local<String>   files = String::New("");
+  Handle<Value>    self = WrapObject(this);
+  Local<Function>    cb = FunctionTemplate::New(NodeCallback,self)->GetFunction();
+  Local<Object>     req = Object::New();
+  Local<String>    post = String::New("");
+  Local<Object> headers = Object::New();
+  Local<String>   files = String::New("");
 
-    CefRequest::HeaderMap headerMap;
-    request_->GetHeaderMap(headerMap);
+  CefRequest::HeaderMap headerMap;
+  request_->GetHeaderMap(headerMap);
 
-    if (headerMap.size() > 0) {
-      CefRequest::HeaderMap::const_iterator it = headerMap.begin();
-      for ( ; it != headerMap.end(); ++it) {
-        headers->Set(String::New((uint16_t*)(*it).first.c_str()),String::New((uint16_t*)(*it).second.c_str()));
-      }
+  if (headerMap.size() > 0) {
+    CefRequest::HeaderMap::const_iterator it = headerMap.begin();
+    for ( ; it != headerMap.end(); ++it) {
+      headers->Set(String::New((uint16_t*)(*it).first.c_str()),String::New((uint16_t*)(*it).second.c_str()));
     }
-
-    CefRefPtr<CefPostData> postData = request_->GetPostData();
-
-    if(postData.get()){
-
-      CefPostData::ElementVector elements;
-
-      postData->GetElements(elements);
-
-      if (elements.size() > 0) {
-        CefRefPtr<CefPostDataElement> element;
-        CefPostData::ElementVector::const_iterator it = elements.begin();
-
-        for ( ; it != elements.end(); ++it) {
-          element = (*it);
-          if (element->GetType() == PDE_TYPE_BYTES && element->GetBytesCount()) {
-
-            // retrieve the data.
-            size_t size = element->GetBytesCount();
-            char* bytes = new char[size];
-            element->GetBytes(size, bytes);
-            post = String::New(bytes);
-            delete [] bytes;
-
-          } else if (element->GetType() == PDE_TYPE_FILE) {
-            //TODO Needs testing
-            files = String::New((uint16_t*)element->GetFile().c_str());
-          }
-        }
-
-      }
-    }
-
-    Handle<Value> method = String::New((uint16_t*)request_->GetMethod().c_str());
-    Handle<Value> url = String::New((uint16_t*)request_->GetURL().c_str());
-
-    req->Set(String::NewSymbol("method"),method);
-    req->Set(String::NewSymbol("url"),url);
-    req->Set(String::NewSymbol("post"),post);
-    req->Set(String::NewSymbol("headers"),headers);
-    req->Set(String::NewSymbol("files"),files);
-
-    Handle<Value> argv[argc] = {String::New("request"),req,cb};
-    node::MakeCallback(emitter,"emit",argc,argv);
-
   }
+
+  CefRefPtr<CefPostData> postData = request_->GetPostData();
+
+  if(postData.get()){
+
+    CefPostData::ElementVector elements;
+
+    postData->GetElements(elements);
+
+    if (elements.size() > 0) {
+      CefRefPtr<CefPostDataElement> element;
+      CefPostData::ElementVector::const_iterator it = elements.begin();
+
+      for ( ; it != elements.end(); ++it) {
+        element = (*it);
+        if (element->GetType() == PDE_TYPE_BYTES && element->GetBytesCount()) {
+
+          // retrieve the data.
+          size_t size = element->GetBytesCount();
+          char* bytes = new char[size];
+          element->GetBytes(size, bytes);
+          post = String::New(bytes);
+          delete [] bytes;
+
+        } else if (element->GetType() == PDE_TYPE_FILE) {
+          //TODO Needs testing
+          files = String::New((uint16_t*)element->GetFile().c_str());
+        }
+      }
+
+    }
+  }
+
+  Handle<Value> method = String::New((uint16_t*)request_->GetMethod().c_str());
+  Handle<Value> url = String::New((uint16_t*)request_->GetURL().c_str());
+
+  req->Set(String::NewSymbol("method"),method);
+  req->Set(String::NewSymbol("url"),url);
+  req->Set(String::NewSymbol("post"),post);
+  req->Set(String::NewSymbol("headers"),headers);
+  req->Set(String::NewSymbol("files"),files);
+
+  Handle<Value> argv[argc] = {String::New("request"),req,cb};
+  node::MakeCallback(emitter,"emit",argc,argv);
 
 }
 
 Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
-  AppjsSchemeHandler* me = AppjsSchemeHandler::GetInstance();
+
+  AppjsSchemeHandler* me = static_cast<AppjsSchemeHandler *>(UnwrapObject(args.Data()));
 
   AutoLock lock_scope(me);
 
@@ -176,7 +195,7 @@ CefRefPtr<CefSchemeHandler> AppjsSchemeHandlerFactory::Create(CefRefPtr<CefBrows
                                              CefRefPtr<CefRequest> request)
 {
   REQUIRE_IO_THREAD();
-  return AppjsSchemeHandler::GetInstance();
+  return new AppjsSchemeHandler();
 }
 
 } /* appjs */
