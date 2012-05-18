@@ -91,7 +91,7 @@ function downloadCef(version,cb){
 function download(url,onError) {
     var request = require('request');
 
-    util.log('Downloading cef tarball...');
+    util.log('Downloading cef tarball for '+platform+'-'+arch+'...');
 
     var requestOpts = {
         uri: url,
