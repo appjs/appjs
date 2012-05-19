@@ -5,6 +5,20 @@
 
 using namespace v8;
 
+Handle<Value> EmitReady(const Arguments& args) {
+  HandleScope scope;
+
+  Local<Object> global = Context::GetCurrent()->Global();
+  Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
+  Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
+
+  const int argc = 1;
+  Handle<Value> argv[argc] = {String::New("window_ready")};
+  node::MakeCallback(emitter,"emit",argc,argv);
+
+  return scope.Close(Undefined());
+}
+
 ClientHandler::ClientHandler()
   : m_MainHwnd(NULL),
     m_BrowserHwnd(NULL) {
@@ -26,11 +40,15 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 
     Local<Object> global = Context::GetCurrent()->Global();
     Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
-    Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
+    Local<Function> nextTick = Local<Function>::Cast(process->Get(String::NewSymbol("nextTick")));
+
+    Local<FunctionTemplate> tpl = FunctionTemplate::New(EmitReady);
+    Local<Function> fn = tpl->GetFunction();
 
     const int argc = 1;
-    Handle<Value> argv[argc] = {String::New("window_ready")};
-    node::MakeCallback(emitter,"emit",argc,argv);
+    Handle<Value> argv[argc] = {fn};
+
+    nextTick->Call(global,argc,argv);
 
   }
 }

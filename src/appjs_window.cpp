@@ -48,6 +48,7 @@ Handle<Value> Window::NewInstance(const Arguments& args) {
   const unsigned argc = 2;
   Handle<Value> argv[argc] = { args[0],args[1] };
   Local<Object> instance = constructor->NewInstance(argc, argv);
+
   return scope.Close(instance);
 }
 
@@ -57,7 +58,7 @@ Handle<Value> Window::Show(const Arguments& args) {
   MainWindow *obj = ObjectWrap::Unwrap<MainWindow> (args.This());
   obj->show();
 
-  return args.This();
+  return scope.Close(args.This());
 }
 
 Handle<Value> Window::Hide(const Arguments& args) {
@@ -67,7 +68,7 @@ Handle<Value> Window::Hide(const Arguments& args) {
 
   obj->hide();
 
-  return args.This();
+  return scope.Close(args.This());
 }
 
 Handle<Value> Window::Destroy(const Arguments& args) {
@@ -77,7 +78,7 @@ Handle<Value> Window::Destroy(const Arguments& args) {
 
   obj->destroy();
 
-  return args.This();
+  return scope.Close(args.This());
 }
 
 Handle<Value> Window::RunInBrowser(const Arguments& args) {
