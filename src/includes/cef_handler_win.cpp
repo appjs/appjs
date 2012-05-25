@@ -16,9 +16,8 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
     // The frame window will be the parent of the browser window
     hwnd = GetParent(hwnd);
   }
-  // TODO it returns the first character. We should force CEF to use
-  // utf8 not utf16
-  SetWindowText(hwnd,(char*) title.c_str());
+  // TODO check to see if this type cast works in x86 systems.
+  SetWindowText(hwnd,std:basic_string<TCHAR>(title).c_str());
 
 }
 
