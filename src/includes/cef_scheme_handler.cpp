@@ -1,4 +1,5 @@
 #include <node.h>
+#include <node_buffer.h>
 #include "includes/cef_scheme_handler.h"
 #include "includes/cef_handler.h"
 #include "includes/util.h"
@@ -106,6 +107,8 @@ void AppjsSchemeHandler::Execute(CefThreadId threadId) {
 
 Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
 
+  HandleScope scope;
+
   AppjsSchemeHandler* me = static_cast<AppjsSchemeHandler *>(UnwrapObject(args.Data()));
 
   AutoLock lock_scope(me);
@@ -113,7 +116,8 @@ Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
   me->status_      = args[0]->NumberValue();
   me->status_text_ = appjs::V8StringToChar(args[1]->ToString());
   me->mime_type_   = appjs::V8StringToChar(args[2]->ToString());
-  me->data_        = appjs::V8StringToChar(args[3]->ToString());
+  me->data_        = node::Buffer::Data(args[3]->ToObject());
+  me->data_length_ = node::Buffer::Length(args[3]->ToObject());
 
   me->callback_->HeadersAvailable();
 
@@ -131,7 +135,8 @@ bool AppjsSchemeHandler::ProcessRequest(CefRefPtr<CefRequest> request,
   status_      = 404;
   status_text_ = "Not Found";
   mime_type_   = "";
-  data_        = "";
+  data_        = NULL;
+  data_length_ = 0;
   offset_      = 0;
   request_     = request;
   callback_    = callback;
@@ -147,14 +152,12 @@ void AppjsSchemeHandler::GetResponseHeaders(CefRefPtr<CefResponse> response,
 {
   REQUIRE_IO_THREAD();
 
-  ASSERT(!data_.empty());
-
   response->SetStatus(status_);
   response->SetStatusText(status_text_);
   response->SetMimeType(mime_type_);
 
   // Set the resulting response length
-  response_length = data_.length();
+  response_length = data_length_;
 }
 
 void AppjsSchemeHandler::Cancel() {
@@ -174,11 +177,10 @@ bool AppjsSchemeHandler::ReadResponse(void* data_out,
 
   AutoLock lock_scope(this);
 
-  if (offset_ < data_.length()) {
+  if (offset_ < data_length_) {
     // Copy the next block of data into the buffer.
-    int transfer_size =
-        std::min(bytes_to_read, static_cast<int>(data_.length() - offset_));
-    memcpy(data_out, data_.c_str() + offset_, transfer_size);
+    int transfer_size = std::min(bytes_to_read, static_cast<int>(data_length_ - offset_));
+    memcpy(data_out, data_ + offset_, transfer_size);
     offset_ += transfer_size;
 
     bytes_read = transfer_size;
