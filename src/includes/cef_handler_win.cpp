@@ -17,7 +17,7 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
     hwnd = GetParent(hwnd);
   }
   // TODO check to see if this type cast works in x86 systems.
-  SetWindowText(hwnd,std:basic_string<TCHAR>(title).c_str());
+  SetWindowText(hwnd,std::basic_string<TCHAR>(title).c_str());
 
 }
 
