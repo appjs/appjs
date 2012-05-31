@@ -10,6 +10,21 @@ tools every developer is familiar with nowadays: HTML/CSS/JS
 
 ![Hello World](https://github.com/milani/appjs/raw/master/examples/output.png "Hello World")
 
+## Preinstall
+
+You need to have node-gyp installed:
+
+    $ npm install node-gyp -g
+
+Please take a look at [node-gyp repository](https://github.com/TooTallNate/node-gyp/) 
+and make sure you have all required packages.
+
+### Linux users
+
+You should have libgtk2.0-dev installed. Ubuntu users can install it using the following command:
+
+    sudo apt-get install libgtk2.0-dev
+
 ## How to install
 
 ** Only Linux and Windows ports work for now. Pull requests for Mac OS are very welcome **
@@ -28,13 +43,6 @@ Using git:
 
 You should copy all shared libraries ( .dll files ) located at `appjs/deps/cef/Release`
 to current working directory or AppJS fails to run with error: module not found.
-
-### Linux users
-
-You should have libgtk2.0-dev installed. Ubuntu users can install it by:
-
-    sudo apt-get install libgtk2.0-dev
-
 
 ## How to use
 
