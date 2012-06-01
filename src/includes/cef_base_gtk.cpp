@@ -14,10 +14,12 @@ void CefBase::Init() {
 
 };
 
-void CefBase::AddWebView(CefWindowHandle ParentWidget,char* url) {
+void CefBase::AddWebView(CefWindowHandle ParentWidget,char* url,Settings* settings) {
 
   CefWindowInfo window_info;
   CefBrowserSettings browser_settings;
+
+  browser_settings.web_security_disabled = settings->getBoolean("disableSecurity",false);
 
   window_info.SetAsChild(ParentWidget);
 

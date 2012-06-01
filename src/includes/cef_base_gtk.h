@@ -3,13 +3,14 @@
 #pragma once
 
 #include "include/cef_browser.h"
+#include "includes/util.h"
 
 namespace appjs {
 
 class CefBase {
 
 public:
-  static void AddWebView(CefWindowHandle,char*);
+  static void AddWebView(CefWindowHandle,char*,Settings*);
 
 protected:
   static void Init();

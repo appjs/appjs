@@ -4,13 +4,14 @@
 
 #include <windows.h>
 #include "include/cef_browser.h"
+#include "includes/util.h"
 
 namespace appjs {
 
 class CefBase {
 
 public:
-  static void AddWebView(CefWindowHandle,RECT,char*);
+  static void AddWebView(CefWindowHandle,RECT,char*,Settings*);
 
 protected:
   static void Init();

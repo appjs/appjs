@@ -10,10 +10,12 @@ void CefBase::Init() {
 
 };
 
-void CefBase::AddWebView(CefWindowHandle hWndParent,RECT windowRect,char* url) {
+void CefBase::AddWebView(CefWindowHandle hWndParent,RECT windowRect,char* url,Settings* settings) {
 
   CefWindowInfo window_info;
   CefBrowserSettings browserSettings;
+
+  browser_settings.web_security_disabled = settings->getBoolean("disableSecurity",false);
 
   window_info.SetAsChild(hWndParent, windowRect);
 

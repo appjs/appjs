@@ -57,7 +57,7 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   GtkWidget* box = gtk_vbox_new(FALSE, 0);
   gtk_container_add(GTK_CONTAINER(window), box);
 
-  Cef::AddWebView(box,url);
+  Cef::AddWebView(box,url,settings);
 
   // Install an signal handler so we clean up after ourselves.
   signal(SIGINT, destroy_handler);

@@ -8,7 +8,8 @@ var settings = {
   showChrome: true,
   opacity:1,
   fullscreen:false,
-  showResizeGrip:false
+  showResizeGrip:false,
+  disableSecurity:true
 };
 
 var window;

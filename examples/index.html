@@ -11,5 +11,11 @@
 		<input name="lastname" type="text" value=""/>
 		<input type="submit" value="submit"/>
 	</form>
+	<script src="jquery.js"></script>
+	<script>
+		$.get('http://programming.com/api/user/?limit=15&start=0&order=followers.desc',function(data){
+			console.log(data);
+		});
+	</script>
 </body>
 </html>

@@ -17,7 +17,8 @@ using namespace v8;
 TCHAR szWindowClass[MAX_LOADSTRING];
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 ATOM MyRegisterClass(HINSTANCE hInstance);
-char* URL;
+char* browserUrl;
+Settings* browserSettings;
 
 MainWindow::MainWindow (char* url, Settings* settings) {
   Cef::Init();
@@ -34,7 +35,8 @@ MainWindow::MainWindow (char* url, Settings* settings) {
 
   HINSTANCE hInstance = GetModuleHandle(NULL);
   strcpy(szWindowClass,"MainWindowClass");
-  URL = url;
+  browserUrl = url;
+  browserSettings = settings;
   
   if(!MyRegisterClass(hInstance)){
 	  //TODO send error to node
@@ -121,7 +123,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,
 	  GetClientRect(hWnd, &rect);
 
       // Initialize window info to the defaults for a child window
-	  Cef::AddWebView(hWnd, rect,URL);
+	  Cef::AddWebView(hWnd, rect,browserUrl,browserSettings);
 
       return 0;
     }
