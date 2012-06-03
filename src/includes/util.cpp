@@ -52,6 +52,12 @@ bool Settings::getBoolean(const char* property, bool defaultValue = false) {
   return (tmp->IsBoolean())? tmp->BooleanValue() : defaultValue;
 }
 
+
+Local<Object> Settings::getObject(const char* property, Local<Object> defaultValue) {
+  Local<Value> tmp = get(property);
+  return (tmp->IsObject())? tmp->ToObject() : defaultValue;
+}
+
 Local<Value> Settings::get(const char* property) {
   return settings_->Get(String::New(property));
 }

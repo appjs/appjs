@@ -18,6 +18,7 @@ public:
   double getNumber(const char*,double);
   char* getString(const char*,char*);
   bool getBoolean(const char*,bool);
+  v8::Local<v8::Object> getObject(const char*,v8::Local<v8::Object>);
 
 private:
   v8::Local<v8::Object> settings_;

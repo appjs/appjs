@@ -27,6 +27,30 @@ MainWindow::MainWindow (char* url, Settings* settings) {
 
   GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
+  // Set default icon list
+  if(!g_handler->GetBrowserHwnd()) {
+    Settings icons(settings->getObject("icons",Object::New()));
+    
+    char* smallerIconPath = icons.getString("smaller","");
+    char* smallIconPath = icons.getString("small","");
+    char* bigIconPath = icons.getString("big","");
+    char* biggerIconPath = icons.getString("bigger","");
+
+    GdkPixbuf* smallerIconBuf = gdk_pixbuf_new_from_file(smallerIconPath,NULL);
+    GdkPixbuf* smallIconBuf = gdk_pixbuf_new_from_file(smallIconPath,NULL);
+    GdkPixbuf* bigIconBuf = gdk_pixbuf_new_from_file(bigIconPath,NULL);
+    GdkPixbuf* biggerIconBuf = gdk_pixbuf_new_from_file(biggerIconPath,NULL);
+
+    GList* iconList;
+
+    iconList = g_list_insert(iconList,smallerIconBuf,0);
+    iconList = g_list_insert(iconList,smallIconBuf,1);
+    iconList = g_list_insert(iconList,bigIconBuf,2);
+    iconList = g_list_insert(iconList,biggerIconBuf,3);
+
+    gtk_window_set_default_icon_list(iconList);
+  }
+
   gtk_window_set_default_size(GTK_WINDOW(window), width, height);
   gtk_window_set_resizable(GTK_WINDOW(window), resizable);
   gtk_window_set_opacity(GTK_WINDOW(window), opacity);
