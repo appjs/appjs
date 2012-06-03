@@ -48,7 +48,7 @@ public:
   CefRefPtr<CefBrowser> GetBrowser() { return m_Browser; }
   CefWindowHandle GetBrowserHwnd() { return m_BrowserHwnd; }
   CefWindowHandle GetMainHwnd();
-  void SetMainHwnd(CefWindowHandle);
+  void SetMainHwnd(CefWindowHandle&);
   void CloseMainWindow();
   void SetAutoResize(bool enable){ m_AutoResize = enable; }
 

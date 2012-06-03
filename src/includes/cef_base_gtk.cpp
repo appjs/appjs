@@ -6,6 +6,11 @@ extern CefRefPtr<ClientHandler> g_handler;
 
 namespace appjs {
 
+
+static void destroy_handler (int status = 0) {
+  g_handler->GetBrowser()->CloseBrowser();
+};
+
 void CefBase::Init() {
       
   g_thread_init (NULL);
@@ -14,7 +19,7 @@ void CefBase::Init() {
 
 };
 
-void CefBase::AddWebView(CefWindowHandle ParentWidget,char* url,Settings* settings) {
+void CefBase::AddWebView(CefWindowHandle& ParentWidget,char* url,Settings* settings) {
 
   CefWindowInfo window_info;
   CefBrowserSettings browser_settings;
@@ -27,7 +32,13 @@ void CefBase::AddWebView(CefWindowHandle ParentWidget,char* url,Settings* settin
                                 static_cast<CefRefPtr<CefClient> >(g_handler),
                                 url, browser_settings);
 
-  g_handler->SetMainHwnd(ParentWidget);
+  if(!g_handler->GetBrowser().get()){
+    g_handler->SetMainHwnd(ParentWidget);
+
+    // Install a signal handler so we clean up after ourselves.
+    signal(SIGINT, destroy_handler);
+    signal(SIGTERM, destroy_handler);
+  }
 }
 
 

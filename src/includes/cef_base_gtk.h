@@ -10,7 +10,7 @@ namespace appjs {
 class CefBase {
 
 public:
-  static void AddWebView(CefWindowHandle,char*,Settings*);
+  static void AddWebView(CefWindowHandle&,char*,Settings*);
 
 protected:
   static void Init();

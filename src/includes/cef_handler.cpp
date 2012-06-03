@@ -31,12 +31,11 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
   REQUIRE_UI_THREAD();
 
   AutoLock lock_scope(this);
+
   if (!m_Browser.get())   {
 
     m_Browser = browser;
     m_BrowserHwnd = browser->GetWindowHandle();
-    // TODO we need to emit this event in two phase because sometimes it is emitted before
-    // returning from var window = app.createWindow() so window is undefined at the time.
 
     Local<Object> global = Context::GetCurrent()->Global();
     Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
@@ -125,7 +124,8 @@ void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
 }
 
 
-void ClientHandler::SetMainHwnd(CefWindowHandle hwnd) {
+void ClientHandler::SetMainHwnd(CefWindowHandle& hwnd) {
   AutoLock lock_scope(this);
+
   m_MainHwnd = hwnd;
 }

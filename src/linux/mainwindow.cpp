@@ -12,10 +12,6 @@ namespace appjs {
 
 using namespace v8;
 
-static void destroy_handler (int status = 0) {
-  g_handler->GetBrowser()->CloseBrowser();
-};
-
 MainWindow::MainWindow (char* url, Settings* settings) {
 
   Cef::Init();
@@ -51,17 +47,11 @@ MainWindow::MainWindow (char* url, Settings* settings) {
 
   g_handler->SetAutoResize(auto_resize);
 
-  g_signal_connect(G_OBJECT(window), "destroy",
-                   G_CALLBACK(&destroy_handler), NULL);
-
   GtkWidget* box = gtk_vbox_new(FALSE, 0);
   gtk_container_add(GTK_CONTAINER(window), box);
-
+  this->window = window;
   Cef::AddWebView(box,url,settings);
 
-  // Install an signal handler so we clean up after ourselves.
-  signal(SIGINT, destroy_handler);
-  signal(SIGTERM, destroy_handler);
   Cef::Run();
 };
 
@@ -69,21 +59,22 @@ void MainWindow::show() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
-  gtk_widget_show_all(GTK_WIDGET(g_handler->GetMainHwnd()));
+  gtk_widget_show_all(GTK_WIDGET(window));
 };
 
 void MainWindow::hide() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
   
-  gtk_widget_hide(GTK_WIDGET(g_handler->GetMainHwnd()));
+  gtk_widget_hide(GTK_WIDGET(window));
 };
 
 void MainWindow::destroy() {
  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
   
-  g_handler->GetBrowser()->CloseBrowser();
+  gtk_widget_destroy(GTK_WIDGET(window));
+
 };
 
 } /* appjs */

@@ -4,6 +4,7 @@
 
 #include <node.h>
 #include <Windows.h>
+#include "include/cef_browser.h"
 #include "includes/util.h"
 
 namespace appjs {
@@ -16,6 +17,9 @@ public:
   void show();
   void hide();
   void destroy();
+
+private:
+  CefWindowHandle window;
 };
 
 } /* appjs */

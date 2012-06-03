@@ -28,6 +28,18 @@ void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
 {
   REQUIRE_UI_THREAD();
 
+  if( this->m_AutoResize ) {
+    HWND window = GetParent(browser->GetWindowHandle());
+    RECT rect;
+    GetClientRect(window, &rect);
+
+    HDWP hdwp = BeginDeferWindowPos(1);
+    hdwp = DeferWindowPos(hdwp, window, NULL,
+         rect.left, rect.top, width, height,
+         SWP_NOZORDER);
+    EndDeferWindowPos(hdwp);
+  }
+
 }
 void ClientHandler::CloseMainWindow() {
   
