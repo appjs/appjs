@@ -1,10 +1,14 @@
 #include <node.h>
 #include <windows.h>
+#include <algorithm>
+#define min(left,right) std::min(left,right)
+#define max(left,right) std::max(left,right)
+#include <gdiplus.h>
 #include "appjs.h"
-#include "windows/mainwindow.h"
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
+#include "windows/mainwindow.h"
 
 #define MAX_LOADSTRING 100
 
@@ -18,6 +22,8 @@ TCHAR szWindowClass[MAX_LOADSTRING];
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 ATOM MyRegisterClass(HINSTANCE hInstance);
 char* browserUrl;
+HICON smallIcon;
+HICON bigIcon;
 Settings* browserSettings;
 
 MainWindow::MainWindow (char* url, Settings* settings) {
@@ -32,6 +38,27 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   bool show_resize_grip = settings->getBoolean("showResizeGrip",false);
   bool auto_resize = settings->getBoolean("autoResize",true);
   bool fullscreen = settings->getBoolean("fullscreen",false);
+
+  if(!g_handler->GetBrowserHwnd()) {
+    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+    ULONG_PTR gdiplusToken;
+    Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
+    Settings icons(settings->getObject("icons",Object::New()));
+    WCHAR* wSmallIconPath = icons.getString("small",L"");
+    WCHAR* wBigIconPath = icons.getString("big",L"");
+
+    Gdiplus::Bitmap* smallIconBitmap = Gdiplus::Bitmap::FromFile(wSmallIconPath);
+    Gdiplus::Bitmap* bigIconBitmap = Gdiplus::Bitmap::FromFile(wBigIconPath);
+
+    smallIconBitmap->GetHICON(&smallIcon);
+    bigIconBitmap->GetHICON(&bigIcon);
+
+    delete[] wSmallIconPath;
+    delete[] wBigIconPath;
+    delete smallIconBitmap;
+    delete bigIconBitmap;
+  }
 
   HINSTANCE hInstance = GetModuleHandle(NULL);
   strcpy(szWindowClass,"AppjsWindow");
@@ -120,8 +147,8 @@ ATOM MyRegisterClass(HINSTANCE hInstance) {
   wcex.cbClsExtra    = 0;
   wcex.cbWndExtra    = 0;
   wcex.hInstance     = hInstance;
-  wcex.hIcon         = LoadIcon(NULL, IDI_APPLICATION );
-  wcex.hIconSm       = LoadIcon(NULL, IDI_APPLICATION );
+  wcex.hIcon         = bigIcon;
+  wcex.hIconSm       = smallIcon;
   wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
   wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
   wcex.lpszMenuName  = NULL;

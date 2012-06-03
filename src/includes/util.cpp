@@ -12,6 +12,21 @@ char* V8StringToChar(Handle<String> str) {
   return buf;
 }
 
+#if defined(__WIN__)
+WCHAR* V8StringToWCHAR(Handle<String> str) {
+  int len = str->Utf8Length();
+  char* buf = new char[len + 1];
+  str->WriteUtf8(buf, len + 1);
+
+  WCHAR *wBuf;
+  int nChars = MultiByteToWideChar(CP_UTF8, 0, buf, -1, NULL, 0);
+  wBuf = new WCHAR[nChars];
+  MultiByteToWideChar(CP_UTF8, 0, buf, -1, (LPWSTR)wBuf, nChars);
+
+  return wBuf;
+}
+#endif
+
 char* V8StringToFunctionChar(Handle<String> str) {
 
   Local<String> prefix = String::New("(");
@@ -46,6 +61,13 @@ char* Settings::getString(const char* property, char* defaultValue = "") {
   Local<Value> tmp = get(property);
   return (tmp->IsString())? V8StringToChar(get(property)->ToString()) : defaultValue;
 }
+
+#if defined(__WIN__)
+WCHAR* Settings::getString(const char* property, WCHAR* defaultValue = L"") {
+  Local<Value> tmp = get(property);
+  return (tmp->IsString())? V8StringToWCHAR(get(property)->ToString()) : defaultValue;
+}
+#endif
 
 bool Settings::getBoolean(const char* property, bool defaultValue = false) {
   Local<Value> tmp = get(property);
