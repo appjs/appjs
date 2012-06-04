@@ -39,7 +39,8 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   bool auto_resize = settings->getBoolean("autoResize",true);
   bool fullscreen = settings->getBoolean("fullscreen",false);
 
-  if(!g_handler->GetBrowserHwnd()) {
+  if( !g_handler->GetBrowserHwnd() ) {
+
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;
     Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
@@ -51,13 +52,18 @@ MainWindow::MainWindow (char* url, Settings* settings) {
     Gdiplus::Bitmap* smallIconBitmap = Gdiplus::Bitmap::FromFile(wSmallIconPath);
     Gdiplus::Bitmap* bigIconBitmap = Gdiplus::Bitmap::FromFile(wBigIconPath);
 
-    smallIconBitmap->GetHICON(&smallIcon);
-    bigIconBitmap->GetHICON(&bigIcon);
+    if( smallIconBitmap->GetWidth() ) {
+      smallIconBitmap->GetHICON(&smallIcon);
+      delete[] wSmallIconPath;
+      delete smallIconBitmap;
+    }
 
-    delete[] wSmallIconPath;
-    delete[] wBigIconPath;
-    delete smallIconBitmap;
-    delete bigIconBitmap;
+    if( bigIconBitmap->GetWidth() ) {
+      bigIconBitmap->GetHICON(&bigIcon);
+      delete[] wBigIconPath;
+      delete bigIconBitmap;
+    }
+
   }
 
   HINSTANCE hInstance = GetModuleHandle(NULL);
