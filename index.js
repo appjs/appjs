@@ -14,6 +14,12 @@ appjs.init = function() {
 
   app.extend(router);
 
+  app.on("window_close",function(){
+    process.nextTick(function(){
+      process.exit();
+    });
+  });
+
   var createWindow = app.createWindow;
 
   app.createWindow = function(url,settings){
