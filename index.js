@@ -31,7 +31,7 @@ appjs.init = function() {
       settings.icons['bigger'] = path.resolve(settings.icons['bigger']);
     }
 
-    return createWindow(url,settings);
+    return createWindow.call(app,url,settings);
   }
 
   return app;
