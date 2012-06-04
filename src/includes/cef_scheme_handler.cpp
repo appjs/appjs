@@ -79,7 +79,7 @@ void AppjsSchemeHandler::Execute(CefThreadId threadId) {
           size_t size = element->GetBytesCount();
           char* bytes = new char[size];
           element->GetBytes(size, bytes);
-          post = String::New(bytes);
+          post = String::New(bytes,size);
           delete [] bytes;
 
         } else if (element->GetType() == PDE_TYPE_FILE) {
