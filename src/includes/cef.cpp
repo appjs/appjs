@@ -23,8 +23,12 @@ void Cef::Init() {
     g_handler = new ClientHandler();
     CefInitialize(settings, app);
 
-    CefRegisterCustomScheme("appjs", true, false, false);
-    CefRegisterSchemeHandlerFactory("appjs", "",
+    // Accoding to this thread [1], I changed appjs scheme to
+    // normal http scheme with a special domain name.
+    // [1] http://code.google.com/p/chromiumembedded/issues/detail?id=404
+
+    //CefRegisterCustomScheme("appjs", true, false, false);
+    CefRegisterSchemeHandlerFactory("http", "appjs",
         new AppjsSchemeHandlerFactory());
 
     CefBase::Init();
