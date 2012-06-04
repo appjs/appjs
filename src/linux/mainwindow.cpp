@@ -28,7 +28,7 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
   // Set default icon list
-  if(!g_handler->GetBrowserHwnd()) {
+  if( !g_handler->GetBrowserHwnd() ) {
     Settings icons(settings->getObject("icons",Object::New()));
     
     char* smallerIconPath = icons.getString("smaller","");
@@ -49,6 +49,11 @@ MainWindow::MainWindow (char* url, Settings* settings) {
     iconList = g_list_insert(iconList,biggerIconBuf,3);
 
     gtk_window_set_default_icon_list(iconList);
+
+    delete smallerIconPath;
+    delete smallIconPath;
+    delete bigIconPath;
+    delete biggerIconPath;
   }
 
   gtk_window_set_default_size(GTK_WINDOW(window), width, height);

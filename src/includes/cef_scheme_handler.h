@@ -37,7 +37,7 @@ protected:
   std::string status_text_;
   std::string mime_type_;
   char*       data_;
-  int         data_length_;
+  size_t      data_length_;
   size_t      offset_;
   int         status_;
 
