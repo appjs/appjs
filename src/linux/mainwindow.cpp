@@ -74,7 +74,7 @@ MainWindow::MainWindow (char* url, Settings* settings) {
     gtk_widget_set_size_request(window,width,height);
   }
 
-  if( x != -1 && y != -1 ) {
+  if( x > -1 && y > -1 ) {
     gtk_window_move(GTK_WINDOW(window),x,y);
   } else {
     gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER_ALWAYS);

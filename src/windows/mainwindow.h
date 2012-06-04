@@ -18,6 +18,9 @@ public:
   void hide();
   void destroy();
 
+  static int ScreenWidth();
+  static int ScreenHeight();
+
 private:
   CefWindowHandle window;
 };

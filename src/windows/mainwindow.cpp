@@ -31,6 +31,8 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   //TODO Take settings into account.
   int width = settings->getNumber("width",800);
   int height = settings->getNumber("height",600);
+  int x = settings->getNumber("x",-1);
+  int y = settings->getNumber("y",-1);
   double opacity = settings->getNumber("opacity",1);
   bool show_chrome = settings->getBoolean("showChrome",true);
   bool resizable = settings->getBoolean("resizable",true);
@@ -98,9 +100,13 @@ MainWindow::MainWindow (char* url, Settings* settings) {
     commonStyle |= WS_POPUP;
   }
 
+  if( x < 0 || y < 0 ) {
+    x = (GetSystemMetrics(SM_CXSCREEN) - width) / 2;
+    y = (GetSystemMetrics(SM_CYSCREEN) - height) / 2;
+  }
   // Perform application initialization
   HWND hWnd = CreateWindowEx(NULL, szWindowClass,"",
-                      commonStyle, CW_USEDEFAULT,CW_USEDEFAULT,width,
+                      commonStyle, x, y, width,
                       height, NULL, NULL, hInstance, NULL);
 
   if (!hWnd) {
@@ -133,6 +139,15 @@ void MainWindow::hide() {
   
   ShowWindow(window, SW_HIDE);
 };
+
+
+int MainWindow::ScreenWidth() {
+  return GetSystemMetrics(SM_CXSCREEN);
+}
+
+int MainWindow::ScreenHeight() {
+  return GetSystemMetrics(SM_CYSCREEN);
+}
 
 void MainWindow::destroy() {
  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
