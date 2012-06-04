@@ -27,7 +27,6 @@ HICON bigIcon;
 Settings* browserSettings;
 
 MainWindow::MainWindow (char* url, Settings* settings) {
-  Cef::Init();
 
   //TODO Take settings into account.
   int width = settings->getNumber("width",800);

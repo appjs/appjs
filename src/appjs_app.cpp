@@ -2,6 +2,7 @@
 #include "appjs.h"
 #include "appjs_app.h"
 #include "appjs_window.h"
+#include "includes/cef.h"
 #include "includes/util.h"
 
 namespace appjs {
@@ -19,6 +20,8 @@ void App::Init () {
   CREATE_NODE_CONSTRUCTOR("App");
   DEFINE_PROTOTYPE_METHOD("on",On);
   DEFINE_PROTOTYPE_METHOD("createWindow",CreateWindow2);
+  DEFINE_PROTOTYPE_METHOD("screenWidth",ScreenWidth);
+  DEFINE_PROTOTYPE_METHOD("screenHeight",ScreenHeight);
 
   END_CONSTRUCTOR();
 }
@@ -35,6 +38,8 @@ Handle<Value> App::New(const Arguments& args) {
 
 Handle<Value> App::NewInstance(const Arguments& args) {
   HandleScope scope;
+
+  Cef::Init();
 
   const unsigned argc = 1;
   Handle<Value> argv[argc] = {args[0]};
@@ -57,6 +62,24 @@ Handle<Value> App::CreateWindow2(const Arguments& args) {
   HandleScope scope;
 
   return scope.Close(Window::NewInstance(args));
+}
+
+Handle<Value> App::ScreenWidth(const Arguments& args) {
+
+  HandleScope scope;
+
+  Handle<Value> width = Integer::New(MainWindow::ScreenWidth());
+
+  return scope.Close(width);
+}
+
+Handle<Value> App::ScreenHeight(const Arguments& args) {
+
+  HandleScope scope;
+
+  Handle<Value> height = Integer::New(MainWindow::ScreenHeight());
+
+  return scope.Close(height);
 }
 
 Handle<Value> App::On(const Arguments& args) {

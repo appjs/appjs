@@ -14,10 +14,10 @@ using namespace v8;
 
 MainWindow::MainWindow (char* url, Settings* settings) {
 
-  Cef::Init();
-
   int width = settings->getNumber("width",800);
   int height = settings->getNumber("height",600);
+  int x = settings->getNumber("x",-1);
+  int y = settings->getNumber("y",-1);
   double opacity = settings->getNumber("opacity",1);
   bool show_chrome = settings->getBoolean("showChrome",true);
   bool resizable = settings->getBoolean("resizable",true);
@@ -43,8 +43,8 @@ MainWindow::MainWindow (char* url, Settings* settings) {
 
     GList* iconList;
 
-    iconList = g_list_insert(iconList,smallerIconBuf,0);
-    iconList = g_list_insert(iconList,smallIconBuf,1);
+    iconList = g_list_insert(iconList,smallerIconBuf,1);
+    iconList = g_list_insert(iconList,smallIconBuf,0);
     iconList = g_list_insert(iconList,bigIconBuf,2);
     iconList = g_list_insert(iconList,biggerIconBuf,3);
 
@@ -74,6 +74,12 @@ MainWindow::MainWindow (char* url, Settings* settings) {
     gtk_widget_set_size_request(window,width,height);
   }
 
+  if( x != -1 && y != -1 ) {
+    gtk_window_move(GTK_WINDOW(window),x,y);
+  } else {
+    gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER_ALWAYS);
+  }
+
   g_handler->SetAutoResize(auto_resize);
 
   GtkWidget* box = gtk_vbox_new(FALSE, 0);
@@ -97,6 +103,16 @@ void MainWindow::hide() {
   
   gtk_widget_hide(GTK_WIDGET(window));
 };
+
+int MainWindow::ScreenWidth() {
+  GdkScreen* screen = gdk_screen_get_default();
+  return gdk_screen_get_width(screen);
+}
+
+int MainWindow::ScreenHeight() {
+  GdkScreen* screen = gdk_screen_get_default();
+  return gdk_screen_get_height(screen); 
+}
 
 void MainWindow::destroy() {
  if (!g_handler.get() || !g_handler->GetBrowserHwnd())

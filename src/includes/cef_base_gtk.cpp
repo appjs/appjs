@@ -12,7 +12,7 @@ static void destroy_handler (int status = 0) {
 };
 
 void CefBase::Init() {
-      
+
   g_thread_init (NULL);
   gdk_threads_init ();
   gtk_init(NULL,NULL);
