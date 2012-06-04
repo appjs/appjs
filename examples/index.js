@@ -9,7 +9,7 @@ var github = new Github({version: '3.0.0',debug:true})
   , screenHeight = app.screenHeight()
 
 var windowSettings = {
-  width: 480,
+  width: 460,
   height: 640,
   x: -1, // remove x and y if you want to put window at center, -1 means the same
   y: -1, // remove x and y if you want to put window at center, -1 means the same
