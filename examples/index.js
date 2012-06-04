@@ -37,16 +37,10 @@ var window = app.createWindow("http://appjs/",windowSettings);
 
 app.on("window_ready",function(){
   console.log("Event WindowReady called");
-
-  
 });
 
 app.on("window_close",function(){
   console.log("Event WindowClose called");
-});
-
-app.on("show",function(){
-  console.log("Event Show called");
 });
 
 app.on("ready",function(){
@@ -73,10 +67,6 @@ app.post('/login',function(req,res,next){
       }
       
       res.send(200,result);
-      /*github.repos.getAll({}, function(err, res) {
-          console.log("GOT ERR?", err);
-          console.log("GOT RES?", res);
-      });*/
   });
 
 });
