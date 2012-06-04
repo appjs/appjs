@@ -1,0 +1,73 @@
+body {
+	background:url(../img/bg.png) no-repeat;
+	color:#ddd;
+}
+
+.box-login {
+	margin:40% auto;
+	width:320px;
+	height:265px;
+	border:1px solid rgba(0,0,0,0.6);
+	border-radius:5px;
+	background-color:rgba(0,0,0,0.4);
+}
+
+.box-login label {
+	font-weight:bold;
+}
+
+.note-login {
+	color:#bbb;
+	font-size:12px;
+	padding:0 10px;
+	margin-top:-10px;
+}
+
+.top {
+	height:60px;
+}
+
+.ribbon {
+	background-color:rgba(0,0,0,0.4);
+	height:60px;
+	margin:0 -20px;
+}
+
+.avatar {
+	width:64px;
+	height:64px;
+	margin-top:-5px;
+	margin-left:40px;
+	border:1px solid #000;
+	background-color:#fff;
+	float:left;
+	padding:3px;
+}
+
+.name {
+	color:#ddd;
+	margin-left:10px;
+	margin-top:12px;
+	float:left;
+	text-shadow:0 1px 1px #000;
+}
+
+.followers {
+	margin-top:40px;
+	height:200px;
+	overflow:hidden;
+}
+
+.followers h2 {
+	margin-bottom:10px;
+}
+
+.following {
+	margin-top:40px;
+	height:200px;
+	overflow:hidden;
+}
+
+.following h2 {
+	margin-bottom:10px;
+}

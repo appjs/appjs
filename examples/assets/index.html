@@ -1,0 +1,90 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Octosocial</title>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="css/google-prettify.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+	<div class="container">
+		<div id="loginPage" class="box-login">
+			<div class="row">
+				<form id="login" action="/login" method="post" class="well">
+					<div class="control-group">
+						<label class="control-label" for="username">Username</label>
+						<input name="username" type="text" class="span3" placeholder="Github Username">
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="password">Password</label>
+						<input name="password" type="password" class="span3" placeholder="Github Password">
+					</div>
+					<div id="info-login" class="control-group">
+						<span id="info-text" class="help-block"></span>
+					</div>
+					<button type="submit" class="btn">Submit</button>
+				</form>
+			</div>
+			<div class="row">
+				<div class="note-login">
+					Don't worry. We do not store your account info. You can always take a look at source code!
+				</div>
+			</div>
+		</div>
+		<div id="profilePage" class="profile" style="display:none;">
+			
+		</div>
+	</div>
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.js"></script>
+	<script src="js/google-prettify.js"></script>
+	<script src="js/profile.js"></script>
+	<script>
+	  $("input").change(function(){
+		$(this).parent().removeClass("error");
+	  });
+	  $('#login').submit(function(){
+	  	var validated = true;
+	  	var username = $("input[name='username']").val();
+	  	var password = $("input[name='password']").val();
+	  	if( username == "" ) {
+			$("input[name='username']").parent().addClass("error");
+			validated = false;
+		}
+		if( password == "" ) {
+			$("input[name='password']").parent().addClass("error");
+			validated = false;
+		}
+		if(validated) {
+			$.post("/login",{username:username,password:password},function(data){
+				
+				if(data.error) {
+					$("#info-login")
+						.removeClass("success")
+						.addClass("error")
+						.find("span")
+						  .html("An error occurred. Try again.");
+
+					$("input,button").removeAttr('disabled','disabled');
+				}
+
+				$('#loginPage').css({display:'none'});
+
+				processProfile(data);
+
+				$("#info-login").removeClass("error").addClass("success").find("span").html("Logged in!");
+
+			}).error(function(){
+				$("#info-login").removeClass("success").addClass("error").find("span").html("Login failed.");
+				$("input,button").removeAttr('disabled','disabled');
+			});
+			$("#info-login").removeClass("error").addClass("success").find("span").html("Logging in...");
+			$("input,button").attr('disabled','disabled');
+		}
+
+	  	return false;
+	  });
+	</script>
+</body>
+</html>
