@@ -1,7 +1,7 @@
 {
   "name": "appjs",
   "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "keywords": [
     "cef",
     "webkit",
@@ -14,7 +14,7 @@
     "ui",
     "sdk"
   ],
-  "homepage": "http://github.com/milani/appjs",
+  "homepage": "http://appjs.org",
   "repository": {
     "type": "git",
     "url": "https://github.com/milani/appjs"
