@@ -15,6 +15,7 @@ char* V8StringToFunctionChar(v8::Handle<v8::String> str);
 class Settings {
 public:
   Settings(v8::Persistent<v8::Object>);
+  Settings(v8::Local<v8::Object>);
   ~Settings(){settings_.Dispose();}
 
   bool isNull(const char*);
