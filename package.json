@@ -37,7 +37,7 @@
   },
   "main": "./index.js",
   "engines": {
-    "node": "0.6 || 0.7 || 0.8"
+    "node": "0.6"
   },
   "dependencies": {
     "mime":"1.2.5",
