@@ -14,8 +14,8 @@ char* V8StringToFunctionChar(v8::Handle<v8::String> str);
 
 class Settings {
 public:
-  Settings(v8::Local<v8::Object>);
-  ~Settings(){}
+  Settings(v8::Persistent<v8::Object>);
+  ~Settings(){settings_.Dispose();}
 
   bool isNull(const char*);
   bool has(const char*);
@@ -30,7 +30,7 @@ public:
   v8::Local<v8::Object> getObject(const char*,v8::Local<v8::Object>);
 
 private:
-  v8::Local<v8::Object> settings_;
+  v8::Persistent<v8::Object> settings_;
   v8::Local<v8::Value> get(const char*);
 };
 

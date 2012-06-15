@@ -42,7 +42,7 @@ char* V8StringToFunctionChar(Handle<String> str) {
   return buf;
 }
 
-Settings::Settings(Local<Object> settings):settings_(settings){};
+Settings::Settings(Persistent<Object> settings):settings_(settings){};
 
 bool Settings::has(const char* property) {
   return settings_->Has(String::New(property));

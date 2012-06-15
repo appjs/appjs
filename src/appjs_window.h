@@ -9,6 +9,11 @@
 
 #include "linux/mainwindow.h"
 
+// Mac files
+#elif defined(__MAC__)
+
+#include "mac/mainwindow.h"
+
 // Windows necessary files
 #elif defined(__WIN__)
 

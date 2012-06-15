@@ -21,14 +21,27 @@
         'src/',
         'deps/cef'
       ],
-  	  'cflags': [
+      'cflags': [
         '-fPIC',
         '-Wall',
         '-std=c++0x'
       ],
       'conditions': [
         ['OS=="mac"', {
-
+          'sources': [
+            'src/includes/cef_base_mac.mm',
+            'src/includes/cef_handler_mac.mm',
+            'src/mac/mainwindow.mm'
+          ],
+          'defines': [
+            '__MAC__',
+          ],
+          'link_settings': {
+            'libraries': [
+               '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
+               '<(module_root_dir)/build/Release/cef_dll_wrapper.node'
+             ]
+          }
         }],
         ['OS=="linux"', {
           'sources': [

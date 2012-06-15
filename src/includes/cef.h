@@ -4,6 +4,8 @@
 
 #if defined(__LINUX__)
 #include "cef_base_gtk.h"
+#elif defined(__MAC__)
+#include "cef_base_mac.h"
 #elif defined(__WIN__)
 #include "cef_base_win.h"
 #endif

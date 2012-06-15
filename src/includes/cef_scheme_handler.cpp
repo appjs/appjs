@@ -17,16 +17,15 @@ Handle<Value> WrapObject(void* obj) {
 
   Handle<Object> self = obj_template->NewInstance();
 
-  self->SetInternalField(0, External::New(obj));
+  self->SetPointerInInternalField(0, obj);
 
   return scope.Close(self);
 }
 
 void *UnwrapObject(Handle<Value> data) {
-  v8::Handle<v8::Object> obj = data->ToObject();
-  v8::Handle<v8::External> obj2 = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
+  Handle<Object> obj = data->ToObject();
 
-  return obj2->Value();
+  return obj->GetPointerFromInternalField(0);
 }
 
 // Implementation of the schema handler for appjs:// requests.

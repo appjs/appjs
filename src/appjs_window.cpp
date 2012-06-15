@@ -29,12 +29,12 @@ void Window::Init () {
 Handle<Value> Window::New(const Arguments& args) {
   HandleScope scope;
 
-  auto self = Persistent<v8::Object>::New(args.This());
+  Handle<Object> self = Persistent<Object>::New(args.This());
 
   char* url = (args[0]->IsString()) ? V8StringToChar(args[0]->ToString()) : (char*) "/";
-  Local<Object> v8settings = (args[1]->IsObject()) ? args[1]->ToObject() : Object::New();
+  Persistent<Object> windowSettings = Persistent<Object>::New((args[1]->IsObject()) ? args[1]->ToObject() : Object::New());
 
-  Settings* settings = new Settings(v8settings);
+  Settings* settings = new Settings(windowSettings);
   MainWindow* obj = new MainWindow(url,settings);
 
   self->SetPointerInInternalField (0, obj);
