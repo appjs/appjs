@@ -50,10 +50,10 @@ MainWindow::MainWindow (char* url, Settings* settings) {
 
     gtk_window_set_default_icon_list(iconList);
 
-    delete smallerIconPath;
-    delete smallIconPath;
-    delete bigIconPath;
-    delete biggerIconPath;
+//    delete smallerIconPath;
+//    delete smallIconPath;
+//    delete bigIconPath;
+//    delete biggerIconPath;
   }
 
   gtk_window_set_default_size(GTK_WINDOW(window), width, height);
