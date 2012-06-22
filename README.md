@@ -23,11 +23,16 @@ and make sure you have all required packages.
 
 You should have libgtk2.0-dev installed. Ubuntu users can install it using the following command:
 
-    sudo apt-get install libgtk2.0-dev
+    $ sudo apt-get install libgtk2.0-dev
+
+### Mac OS X users
+
+AppJS only works with 32bit node. Please make sure by running:
+
+    $ node -e "console.log(process.arch)"
+    ia32
 
 ## How to install
-
-** Only Linux and Windows ports work for now. Pull requests for Mac OS are very welcome **
 
 Using npm:
 
