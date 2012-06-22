@@ -37,7 +37,7 @@
             '__MAC__',
           ],
           'xcode_settings': {
-            'OTHER_LDFLAGS':['-Xlinker -rpath -Xlinker /Users/nima/code/appjs/deps/cef/Release/lib.target/']
+            'OTHER_LDFLAGS':['-Xlinker -rpath -Xlinker <(module_root_dir)/deps/cef/Release/lib.target/']
           },
           'link_settings': {
             'libraries': [
