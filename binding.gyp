@@ -37,7 +37,7 @@
             '__MAC__',
           ],
           'xcode_settings': {
-            'OTHER_LDFLAGS':['-Xlinker -rpath -Xlinker <(module_root_dir)/deps/cef/Release/lib.target/']
+            'OTHER_LDFLAGS':['-Xlinker -rpath -Xlinker @loader_path/']
           },
           'link_settings': {
             'libraries': [
@@ -51,7 +51,7 @@
             'src/includes/cef_base_gtk.cpp',
             'src/includes/cef_handler_gtk.cpp',
             'src/linux/mainwindow.cpp',
-        	],
+          ],
           'defines': [
             '__LINUX__',
             '<!@(uname -a | grep "Ubuntu" > /dev/null && echo "__UBUNTU__" || echo "__NOTUBUNTU__")'
@@ -62,7 +62,7 @@
           'link_settings': {
               'ldflags': [
                 '<!@(pkg-config --libs-only-L --libs-only-other gtk+-2.0 gthread-2.0)',
-                '-Wl,-R,<(module_root_dir)/deps/cef/Release/lib.target/'
+                '-Wl,-R,\'$$ORIGIN/\'',
               ],
               'libraries': [
                 '<!@(pkg-config --libs-only-l gtk+-2.0 gthread-2.0)',
