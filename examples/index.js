@@ -25,7 +25,11 @@ var windowSettings = {
     small: './assets/icons/32.png', // 32x32
     big: './assets/icons/48.png', // 48x48
     bigger: './assets/icons/64.png' // 64x64 or 128x128
-  }
+  },
+
+  /* Global Router Settings */
+  caseSensitive: false,
+  strict: false
 };
 
 /**
@@ -33,7 +37,7 @@ var windowSettings = {
  * Use this scheme to communicate with nodejs. Use appjs routers to handle
  * these special requests. Note that there is no http server in between.
  **/
-var window = app.createWindow("http://appjs/",windowSettings);
+var window = app.createWindow("http://appjs/user/1",windowSettings);
 
 app.on("window_ready",function(){
   console.log("Event WindowReady called");
@@ -48,7 +52,16 @@ app.on("ready",function(){
   window.show();
 });
 
-app.use(app.staticRouter('./assets'));
+
+app.use(app.staticRouter('./assets'),
+  'get' //use this middleware only on GET request
+);
+
+
+app.all('/user/:id', function(req, res) {
+  console.log(req.params.id);
+  res.sendFile(200, './assets/example.html');
+});
 
 app.post('/login',function(req,res,next){
   var username = req.post('username')
