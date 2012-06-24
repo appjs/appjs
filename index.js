@@ -12,6 +12,7 @@ appjs.init = function() {
     mod.call(this);
   }
 
+  app.router = new router(app);
 //  app.extend(router);
 
   app.on("window_close",function(){
@@ -23,7 +24,6 @@ appjs.init = function() {
   var createWindow = app.createWindow;
 
   app.createWindow = function(url,settings){
-    new router(app, settings);
     if( settings.icons ) {
       settings.icons['smaller'] = path.resolve(settings.icons['smaller']);
       settings.icons['small'] = path.resolve(settings.icons['small']);
