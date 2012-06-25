@@ -1,4 +1,9 @@
 var path = require('path');
+
+if (process.platform === 'win32') {
+  process.env.PATH += ';' + path.resolve(__dirname, 'build/Release');
+}
+
 var appjs = require('./build/Release/appjs.node');
 var router = require('./lib/router');
 
