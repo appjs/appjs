@@ -1,7 +1,7 @@
 {
   "name": "appjs",
   "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "keywords": [
     "cef",
     "webkit",
@@ -37,7 +37,7 @@
   },
   "main": "./index.js",
   "engines": {
-    "node": "0.6"
+    "node": "0.6 || 0.8"
   },
   "dependencies": {
     "mime":"1.2.5",
