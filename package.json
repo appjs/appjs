@@ -42,7 +42,10 @@
   "dependencies": {
     "mime":"1.2.5",
     "request":"2.9.x",
-    "tar":">= 0.1.13"
+    "tar":">= 0.1.13",
+    "nopt": ">= 1.0.10",
+    "mkdirp": ">= 0.3.0",
+    "diveSync": ">= 0.2.0"
   },
   "devDependencies": {},
   "optionalDependencies": {},
