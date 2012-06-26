@@ -1,15 +1,10 @@
 var path = require('path');
-
-if (process.platform === 'win32') {
-  process.env.PATH += ';' + path.resolve(__dirname, 'build/Release');
-}
-
-var appjs = require('./build/Release/appjs.node');
+var bindings = require('./lib/bindings');
 var router = require('./lib/router');
 
-var Init = appjs.init;
+var Init = bindings.init;
 
-appjs.init = function() {
+bindings.init = function() {
 
   var app = Init.apply(null,arguments);
 
@@ -42,4 +37,4 @@ appjs.init = function() {
   return app;
 }
 
-module.exports = appjs;
+module.exports = bindings;
