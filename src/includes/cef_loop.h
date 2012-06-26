@@ -10,6 +10,7 @@ class CefLoop {
 
 public:
   static uv_timer_t timer;
+  static uv_async_t g_async;
   static void Init();
   static void Run();
   static void Pause();

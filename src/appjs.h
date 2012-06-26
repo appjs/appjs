@@ -3,6 +3,7 @@
 #pragma once
 
 #include <node.h>
+#include <node_version.h>
 
 // Easy throw exceptions
 #define NODE_ERROR(str) \
