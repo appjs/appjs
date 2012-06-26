@@ -18,6 +18,46 @@
             '<(module_root_dir)/data/README.md'
           ],
         }
+      ],
+      'conditions': [
+        ['OS=="mac"', {
+          'copies': [
+            {
+              'destination': '<(module_root_dir)/build/Release',
+              'files': [
+                '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
+              ]
+            }
+          ]
+        }],
+        ['OS=="linux"', {
+          'copies': [
+            {
+              'destination': '<(module_root_dir)/build/Release',
+              'files': [
+                '<(module_root_dir)/deps/cef/Release/lib.target/libcef.so',
+              ]
+            }
+          ]
+        }],
+        ['OS=="win"', {
+          'copies': [
+            {
+              'destination': '<(module_root_dir)/build/Release',
+              'files': [
+                '<(module_root_dir)/deps/cef/Release/libcef.dll',
+                '<(module_root_dir)/deps/cef/Release/avcodec-54.dll',
+                '<(module_root_dir)/deps/cef/Release/avformat-54.dll',
+                '<(module_root_dir)/deps/cef/Release/avutil-51.dll',
+                '<(module_root_dir)/deps/cef/Release/d3dcompiler_43.dll',
+                '<(module_root_dir)/deps/cef/Release/d3dx9_43.dll',
+                '<(module_root_dir)/deps/cef/Release/icudt.dll',
+                '<(module_root_dir)/deps/cef/Release/libEGL.dll',
+                '<(module_root_dir)/deps/cef/Release/libGLESv2.dll'
+              ]
+            }
+          ]
+        }]
       ]
     },
     {
