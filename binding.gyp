@@ -1,6 +1,26 @@
 {
   'targets': [
     {
+      'target_name': 'pack',
+      'dependencies': [
+        'appjs'
+      ],
+      'copies':[
+        {
+          'destination': '<(module_root_dir)/publish/npm-module',
+          'files': [
+            '<(module_root_dir)/bin',
+            '<(module_root_dir)/cli',
+            '<(module_root_dir)/lib',
+            '<(module_root_dir)/index.js',
+            '<(module_root_dir)/examples',
+            '<(module_root_dir)/data/package.json',
+            '<(module_root_dir)/data/README.md'
+          ],
+        }
+      ]
+    },
+    {
       'target_name': 'appjs',
       'msvs_guid': 'A9D6DC71-C0DC-4549-AEB1-3B15B44E86A9',
       'sources': [ 
@@ -69,7 +89,7 @@
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.so',
                 '<(module_root_dir)/build/Release/obj.target/deps/cef/cef_dll_wrapper.node'
               ],
-          },
+          }
         }],
         ['OS=="win"', {
           'sources': [
