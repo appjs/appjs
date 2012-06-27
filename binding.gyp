@@ -9,13 +9,10 @@
         {
           'destination': '<(module_root_dir)/publish/npm-module',
           'files': [
-            '<(module_root_dir)/bin',
             '<(module_root_dir)/cli',
             '<(module_root_dir)/lib',
             '<(module_root_dir)/index.js',
             '<(module_root_dir)/examples',
-            '<(module_root_dir)/data/package.json',
-            '<(module_root_dir)/data/README.md'
           ],
         }
       ],
