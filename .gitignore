@@ -2,3 +2,8 @@ build/
 node_modules/
 appjs.sublime*
 deps/*
+publish/
+data/linux/node-bin/ia32/node
+data/linux/node-bin/x64/node
+data/mac/node-bin/node
+data/win/node-bin/node

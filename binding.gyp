@@ -1,19 +1,48 @@
 {
   'targets': [
     {
-      'target_name': 'pack',
+      'target_name': 'wrap',
+      'type':'none',
+      'dependencies': [
+        'publish'
+      ],
+      'actions':[
+        {
+          'action_name':'npm',
+          'inputs':[''],
+          'outputs':[''],
+          'conditions':[
+            ['OS!="win"', {
+              'action':['<(module_root_dir)/data/add-dependencies.sh','<(module_root_dir)/publish/node_modules/appjs']
+            }],
+            ['OS=="win"', {
+              'action':['<(module_root_dir)/data/add-dependencies.bat','<(module_root_dir)/publish/node_modules/appjs']
+            }]
+          ]
+        },
+      ]
+    },
+    {
+      'target_name': 'publish',
+      'type':'none',
       'dependencies': [
         'appjs'
       ],
       'copies':[
         {
-          'destination': '<(module_root_dir)/publish/npm-module',
+          'destination': '<(module_root_dir)/publish/node_modules/appjs',
           'files': [
-            '<(module_root_dir)/cli',
             '<(module_root_dir)/lib',
             '<(module_root_dir)/index.js',
             '<(module_root_dir)/examples',
-          ],
+            '<(module_root_dir)/data/common/README.md'
+          ]
+        },
+        {
+          'destination': '<(module_root_dir)/publish',
+          'files': [
+            '<(module_root_dir)/data/common/app.js'
+          ]
         }
       ],
       'conditions': [
@@ -24,6 +53,32 @@
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
               ]
+            },
+            {
+              'destination': '<(module_root_dir)/publish/node_modules/appjs/build/Release',
+              'files': [
+                '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
+                '<(module_root_dir)/deps/cef/Release/lib.target/ffmpegsumo.so',
+                '<(PRODUCT_DIR)/appjs.node'
+              ],
+            },
+            {
+              'destination': '<(module_root_dir)/publish/node_modules/appjs',
+              'files': [
+                '<(module_root_dir)/data/mac/package.json',
+              ],
+            },
+            {
+              'destination': '<(module_root_dir)/publish/',
+              'files': [
+                '<(module_root_dir)/data/mac/launch.sh',
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/publish/bin',
+              'files': [
+                '<(module_root_dir)/data/mac/node-bin/node',
+              ]
             }
           ]
         }],
@@ -33,6 +88,31 @@
               'destination': '<(module_root_dir)/build/Release',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.so',
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/publish/node_modules/appjs/build/Release',
+              'files': [
+                '<(module_root_dir)/deps/cef/Release/lib.target/libcef.so',
+                '<(PRODUCT_DIR)/appjs.node'
+              ],
+            },
+            {
+              'destination': '<(module_root_dir)/publish/node_modules/appjs',
+              'files': [
+                '<(module_root_dir)/data/linux/package.json',
+              ],
+            },
+            {
+              'destination': '<(module_root_dir)/publish/',
+              'files': [
+                '<(module_root_dir)/data/linux/launch.sh',
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/publish/bin',
+              'files': [
+                '<(module_root_dir)/data/linux/node-bin/<!@(node -e "console.log(require(\'os\').arch())")/node',
               ]
             }
           ]
@@ -51,6 +131,39 @@
                 '<(module_root_dir)/deps/cef/Release/icudt.dll',
                 '<(module_root_dir)/deps/cef/Release/libEGL.dll',
                 '<(module_root_dir)/deps/cef/Release/libGLESv2.dll'
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/publish/node_modules/appjs/build/Release',
+              'files': [
+                '<(module_root_dir)/deps/cef/Release/libcef.dll',
+                '<(module_root_dir)/deps/cef/Release/avcodec-54.dll',
+                '<(module_root_dir)/deps/cef/Release/avformat-54.dll',
+                '<(module_root_dir)/deps/cef/Release/avutil-51.dll',
+                '<(module_root_dir)/deps/cef/Release/d3dcompiler_43.dll',
+                '<(module_root_dir)/deps/cef/Release/d3dx9_43.dll',
+                '<(module_root_dir)/deps/cef/Release/icudt.dll',
+                '<(module_root_dir)/deps/cef/Release/libEGL.dll',
+                '<(module_root_dir)/deps/cef/Release/libGLESv2.dll',
+                '<(PRODUCT_DIR)/appjs.node'
+              ],
+            },
+            {
+              'destination': '<(module_root_dir)/publish/node_modules/appjs',
+              'files': [
+                '<(module_root_dir)/data/win/package.json',
+              ],
+            },
+            {
+              'destination': '<(module_root_dir)/publish/',
+              'files': [
+                '<(module_root_dir)/data/win/launch.exe',
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/publish/bin',
+              'files': [
+                '<(module_root_dir)/data/win/node-bin/node.exe',
               ]
             }
           ]
