@@ -25,7 +25,7 @@
         {
           'destination': '<(module_root_dir)/publish/node_modules/',
           'files': [
-            '<(module_root_dir)/data/common/appjs'
+            '<(module_root_dir)/data/common/appjs/'
           ]
         }
       ]
@@ -40,14 +40,14 @@
         {
           'destination': '<(module_root_dir)/publish/node_modules/appjs-<(OS)',
           'files': [
-            '<(module_root_dir)/lib',
+            '<(module_root_dir)/lib/',
             '<(module_root_dir)/index.js',
-            '<(module_root_dir)/examples',
+            '<(module_root_dir)/examples/',
             '<(module_root_dir)/data/common/README.md'
           ]
         },
         {
-          'destination': '<(module_root_dir)/publish',
+          'destination': '<(module_root_dir)/publish/',
           'files': [
             '<(module_root_dir)/data/common/app.js'
           ]
@@ -57,7 +57,7 @@
         ['OS=="mac"', {
           'copies': [
             {
-              'destination': '<(module_root_dir)/build/Release',
+              'destination': '<(module_root_dir)/build/Release/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
               ]
@@ -83,9 +83,9 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/bin',
+              'destination': '<(module_root_dir)/publish/bin/',
               'files': [
-                '<(module_root_dir)/data/mac/node-bin/node',
+                '<(module_root_dir)/data/mac/node-bin/node/',
               ]
             }
           ]
@@ -93,20 +93,20 @@
         ['OS=="linux"', {
           'copies': [
             {
-              'destination': '<(module_root_dir)/build/Release',
+              'destination': '<(module_root_dir)/build/Release/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.so',
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs-linux/build/Release',
+              'destination': '<(module_root_dir)/publish/node_modules/appjs-linux/build/Release/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.so',
                 '<(PRODUCT_DIR)/appjs.node'
               ],
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs-linux',
+              'destination': '<(module_root_dir)/publish/node_modules/appjs-linux/',
               'files': [
                 '<(module_root_dir)/data/linux/package.json',
               ],
@@ -118,7 +118,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/bin',
+              'destination': '<(module_root_dir)/publish/bin/',
               'files': [
                 '<(module_root_dir)/data/linux/node-bin/<!@(node -e "console.log(require(\'os\').arch())")/node',
               ]
@@ -128,7 +128,7 @@
         ['OS=="win"', {
           'copies': [
             {
-              'destination': '<(module_root_dir)/build/Release',
+              'destination': '<(module_root_dir)/build/Release/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/libcef.dll',
                 '<(module_root_dir)/deps/cef/Release/avcodec-54.dll',
@@ -142,7 +142,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs-win/build/Release',
+              'destination': '<(module_root_dir)/publish/node_modules/appjs-win/build/Release/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/libcef.dll',
                 '<(module_root_dir)/deps/cef/Release/avcodec-54.dll',
@@ -157,7 +157,7 @@
               ],
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs-win',
+              'destination': '<(module_root_dir)/publish/node_modules/appjs-win/',
               'files': [
                 '<(module_root_dir)/data/win/package.json',
               ],
@@ -169,7 +169,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/bin',
+              'destination': '<(module_root_dir)/publish/bin/',
               'files': [
                 '<(module_root_dir)/data/win/node-bin/node.exe',
               ]
@@ -197,7 +197,7 @@
       ],
       'include_dirs': [
         'src/',
-        'deps/cef'
+        'deps/cef/'
       ],
       'cflags': [
         '-fPIC',
