@@ -16,7 +16,7 @@
               'action':['<(module_root_dir)/data/add-dependencies.sh','<(module_root_dir)/publish/node_modules/appjs']
             }],
             ['OS=="win"', {
-              'action':['<(module_root_dir)/data/add-dependencies.bat','<(module_root_dir)/publish/node_modules/appjs']
+              'action':['"<(module_root_dir)/data/add-dependencies.bat"','<(module_root_dir)/publish/node_modules/appjs']
             }]
           ]
         },
@@ -157,7 +157,7 @@
             {
               'destination': '<(module_root_dir)/publish/',
               'files': [
-                '<(module_root_dir)/data/win/launch.exe',
+                '<(module_root_dir)/data/win/launch.bat',
               ]
             },
             {
