@@ -59,7 +59,7 @@
         <h1>Build Desktop Applications</h1>
         <p>for Linux, Windows and Mac using HTML, CSS and Javascript</p>
         <p>
-          <a class="btn btn-warning btn-large disabled">Download AppJS (v0.0.2)</a>
+          <a href="#download" class="btn btn-warning btn-large">Download AppJS (v0.0.13)</a>
           <a class="btn btn-large disabled">Read Documentation</a>
         </p>
         <p style="font-size:20px;"><strong>Mac port only works with 32bit node (i386). We are working on releasing AppJS for x86_64.</strong></p>
@@ -98,10 +98,10 @@
           <h1>Getting Started Guide</h1>
         </div>
         <div class="page-body">
-          <p>Make sure you have the latest Node.js installed.</p>
+          <p>Make sure you have <strong>node v0.8.0</strong> installed. See more information <a href="https://github.com/joyent/node/wiki/Installation">here</a>.</p>
           <p>Before you continue, install node-gyp using npm (node's package manager).</p>
-          <pre>$ npm install node-gyp -g</pre>
-          <p>Again use npm to install AppJS.</p>
+          <pre>$ sudo npm install node-gyp -g</pre>
+          <p>Again use npm to install AppJS or download ready to use packages <a href="http://dists.appjs.org">here</a>.</p>
           <pre>$ npm install appjs</pre>
           <p>AppJS tries to install dependencies based on the platform you are working with.</p>
           <p>Now you are ready to develop your first desktop application with HTML/CSS/JS! Create a file named app.js. Open it with your favorite editor and start coding:</p>
@@ -120,7 +120,13 @@ var appjs = require('appjs');
 var window,app,settings = {
   width: 800,
   height: 600,
-  autoResize: false
+  autoResize: false,
+  icons: {
+    smaller: './public/icons/16.png', //16x16
+    small: './public/icons/32.png', // 32x32
+    big: './public/icons/48.png', // 48x48
+    bigger: './public/icons/64.png' // 64x64 or 128x128
+  }
 };
 
 // Initialize application. It tells appjs that you are going to start desktop application.
@@ -156,7 +162,7 @@ app.post('/',function(req,res,next){
  **/
 window = app.createWindow("http://appjs/",settings);
           </pre>
-          <p>Create a folder named <code>public</code> and create a html file named <code>index.html</code> inside it. Open <code>index.html</code> in the editor. We want to create a form to submit first name and last name.</p>
+          <p>Create a folder named <code>public</code>. You can add icons if you like. Create a html file named <code>index.html</code> inside it. Open <code>index.html</code> in the editor. We want to create a form to submit first name and last name.</p>
           <pre>&lt;!doctype html&gt;
 &lt;html&gt;
   &lt;head&gt;
@@ -170,9 +176,11 @@ window = app.createWindow("http://appjs/",settings);
     &lt;/form&gt;
   &lt;/body&gt;
 &lt;/html&gt;</pre>
-          <p>Now everything is ready. Open terminal and navigate to your project directory.</p>
+          <p>Open terminal and navigate to your project directory. If you used npm run application like this:</p>
           <pre>$ node app.js</pre>
-          <p>You will see a window that asks you for firstname and lastname! Fill the form and click submit. AppJS routes the request to post router at line 42 of <code>app.js</code>. We process the request and send response.</p>
+          <p>If you used ready to use packages, there is launcher for you, simply run:</p>
+          <pre>$ ./launch.sh # launch.bat if you are on Windows</pre>
+          <p>You will see a window that asks you for firstname and lastname! Fill the form and click submit. AppJS routes the request to post router at line 46 of <code>app.js</code>. We process the request and send response.</p>
           <p>It was a simple application to show how AppJS works. For more detailed information read the documentation <href="/docs" title="Documentation">here</a>.</p>
         </div>
       </section>
@@ -190,7 +198,7 @@ window = app.createWindow("http://appjs/",settings);
           <h3>Git</h3>
           <ul>
             <li>Use topic branches to add features. This way you can keep master branch up-to-date and reduce merge conflicts.</li>
-            <li>Use present tense commit messages. Always add describe what you did in this commit. Example:
+            <li>Use present tense commit messages. Always describe what you did in this commit. Example:
               <pre>Fixes #111
 
 Describe what changed in this commit here.</pre>
@@ -213,10 +221,14 @@ Describe what changed in this commit here.</pre>
           <h1>Download</h1>
         </div>
         <div class="page-body">
-          <p>AppJS should be used as a module for Nodejs. If you have <code>npm</code> installed then downloading AppJS is easy:</p>
+          <p>You can use node package manager (npm) to download appjs.</p>
           <pre>$ npm install appjs</pre>
-          <p>There is no tarball at the time. We are working hard to make them available.</p>
-          <!--p>Here are compiled tarballs for different platforms. Remember that you should extract tarball in <code>your_project_root/node_modules</code>.</p-->
+          <p>Or you can download tarball archives based on your platform.</p>
+          <ul>
+            <li><a href="http://dists.appjs.org/0.0.13/appjs-0.0.13-win32-ia32.zip">Windows</a></li>
+            <li><a href="http://dists.appjs.org/0.0.13/appjs-0.0.13-linux-x64.tar.gz">Linux</a></li>
+            <li><a href="http://dists.appjs.org/0.0.13/appjs-0.0.13-darwin-ia32.zip">Mac OS X</a></li>
+          </ul>
         </div>
       </section>
 
