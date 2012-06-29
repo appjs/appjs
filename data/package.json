@@ -1,7 +1,7 @@
 {
   "name": "appjs",
   "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS",
-  "version": "0.0.12-fixed",
+  "version": "0.0.12",
   "keywords": [
     "cef",
     "webkit",
@@ -12,7 +12,8 @@
     "native",
     "gtk",
     "ui",
-    "sdk"
+    "sdk",
+    "cocoa"
   ],
   "homepage": "http://appjs.org",
   "repository": {
@@ -25,14 +26,14 @@
   },
   "contributors": [
     {
-        "name": "Ali Farhadi",
-        "email": "a.farhadi@gmail.com"
+        "name": "Brandon Benvie",
+        "email": "brandon.benvie@gmail.com"
     }
   ],
   "directories": {
+    "bin": "./bin",
     "doc": "./doc",
     "lib": "./lib",
-    "bin": "./bin",
     "test": "./tests"
   },
   "main": "./index.js",
@@ -50,7 +51,7 @@
   "devDependencies": {},
   "optionalDependencies": {},
   "scripts": {
-    "install": "node cli/configure.js && node-gyp rebuild"
+    "install": "node cli/initialize.js"
   },
   "licenses": [
     {
