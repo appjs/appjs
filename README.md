@@ -12,18 +12,14 @@ tools every developer is familiar with nowadays: HTML/CSS/JS
 
 ## Preinstall
 
-You need to have node-gyp installed:
+You need to have node **v0.8.0** and node-gyp installed.
+After [installing node](https://github.com/joyent/node/wiki/Installation), use the following command
+to install node-gyp:
 
-    $ npm install node-gyp -g
+    $ sudo npm install node-gyp -g
 
 Please take a look at [node-gyp repository](https://github.com/TooTallNate/node-gyp/) 
 and make sure you have all required packages.
-
-### Linux users
-
-You should have libgtk2.0-dev installed. Ubuntu users can install it using the following command:
-
-    $ sudo apt-get install libgtk2.0-dev
 
 ### Mac OS X users
 
@@ -34,20 +30,28 @@ AppJS only works with 32bit node. Please make sure by running:
 
 ## How to install
 
-Using npm:
+There are ready to use appjs packages that do not need compilation.
+They contain node binary file, a launcher and a simple appjs app to
+help you get start.
+
+Download them from http://appjs.org/#download
+
+You can also use npm to install these ready to use packages easily.
+This way you only get appjs module, it doesn't include launcher.
 
     $ npm install appjs
 
-Using git:
+You can clone appjs repository and build it on your own. You need to have
+the following dependencies installed:
 
-    $ git clone https://github.com/milani/appjs
-    $ cd appjs
-    $ npm install -d
+### Linux users
+
+    $ sudo apt-get install libgtk2.0-dev
 
 ### Windows users
 
-You should copy all shared libraries ( .dll files ) located at `appjs/deps/cef/Release`
-to current working directory or AppJS fails to run with error: module not found.
+You need Windows SDK and Visual Studio 2010. Take a look at node-gyp readme
+to get more information.
 
 ## How to use
 
@@ -95,10 +99,14 @@ Here is a simple one:
     // http://appjs/ is a special url. It is home for your application!
     window = app.createWindow("http://appjs/",{autoResize:false});
 
+If you are using appjs tarballs, you can run the boilerplate application simply
+by clicking launch.sh or launch.exe.
+
 ## Thanks to
 
 * Brandon Benvie: He helps me with CEF.
 * Ali Farhadi: He helps me with AppJS.
+* And all other AppJS contributors.
 
 ## License
 ( The MIT License )
