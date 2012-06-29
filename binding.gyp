@@ -13,13 +13,21 @@
           'outputs':[''],
           'conditions':[
             ['OS!="win"', {
-              'action':['<(module_root_dir)/data/add-dependencies.sh','<(module_root_dir)/publish/node_modules/appjs']
+              'action':['<(module_root_dir)/data/add-dependencies.sh','<(module_root_dir)/publish/node_modules/appjs-<(OS)']
             }],
             ['OS=="win"', {
-              'action':['"<(module_root_dir)/data/add-dependencies.bat"','<(module_root_dir)/publish/node_modules/appjs']
+              'action':['"<(module_root_dir)/data/add-dependencies.bat"','<(module_root_dir)/publish/node_modules/appjs-<(OS)']
             }]
           ]
         },
+      ],
+      'copies':[
+        {
+          'destination': '<(module_root_dir)/publish/node_modules/',
+          'files': [
+            '<(module_root_dir)/data/common/appjs'
+          ]
+        }
       ]
     },
     {
@@ -30,7 +38,7 @@
       ],
       'copies':[
         {
-          'destination': '<(module_root_dir)/publish/node_modules/appjs',
+          'destination': '<(module_root_dir)/publish/node_modules/appjs-<(OS)',
           'files': [
             '<(module_root_dir)/lib',
             '<(module_root_dir)/index.js',
@@ -55,7 +63,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs/build/Release',
+              'destination': '<(module_root_dir)/publish/node_modules/appjs-mac/build/Release',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
                 '<(module_root_dir)/deps/cef/Release/lib.target/ffmpegsumo.so',
@@ -63,7 +71,7 @@
               ],
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs',
+              'destination': '<(module_root_dir)/publish/node_modules/appjs-mac',
               'files': [
                 '<(module_root_dir)/data/mac/package.json',
               ],
@@ -91,14 +99,14 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs/build/Release',
+              'destination': '<(module_root_dir)/publish/node_modules/appjs-linux/build/Release',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.so',
                 '<(PRODUCT_DIR)/appjs.node'
               ],
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs',
+              'destination': '<(module_root_dir)/publish/node_modules/appjs-linux',
               'files': [
                 '<(module_root_dir)/data/linux/package.json',
               ],
@@ -134,7 +142,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs/build/Release',
+              'destination': '<(module_root_dir)/publish/node_modules/appjs-win/build/Release',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/libcef.dll',
                 '<(module_root_dir)/deps/cef/Release/avcodec-54.dll',
@@ -149,7 +157,7 @@
               ],
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs',
+              'destination': '<(module_root_dir)/publish/node_modules/appjs-win',
               'files': [
                 '<(module_root_dir)/data/win/package.json',
               ],

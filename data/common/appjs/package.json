@@ -1,0 +1,44 @@
+{
+  "name": "appjs",
+  "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS",
+  "version": "0.0.13",
+  "keywords": [
+    "cef",
+    "webkit",
+    "browser",
+    "canvas",
+    "html5",
+    "desktop",
+    "native",
+    "gtk",
+    "ui",
+    "sdk"
+  ],
+  "target":"mac",
+  "homepage": "http://appjs.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/milani/appjs"
+  },
+  "author": {
+    "name": "Morteza Milani",
+    "email": "mrtz.milani@gmail.com"
+  },
+  "directories": {},
+  "main": "./index.js",
+  "engines": {
+    "node": "0.6 || 0.8"
+  },
+  "scripts": {
+    "install":"node-gyp rebuild"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/milani/appjs/blob/master/LICENSE"
+    }
+  ]
+}
