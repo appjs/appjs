@@ -1,1 +1,1 @@
-#!./bin/node app.js
+#!./bin/node app.js & wait

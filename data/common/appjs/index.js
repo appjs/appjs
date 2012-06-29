@@ -1,6 +1,6 @@
 var platforms = {
 	win32: 'win',
-	mac: 'mac',
+	darwin: 'mac',
 	linux: 'linux'
 };
 
