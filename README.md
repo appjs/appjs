@@ -8,13 +8,15 @@ AppJS is an SDK to develop desktop applications using Node.js melded with Chromi
 * sandboxed code execution environements virtual machines - Node
 * tools for exposing native C++ bindings to JavaScript--APIs for authoring and the tools for compiling - Node
 
-** Site: [appjs.org](http://appjs.org) **
-** Community: [mailing list](https://groups.google.com/forum/#!forum/appjs-dev) **
+
+---
+
+* __Site: [appjs.org](http://appjs.org)__
+* __Community: [mailing list](https://groups.google.com/forum/#!forum/appjs-dev)__
+
+---
 
 __AppJS is under heavy development. Expect many API changes and things to break.__
-
-
-![Hello World](https://github.com/milani/appjs/raw/master/examples/output.jpg "Hello World")
 
 ## Quick Start
 
@@ -26,6 +28,7 @@ AppJS 0.0.13 Complete Distributables:
 * [Linux](http://dists.appjs.org/0.0.13/appjs-0.0.13-linux-x64.tar.gz) (64 bit) -> launch.sh
 * [Mac](http://dists.appjs.org/0.0.13/appjs-0.0.13-darwin-ia32.zip) (32 bit) -> launch.sh
 
+![Hello World](https://github.com/milani/appjs/raw/master/examples/output.jpg "Hello World")
 
 ## Node Install
 
