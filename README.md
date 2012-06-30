@@ -14,7 +14,7 @@ AppJS is an SDK to develop desktop applications using Node.js melded with Chromi
 __AppJS is under heavy development. Expect many API changes and things to break.__
 
 
-![Hello World](https://github.com/milani/appjs/raw/master/examples/output.png "Hello World")
+![Hello World](https://github.com/milani/appjs/raw/master/examples/output.jpg "Hello World")
 
 ## Quick Start
 
