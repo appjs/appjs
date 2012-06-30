@@ -165,7 +165,7 @@
             {
               'destination': '<(module_root_dir)/publish/',
               'files': [
-                '<(module_root_dir)/data/win/launch.bat',
+                '<(module_root_dir)/data/win/launch.exe',
               ]
             },
             {
