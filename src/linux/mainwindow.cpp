@@ -22,7 +22,7 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   bool show_chrome = settings->getBoolean("showChrome",true);
   bool resizable = settings->getBoolean("resizable",true);
   bool show_resize_grip = settings->getBoolean("showResizeGrip",false);
-  bool auto_resize = settings->getBoolean("autoResize",true);
+  bool auto_resize = settings->getBoolean("autoResize",false);
   bool fullscreen = settings->getBoolean("fullscreen",false);
 
   GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);

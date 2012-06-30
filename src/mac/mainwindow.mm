@@ -132,7 +132,7 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   double opacity = settings->getNumber("opacity",1);
   bool show_chrome = settings->getBoolean("showChrome",true);
   bool resizable = settings->getBoolean("resizable",true);
-  bool auto_resize = settings->getBoolean("autoResize",true);
+  bool auto_resize = settings->getBoolean("autoResize",false);
   bool fullscreen = settings->getBoolean("fullscreen",false);
 
   // Set auto_resize on cef handler
