@@ -18,9 +18,8 @@ AppJS is an SDK to develop desktop applications using Node.js melded with Chromi
 
 __AppJS is under heavy development. Expect many API changes and things to break.__
 
-## Quick Start
-
-Binary packages are available for Windows, Linux, and OS X (not for all architectures yet). These packages include everything needed to get started with AppJS, including a double clickable launcher. These packages include Node in them, they are zero dependency builds.
+## Zero Configuration Quick Start
+The below packages include everything needed to get started with AppJS, including Node.js, all dependencies, binaries, and a launcher ready to go out of the box. 1.) Extract to a folder. 2.) Double click on launch. 3.) Hello World.
 
 AppJS 0.0.13 Complete Distributables:
 
