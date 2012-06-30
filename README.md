@@ -31,7 +31,7 @@ AppJS 0.0.13 Complete Distributables:
 
 ## Node Install
 
-__Due to the complex dependencies of AppJS installation via npm is more difficult than we'd like, be forewarned.__
+__Be forewarned: due to the complex dependencies of AppJS, installation via npm is difficult and error prone.__
 
 You need to have node **v0.8.x** and node-gyp installed. After [installing node](https://github.com/joyent/node/wiki/Installation), use the following command to install node-gyp:
 
