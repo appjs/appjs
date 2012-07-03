@@ -9,6 +9,8 @@
 // The global ClientHandler reference.
 extern CefRefPtr<ClientHandler> g_handler;
 
+appjs::Settings* mainWndSettings;
+char* mainWndUrl;
 // Memory AutoRelease pool.
 static NSAutoreleasePool* g_autopool = nil;
 
@@ -32,6 +34,7 @@ static NSAutoreleasePool* g_autopool = nil;
   CefScopedSendingEvent sendingEventScoper;
   [super sendEvent:event];
 }
+
 @end
 
 
@@ -53,20 +56,26 @@ static NSAutoreleasePool* g_autopool = nil;
 // sequence by getting rid of the window. By returning YES, we allow the window
 // to be removed from the screen.
 - (BOOL)windowShouldClose:(id)window {  
-  // Try to make the window go away.
-  [window autorelease];
+
+  // If this is the main window, shutdown cef.
+  NSView* mainWnd = g_handler->GetBrowserHwnd();
+
+  if( window == [mainWnd window]){
+    appjs::Cef::Shutdown();
+  };
 
   // Clean ourselves up after clearing the stack of anything that might have the
   // window on it.
   [self performSelectorOnMainThread:@selector(cleanup:)
                          withObject:window
                       waitUntilDone:NO];
-  
+ 
   return YES;
 }
 
 // Deletes itself.
 - (void)cleanup:(id)window {
+
   [self release];
 }
 
@@ -74,19 +83,10 @@ static NSAutoreleasePool* g_autopool = nil;
 
 // Receives notifications from the application. Will delete itself when done.
 @interface AppjsAppDelegate : NSObject
-- (void)createApp:(id)object;
+
 @end
 
 @implementation AppjsAppDelegate
-
-// Create the application on the UI thread.
-- (void)createApp:(id)object {
-  [NSApplication sharedApplication];
-  
-  // Set the delegate for application events.
-  [NSApp setDelegate:self];
-
-}
 
 // Sent by the default notification center immediately before the application
 // terminates.
@@ -108,7 +108,8 @@ namespace appjs {
 using namespace v8;
 
 MainWindow::MainWindow (char* url, Settings* settings) {
-
+  mainWndSettings = settings;
+  mainWndUrl = url;
   // if it is the first time MainWindow is called, create the Application.
   if(!g_handler->GetBrowser().get()){
     // Initialize the AutoRelease pool.
@@ -117,9 +118,9 @@ MainWindow::MainWindow (char* url, Settings* settings) {
     [AppjsApplication sharedApplication];
     
     // Create the application delegate and window.
-    NSObject* delegate = [[AppjsAppDelegate alloc] init];
-    [delegate performSelectorOnMainThread:@selector(createApp:) withObject:nil
-                            waitUntilDone:NO];
+    AppjsAppDelegate* appDelegate = [[AppjsAppDelegate alloc] init];
+    [NSApp setDelegate:appDelegate];
+
   }
 
   // Create the delegate for browser window events.
@@ -184,7 +185,7 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   // releasing when the window gets closed. We use the delegate to do
   // everything from the autorelease pool so the window isn't on the stack
   // during cleanup (ie, a window close from javascript).
-  [mainWnd setReleasedWhenClosed:NO];
+  [mainWnd setReleasedWhenClosed:YES];
 
   // Add browser view to newly created window.
   NSView* contentView = [mainWnd contentView];
@@ -227,9 +228,12 @@ int MainWindow::ScreenHeight() {
 }
 
 void MainWindow::destroy() {
- if (!g_handler.get() || !g_handler->GetBrowserHwnd())
+  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
-        
+
+  [[window window] performSelectorOnMainThread:@selector(performClose:)
+                         withObject:nil
+                      waitUntilDone:NO];
 
 };
 
