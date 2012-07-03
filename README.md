@@ -1,5 +1,4 @@
 # AppJS
-
 AppJS is an SDK to develop desktop applications using Node.js melded with Chromium. With AppJS you can develop desktop tools and applications using the same libraries and knowledge used to build websites. You get all the following in one package:
 
 * JS, HTML5, CSS, SVG, WebGL provided by Chromium
@@ -18,35 +17,18 @@ AppJS is an SDK to develop desktop applications using Node.js melded with Chromi
 
 __AppJS is under heavy development. Expect many API changes and things to break.__
 
-## Zero Configuration Quick Start
+## 30 Second Quickstart
 The below packages include everything needed to get started with AppJS, including Node.js, all dependencies, binaries, and a launcher ready to go out of the box. 1.) Extract to a folder. 2.) Double click on launch. 3.) Hello World.
 
 AppJS 0.0.13 Complete Distributables:
 
-* [Windows](http://dists.appjs.org/0.0.13/appjs-0.0.13-win32-ia32.zip) (32 bit) -> launch.exe
-* [Linux](http://dists.appjs.org/0.0.13/appjs-0.0.13-linux-x64.tar.gz) (64 bit) -> launch.sh
-* [Mac](http://dists.appjs.org/0.0.13/appjs-0.0.13-darwin-ia32.zip) (32 bit) -> launch.sh
+* [Windows](http://dists.appjs.org/0.0.13/appjs-0.0.13-win32-ia32.zip) -> launch.exe
+* [Linux](http://dists.appjs.org/0.0.13/appjs-0.0.13-linux-x64.tar.gz) -> launch.sh
+* [Mac](http://dists.appjs.org/0.0.13/appjs-0.0.13-darwin-ia32.zip) -> launch.sh
 
 ![Hello World](https://github.com/milani/appjs/raw/master/examples/output.jpg "Hello World")
 
-## Node Install
-
-__Be forewarned: due to the complex dependencies of AppJS, installation via npm is difficult and error prone.__
-
-You need to have node **v0.8.x** and node-gyp installed. After [installing node](https://github.com/joyent/node/wiki/Installation), use the following command to install node-gyp:
-
-    $ sudo npm install node-gyp -g
-
-Please take a look at [node-gyp repository](https://github.com/TooTallNate/node-gyp/) and make sure you have all required packages.
-
-
-## Platform build requirements:
-
-* __Mac OS X__: Currently 32bit node only, `$ node -e "console.log(process.arch)"` -> __ia32__
-* __Linux__: `$ sudo apt-get install libgtk2.0-dev`
-* __Windows__: Windows SDK, DirectX SDK, and Visual C++ 2010
-
-## Usage Overview
+## One Minute Usage Overview
 There is a complete example in the `examples` folder.
 
 ```javascript
@@ -91,6 +73,31 @@ app.get("/",function(req,res,next){
 window = app.createWindow("http://appjs/",{autoResize:false});
 ```
 
+## Node Install
+__Due to the complex dependencies of AppJS, installation via npm is difficult and error prone.__
+
+* First you need [Node 0.8+](https://github.com/joyent/node/wiki/Installation) installed.
+* Then use npm to install [node-gyp](https://github.com/TooTallNate/node-gyp): `npm install node-gyp`.
+* Finally, install appjs: `npm install appjs`.
+
+Currently the binaries require Node for the following architectures:
+
+* Linux - 64 bit
+* Mac - 32 bit
+* Windows - 32 bit
+
+## Platform build requirements:
+
+* __Mac OS X__: Currently 32bit node only, `$ node -e "console.log(process.arch)"` -> __ia32__
+* __Linux__: `sudo apt-get install libgtk2.0-dev`
+* __Windows__: Windows SDK, DirectX SDK, and Visual C++ 2010
+
+## Coming Soon
+The follow are things we're currently working on solutions for and are high on the priority list to fix/address.
+
+* bridging of Node and browser JS context so sharing of objects directly is possible
+* distribution tools to help package up your apps for deployment
+* expanded platform APIs to cover the standard use-cases for desktop apps
 
 ## License
 ( The MIT License )
