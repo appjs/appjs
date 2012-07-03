@@ -52,18 +52,16 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser,CefRefPtr<CefFrame> frame,CefRefPtr<CefV8Context> context) {
+void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
   REQUIRE_UI_THREAD();
-  ///CefRefPtr<CefV8Value> ret;
-  //CefRefPtr<CefV8Exception> exc;
-  //CefRefPtr<CefV8Value> global = context->GetGlobal();
-
-  //CefRefPtr<CefV8Value> m = static_cast<CefV8Value*>(&cb);
-  
-  //CefRefPtr<CefV8Value> m = static_cast<CefV8Value*>(v8::External::Unwrap(cb));
-
-  //m->ExecuteFunctionWithContext(context,global,{},ret,exc,false);
-//  fprintf(stderr, "%d\n",cb->IsFunction());
+  // if (context.get())   {
+  //   Local<Context> browserContext;
+  //   Local<Context> nodeContext;
+  //   browserContext = CefV8Context::GetV8Context();
+  //   nodeContext = Context::GetCurrent();
+  //   browserContext->SetSecurityToken(nodeContext->GetSecurityToken());
+  //   browserContext->Global()->Set(String::NewSymbol("process"), nodeContext->Global()->Get(String::NewSymbol("process")));
+  // }
 }
 
 bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
