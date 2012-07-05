@@ -9,3 +9,4 @@ data/mac/node-bin/node
 data/win/node-bin/node
 *.vcxproj
 *.sln
+node.exe
