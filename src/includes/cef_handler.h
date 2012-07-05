@@ -51,6 +51,7 @@ public:
   void SetMainHwnd(CefWindowHandle&);
   void CloseMainWindow();
   void SetAutoResize(bool enable){ m_AutoResize = enable; }
+  v8::Handle<v8::Object> GetV8WindowHandle(CefRefPtr<CefBrowser> browser);
 
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;

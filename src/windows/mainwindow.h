@@ -20,11 +20,15 @@ public:
   void hide();
   void destroy();
 
+  void setV8Handle(v8::Handle<v8::Object>);
+  v8::Handle<v8::Object> getV8Handle();
+
   static int ScreenWidth();
   static int ScreenHeight();
 
 private:
   CefWindowHandle window;
+  v8::Handle<v8::Object> jsObj;
 };
 
 } /* appjs */

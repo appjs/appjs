@@ -248,8 +248,16 @@ void MainWindow::destroy() {
   [[window window] performSelectorOnMainThread:@selector(performClose:)
                          withObject:nil
                       waitUntilDone:NO];
-
 };
+
+void MainWindow::setV8Handle(Handle<Object> obj) {
+  this->jsObj = obj;
+}
+
+Handle<Object> MainWindow::getV8Handle() {
+  return this->jsObj;
+}
+
 
 } /* appjs */
 

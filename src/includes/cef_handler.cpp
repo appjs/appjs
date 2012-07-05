@@ -5,6 +5,7 @@
 
 using namespace v8;
 
+/*
 Handle<Value> EmitReady(const Arguments& args) {
   HandleScope scope;
 
@@ -17,7 +18,7 @@ Handle<Value> EmitReady(const Arguments& args) {
   node::MakeCallback(emitter,"emit",argc,argv);
 
   return scope.Close(Undefined());
-}
+}*/
 
 ClientHandler::ClientHandler()
   : m_MainHwnd(NULL),
@@ -32,12 +33,12 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 
   AutoLock lock_scope(this);
 
-  if (!m_Browser.get())   {
+  if (!m_Browser.get()) {
 
     m_Browser = browser;
     m_BrowserHwnd = browser->GetWindowHandle();
 
-    Local<Object> global = Context::GetCurrent()->Global();
+    /*Local<Object> global = Context::GetCurrent()->Global();
     Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
     Local<Function> nextTick = Local<Function>::Cast(process->Get(String::NewSymbol("nextTick")));
 
@@ -48,8 +49,13 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     Handle<Value> argv[argc] = {fn};
 
     nextTick->Call(global,argc,argv);
-
+*/
   }
+
+  const int argc = 1;
+  Handle<Object> handle = this->GetV8WindowHandle(browser);
+  Handle<Value> argv[argc] = {String::New("create")};
+  node::MakeCallback(handle,"emit",argc,argv);
 }
 
 void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
@@ -95,11 +101,13 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
 
     const int argc = 1;
-    Handle<Value> argv[argc] = {String::New("window_close")};
+    Handle<Value> argv[argc] = {String::New("exit")};
     node::MakeCallback(emitter,"emit",argc,argv);
 
     DoClose(browser);
+
   }
+
 }
 
 void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
@@ -107,16 +115,18 @@ void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
                          int httpStatusCode) 
 {
   REQUIRE_UI_THREAD();
-
   if (m_Browser.get()) {
-
-    Local<Object> global = Context::GetCurrent()->Global();
+    /*Local<Object> global = Context::GetCurrent()->Global();
     Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
     Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
 
     const int argc = 2;
     Handle<Value> argv[argc] = {String::New("ready"),Number::New(httpStatusCode)};
-    node::MakeCallback(emitter,"emit",argc,argv);
+    node::MakeCallback(emitter,"emit",argc,argv);*/
+    const int argc = 1;
+    Handle<Object> handle = this->GetV8WindowHandle(browser);
+    Handle<Value> argv[argc] = {String::New("ready")};
+    node::MakeCallback(handle,"emit",argc,argv);
 
   }
 }

@@ -39,6 +39,7 @@ Handle<Value> Window::New(const Arguments& args) {
 
   Settings* settings = new Settings(windowSettings);
   MainWindow* obj = new MainWindow(url,settings);
+  obj->setV8Handle(self);
 
   self->SetPointerInInternalField (0, obj);
 
@@ -51,6 +52,13 @@ Handle<Value> Window::NewInstance(const Arguments& args) {
   const unsigned argc = 2;
   Handle<Value> argv[argc] = { args[0],args[1] };
   Local<Object> instance = constructor->NewInstance(argc, argv);
+
+  Local<Object> global = Context::GetCurrent()->Global();
+  Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
+  Local<Function> emitterConstructor = Local<Function>::Cast(process->Get(String::NewSymbol("EventEmitter")));
+  Local<Value> emitterProto = emitterConstructor->Get(String::New("prototype"));
+  Local<Object> windowProto = Local<Object>::Cast(instance->GetPrototype());
+  windowProto->SetPrototype(emitterProto);
 
   return scope.Close(instance);
 }

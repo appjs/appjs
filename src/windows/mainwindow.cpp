@@ -171,6 +171,14 @@ void MainWindow::destroy() {
   CloseWindow(window);
 };
 
+void MainWindow::setV8Handle(Handle<Object> obj) {
+  this->jsObj = obj;
+}
+
+Handle<Object> MainWindow::getV8Handle() {
+  return this->jsObj;
+}
+
 // Register Class
 ATOM MyRegisterClass(HINSTANCE hInstance) {
   WNDCLASSEX wcex;
