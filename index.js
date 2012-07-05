@@ -1,20 +1,23 @@
-var path = require('path');
-var bindings = require('./lib/bindings');
-var router = require('./lib/router');
+var path = require('path'),
+    router = require('./lib/router'),
+    bindings = module.exports = require('./lib/bindings');
 
-var Init = bindings.init;
+
+var init = bindings.init;
 
 bindings.init = function() {
+  var app = init.apply(null, arguments);
 
-  var app = Init.apply(null,arguments);
-
-  app.extend = function(mod) {
-    mod.call(this);
+  app.extend = function extend(mod){
+    Object.keys(mod.prototype).forEach(function(key){
+      app[key] = mod.prototype[key];
+    });
+    mod.call(app);
   }
 
   app.extend(router);
 
-  app.on("window_close",function(){
+  app.on("window_close", function(){
     process.nextTick(function(){
       process.exit();
     });
@@ -24,11 +27,10 @@ bindings.init = function() {
 
   app.createWindow = function(url,settings){
 
-    if( settings.icons ) {
-      settings.icons['smaller'] = path.resolve(settings.icons['smaller']);
-      settings.icons['small'] = path.resolve(settings.icons['small']);
-      settings.icons['big'] = path.resolve(settings.icons['big']);
-      settings.icons['bigger'] = path.resolve(settings.icons['bigger']);
+    if (settings.icons) {
+      ['smaller', 'small', 'big', 'bigger'].forEach(function(size){
+        settings.icons[size] = path.resolve(settings.icons[size]);
+      });
     }
 
     return createWindow.call(app,url,settings);
@@ -37,4 +39,4 @@ bindings.init = function() {
   return app;
 }
 
-module.exports = bindings;
+bindings;
