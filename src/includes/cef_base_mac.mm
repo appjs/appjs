@@ -22,7 +22,7 @@ void CefBase::AddWebView(CefWindowHandle ParentWidget,char* url,Settings* settin
   
   window_info.SetAsChild(ParentWidget,0,0,width,height);
 
-  CefBrowser::CreateBrowserSync(window_info,
+  CefBrowser::CreateBrowser(window_info,
                                 g_handler.get(),
                                 url, browser_settings);
 

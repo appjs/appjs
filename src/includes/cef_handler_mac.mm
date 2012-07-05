@@ -1,10 +1,36 @@
 #import  <Cocoa/Cocoa.h>
+#import  <objc/runtime.h>
+#include <node.h>
 #include "include/cef_browser.h"
 #include "includes/cef.h"
 #include "includes/cef_handler.h"
+#include "mac/mainwindow.h"
+
+using namespace appjs;
+
+struct Wrap;
+@interface Wrapper : NSObject {
+
+Wrap* object_;
+
+}
+- (id)initWithV8Object:(appjs::MainWindow*)window;
+@property (nonatomic,readwrite,assign) appjs::MainWindow* handle;
+
+@end
+
 
 CefWindowHandle ClientHandler::GetMainHwnd(){
   return m_MainHwnd;
+}
+
+v8::Handle<v8::Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
+  NSView* view = (NSView*)browser->GetWindowHandle();
+  NSWindow* win = [view window];
+  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win,"mainwindow");
+  MainWindow* mainwindow = [wrap handle];
+
+  return mainwindow->getV8Handle();
 }
 
 void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,

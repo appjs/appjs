@@ -1,6 +1,7 @@
 #import  <Cocoa/Cocoa.h>
-#include "appjs.h"
+#import  <objc/runtime.h>
 #import  "include/cef_application_mac.h"
+#include "appjs.h"
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
@@ -102,6 +103,48 @@ static NSAutoreleasePool* g_autopool = nil;
 
 @end
 
+struct Wrap;
+@interface Wrapper : NSObject {
+
+Wrap* object_;
+
+}
+- (id)initWithV8Object:(appjs::MainWindow*)window;
+@property (nonatomic,readwrite,assign) appjs::MainWindow* handle;
+
+@end
+
+@interface Wrapper ()
+@property (nonatomic,readwrite,assign) Wrap* object;
+@end
+
+@implementation Wrapper 
+
+@synthesize object = object_;
+
+struct Wrap {
+public:
+  Wrap(appjs::MainWindow* obj):handle(obj){};
+  appjs::MainWindow* handle;
+};
+
+- (id)initWithV8Object:(appjs::MainWindow*)window {
+  self = [super init];
+  if(self != nil){
+    self.object = new Wrap(window);
+  }
+  return self;
+}
+
+- (appjs::MainWindow*)handle {
+  return self.object->handle;
+}
+
+- (void)setHandle:(appjs::MainWindow*)window {
+  object_->handle = window;
+}
+
+@end
 
 namespace appjs {
 
@@ -189,10 +232,14 @@ MainWindow::MainWindow (char* url, Settings* settings) {
 
   // Add browser view to newly created window.
   NSView* contentView = [mainWnd contentView];
+  this->window = contentView;
+  Wrapper* wrap = [[Wrapper alloc] initWithV8Object:this];
+  objc_setAssociatedObject(mainWnd,"mainwindow",wrap,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   appjs::Cef::AddWebView(contentView,url,settings);
 
   // Keep an instance of frame, we need it for show/hide methods.
-  this->window = contentView;
+ 
+  //[wrap setV8Handle:this->getV8Handle()];
 
   // Size the window.
   [mainWnd setFrame:[mainWnd frameRectForContentRect:[mainWnd frame]] display:YES];
@@ -250,11 +297,11 @@ void MainWindow::destroy() {
                       waitUntilDone:NO];
 };
 
-void MainWindow::setV8Handle(Handle<Object> obj) {
+void MainWindow::setV8Handle(v8::Handle<v8::Object> obj) {
   this->jsObj = obj;
 }
 
-Handle<Object> MainWindow::getV8Handle() {
+v8::Handle<v8::Object> MainWindow::getV8Handle() {
   return this->jsObj;
 }
 
