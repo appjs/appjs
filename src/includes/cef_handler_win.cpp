@@ -1,9 +1,21 @@
 #include "include/cef_browser.h"
 #include "includes/cef.h"
 #include "includes/cef_handler.h"
+#include "windows/mainwindow.h"
+
+using namespace v8;
+using namespace appjs;
 
 CefWindowHandle ClientHandler::GetMainHwnd(){
   return m_MainHwnd;
+}
+
+Handle<Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
+  CefWindowHandle window = GetParent(browser->GetWindowHandle());
+  
+  MainWindow* mainwindow = (MainWindow*)GetWindowLongPtr(window,GWLP_USERDATA);
+
+  return mainwindow->getV8Handle();
 }
 
 void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,

@@ -118,6 +118,7 @@ MainWindow::MainWindow (char* url, Settings* settings) {
 
   //set window opacity
   SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
+  SetWindowLongPtr(hWnd,GWLP_USERDATA,(LONG)this);
   SetLayeredWindowAttributes(hWnd, 0, 255 * opacity, LWA_ALPHA);
 
   this->window = hWnd;
