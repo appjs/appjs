@@ -30,6 +30,8 @@ class Window : public node::ObjectWrap {
 
   DECLARE_NODE_OBJECT_FACTORY(Window);
 
+  DEFINE_CPP_METHOD(OpenDevTools);
+  DEFINE_CPP_METHOD(CloseDevTools);
   DEFINE_CPP_METHOD(Show);
   DEFINE_CPP_METHOD(Hide);
   DEFINE_CPP_METHOD(Destroy);

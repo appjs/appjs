@@ -18,6 +18,8 @@ Persistent<Function> Window::constructor;
 void Window::Init () {
   CREATE_NODE_CONSTRUCTOR("Window");
 
+  DEFINE_PROTOTYPE_METHOD("openDevTools", OpenDevTools);
+  DEFINE_PROTOTYPE_METHOD("closeDevTools", CloseDevTools);
   DEFINE_PROTOTYPE_METHOD("show",Show);
   DEFINE_PROTOTYPE_METHOD("hide",Hide);
   DEFINE_PROTOTYPE_METHOD("destroy",Destroy);
@@ -52,6 +54,24 @@ Handle<Value> Window::NewInstance(const Arguments& args) {
   return scope.Close(instance);
 }
 
+Handle<Value> Window::OpenDevTools(const Arguments& args) {
+  HandleScope scope;
+
+  MainWindow *obj = ObjectWrap::Unwrap<MainWindow> (args.This());
+  obj->OpenDevTools();
+
+  return scope.Close(args.This());
+}
+
+Handle<Value> Window::CloseDevTools(const Arguments& args) {
+  HandleScope scope;
+
+  MainWindow *obj = ObjectWrap::Unwrap<MainWindow> (args.This());
+  obj->CloseDevTools();
+
+  return scope.Close(args.This());
+}
+
 Handle<Value> Window::Show(const Arguments& args) {
   HandleScope scope;
 
@@ -63,7 +83,7 @@ Handle<Value> Window::Show(const Arguments& args) {
 
 Handle<Value> Window::Hide(const Arguments& args) {
   HandleScope scope;
-  
+
   MainWindow *obj = ObjectWrap::Unwrap<MainWindow> (args.This());
 
   obj->hide();
@@ -73,7 +93,7 @@ Handle<Value> Window::Hide(const Arguments& args) {
 
 Handle<Value> Window::Destroy(const Arguments& args) {
   HandleScope scope;
-  
+
   MainWindow *obj = ObjectWrap::Unwrap<MainWindow> (args.This());
 
   obj->destroy();

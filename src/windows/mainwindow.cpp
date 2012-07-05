@@ -72,7 +72,7 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   browserUrl = url;
   browserSettings = settings;
   g_handler->SetAutoResize(auto_resize);
-  
+
   if(!MyRegisterClass(hInstance)){
 	  //TODO send error to node
 	  if( GetLastError() != 1410 ) { //1410: Class Already Registered
@@ -126,6 +126,21 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   Cef::Run();
 };
 
+
+void MainWindow::OpenDevTools(){
+  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
+    NODE_ERROR("Browser window not available or not ready.");
+
+  g_handler->GetBrowser()->ShowDevTools();
+}
+
+void MainWindow::CloseDevTools(){
+  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
+    NODE_ERROR("Browser window not available or not ready.");
+
+  g_handler->GetBrowser()->CloseDevTools();
+}
+
 void MainWindow::show() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
@@ -136,7 +151,7 @@ void MainWindow::show() {
 void MainWindow::hide() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
-  
+
   ShowWindow(window, SW_HIDE);
 };
 
@@ -247,7 +262,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,
       }
       break;
 
-    /*case WM_CLOSE:		
+    /*case WM_CLOSE:
       if (g_handler.get()) {
         CefRefPtr<CefBrowser> browser = g_handler->GetBrowser();
         if (browser.get()) {
@@ -261,7 +276,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,
         //PostQuitMessage(0);*/
       return 0;
     }
-	
+
 
     return DefWindowProc(hWnd, message, wParam, lParam);
   }
