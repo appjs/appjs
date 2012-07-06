@@ -16,7 +16,7 @@ bindings.init = function() {
 
   app.extend(router);
 
-  app.on("window_close", function(){
+  app.on("exit",function(){
     process.nextTick(function(){
       process.exit();
     });

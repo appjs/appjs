@@ -2,9 +2,10 @@
 #include "include/cef_browser.h"
 #include "include/cef_frame.h"
 #include "includes/cef_handler.h"
+#include "appjs_window.h"
 
 using namespace v8;
-
+using namespace appjs;
 /*
 Handle<Value> EmitReady(const Arguments& args) {
   HandleScope scope;
@@ -20,6 +21,13 @@ Handle<Value> EmitReady(const Arguments& args) {
   return scope.Close(Undefined());
 }*/
 
+void destroy_handler(GtkWidget* widget, MainWindow* window) {
+  const int argc = 1;
+  Handle<Object> handle = window->getV8Handle();
+  Handle<Value> argv[argc] = {String::New("close")};
+  node::MakeCallback(handle,"emit",argc,argv);
+}
+
 ClientHandler::ClientHandler()
   : m_MainHwnd(NULL),
     m_BrowserHwnd(NULL) {
@@ -33,24 +41,22 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 
   AutoLock lock_scope(this);
 
+  // Set main browser of the application
   if (!m_Browser.get()) {
 
     m_Browser = browser;
     m_BrowserHwnd = browser->GetWindowHandle();
 
-    /*Local<Object> global = Context::GetCurrent()->Global();
-    Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
-    Local<Function> nextTick = Local<Function>::Cast(process->Get(String::NewSymbol("nextTick")));
-
-    Local<FunctionTemplate> tpl = FunctionTemplate::New(EmitReady);
-    Local<Function> fn = tpl->GetFunction();
-
-    const int argc = 1;
-    Handle<Value> argv[argc] = {fn};
-
-    nextTick->Call(global,argc,argv);
-*/
   }
+
+  GtkWidget* window =
+      gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()),
+                              GTK_TYPE_WINDOW);
+
+  MainWindow* mainwindow = (MainWindow*)g_object_get_data(G_OBJECT(window),"mainwindow");
+
+  g_signal_connect(window, "destroy",
+                   G_CALLBACK(destroy_handler), mainwindow);
 
   const int argc = 1;
   Handle<Object> handle = this->GetV8WindowHandle(browser);
@@ -60,14 +66,7 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 
 void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
   REQUIRE_UI_THREAD();
-  // if (context.get())   {
-  //   Local<Context> browserContext;
-  //   Local<Context> nodeContext;
-  //   browserContext = CefV8Context::GetV8Context();
-  //   nodeContext = Context::GetCurrent();
-  //   browserContext->SetSecurityToken(nodeContext->GetSecurityToken());
-  //   browserContext->Global()->Set(String::NewSymbol("process"), nodeContext->Global()->Get(String::NewSymbol("process")));
-  // }
+
 }
 
 bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
@@ -91,6 +90,15 @@ bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
 
 void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   REQUIRE_UI_THREAD();
+
+// There is a bug in CEF for Linux I think that there is no window object
+// when the code reaches here.
+#if not defined(__LINUX__)
+  const int argc = 1;
+  Handle<Object> handle = this->GetV8WindowHandle(browser);
+  Handle<Value> argv[argc] = {String::New("close")};
+  node::MakeCallback(handle,"emit",argc,argv);
+#endif
 
   if (m_BrowserHwnd == browser->GetWindowHandle()) {
     // Free the browser pointer so that the browser can be destroyed
@@ -116,13 +124,7 @@ void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
 {
   REQUIRE_UI_THREAD();
   if (m_Browser.get()) {
-    /*Local<Object> global = Context::GetCurrent()->Global();
-    Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
-    Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
 
-    const int argc = 2;
-    Handle<Value> argv[argc] = {String::New("ready"),Number::New(httpStatusCode)};
-    node::MakeCallback(emitter,"emit",argc,argv);*/
     const int argc = 1;
     Handle<Object> handle = this->GetV8WindowHandle(browser);
     Handle<Value> argv[argc] = {String::New("ready")};

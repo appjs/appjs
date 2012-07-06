@@ -35,17 +35,21 @@ var windowSettings = {
  **/
 var window = app.createWindow("http://appjs/",windowSettings);
 
-app.on("window_ready",function(){
-  console.log("Event WindowReady called");
-});
-
-app.on("window_close",function(){
-  console.log("Event WindowClose called");
-});
-
-app.on("ready",function(){
-  console.log("Event Ready called");
+window.on("create",function(){
+  console.log("Window created");
   window.show();
+});
+
+window.on("ready",function(){
+  console.log("Window is ready");
+});
+
+window.on("close",function(){
+  console.log("Window closed");
+});
+
+app.on("exit",function(){
+  console.log("Event Exit called");
 });
 
 app.use(app.staticRouter('./assets'));

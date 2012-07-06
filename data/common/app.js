@@ -1,9 +1,5 @@
 var app = require('appjs').init();
 
-app.on('window_ready',function(){
-  window.show();
-});
-
 app.get('/',function(req,res,next){
   res.send(200,"Hello World!");
 });
@@ -20,4 +16,18 @@ var window = app.createWindow("http://appjs/", {
   fullscreen: false, // we don't need fullscreen window
   showResizeGrip: false, // resize grip is an annoying triangle at the right bottom corner of window
   disableSecurity: true, // allow cross origin requests
+});
+
+window.on("create",function(){
+  console.log("Window Created");
+  // Make window visible
+  this.show();
+});
+
+window.on("ready",function(){
+  console.log("Page loaded.");
+});
+
+window.on('close',function(){
+  console.log("closed");
 });

@@ -15,7 +15,8 @@ Handle<Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
   GtkWidget* window =
       gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()),
                               GTK_TYPE_WINDOW);
-  MainWindow* mainwindow = static_cast<appjs::MainWindow*>(g_object_get_data(G_OBJECT(window),"mainwindow"));
+
+  MainWindow* mainwindow = (MainWindow*)g_object_get_data(G_OBJECT(window),"mainwindow");
 
   return mainwindow->getV8Handle();
 }

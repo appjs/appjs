@@ -12,16 +12,6 @@ namespace appjs {
 
 using namespace v8;
 
-static void destroy_handler(gpointer data) {
-  const int argc = 1;
-  MainWindow* me = static_cast<MainWindow*>(data);
-
-  Handle<Object> handle = me->getV8Handle();
-  Handle<Value> argv[argc] = {String::New("close")};
-  Local<Value> proto = handle->Get(String::NewSymbol("prototype"));
-  //node::MakeCallback(handle,"emit",argc,argv);
-}
-
 MainWindow::MainWindow (char* url, Settings* settings) {
 
   int width = settings->getNumber("width",800);
@@ -97,9 +87,6 @@ MainWindow::MainWindow (char* url, Settings* settings) {
 
   this->window = window;
   g_object_set_data(G_OBJECT(window),"mainwindow",this);
-  //g_signal_connect(G_OBJECT(window), "destroy",
-  //               G_CALLBACK(&destroy_handler), this);
-
 
   Cef::AddWebView(box,url,settings);
 
