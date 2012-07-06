@@ -17,7 +17,13 @@ void Cef::Init() {
     CefSettings settings;
     CefRefPtr<CefApp> app;
 
+    // TODO: Use settings.pack_file_path to set the correct chrome.pak path
+    // since it searches in execute path ( where node exists ) to find
+    // the pack file in linux and it won't work.
+    // settings.pack_file_path = filePath;
+    settings.pack_loading_disabled = true;
     settings.multi_threaded_message_loop = false;
+
 
     g_handler = new ClientHandler();
     CefInitialize(settings, app);
