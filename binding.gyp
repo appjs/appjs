@@ -25,7 +25,8 @@
         {
           'destination': '<(module_root_dir)/publish/node_modules/',
           'files': [
-            '<(module_root_dir)/data/common/appjs/'
+            '<(module_root_dir)/data/common/appjs/',
+            '<(module_root_dir)/data/common/npm/'
           ]
         }
       ]
