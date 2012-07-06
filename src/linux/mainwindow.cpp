@@ -30,7 +30,7 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   // Set default icon list
   if( !g_handler->GetBrowserHwnd() ) {
     Settings icons(settings->getObject("icons",Object::New()));
-    
+
     char* smallerIconPath = icons.getString("smaller","");
     char* smallIconPath = icons.getString("small","");
     char* bigIconPath = icons.getString("big","");
@@ -65,11 +65,11 @@ MainWindow::MainWindow (char* url, Settings* settings) {
     if(gtk_check_version(2, 24, 10))
       gtk_window_set_has_resize_grip(GTK_WINDOW(window), show_resize_grip);
   #endif
-  
+
   if( fullscreen ) {
     gtk_window_fullscreen(GTK_WINDOW(window));
   }
-  
+
   if( !resizable ) {
     gtk_widget_set_size_request(window,width,height);
   }
@@ -90,6 +90,22 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   Cef::Run();
 };
 
+
+void MainWindow::OpenDevTools(){
+  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
+    NODE_ERROR("Browser window not available or not ready.");
+
+  g_handler->GetBrowser()->ShowDevTools();
+}
+
+void MainWindow::CloseDevTools(){
+  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
+    NODE_ERROR("Browser window not available or not ready.");
+
+  g_handler->GetBrowser()->CloseDevTools();
+}
+
+
 void MainWindow::show() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
@@ -100,7 +116,7 @@ void MainWindow::show() {
 void MainWindow::hide() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
-  
+
   gtk_widget_hide(GTK_WIDGET(window));
 };
 
@@ -111,13 +127,13 @@ int MainWindow::ScreenWidth() {
 
 int MainWindow::ScreenHeight() {
   GdkScreen* screen = gdk_screen_get_default();
-  return gdk_screen_get_height(screen); 
+  return gdk_screen_get_height(screen);
 }
 
 void MainWindow::destroy() {
  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
-  
+
   gtk_widget_destroy(GTK_WIDGET(window));
 
 };

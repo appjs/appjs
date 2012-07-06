@@ -14,6 +14,8 @@ public:
   MainWindow(char*,Settings*);
   ~MainWindow();
 
+  void OpenDevTools();
+  void CloseDevTools();
   void show();
   void hide();
   void destroy();

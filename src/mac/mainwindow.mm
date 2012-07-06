@@ -55,7 +55,7 @@ static NSAutoreleasePool* g_autopool = nil;
 // Called when the window is about to close. Perform the self-destruction
 // sequence by getting rid of the window. By returning YES, we allow the window
 // to be removed from the screen.
-- (BOOL)windowShouldClose:(id)window {  
+- (BOOL)windowShouldClose:(id)window {
 
   // If this is the main window, shutdown cef.
   NSView* mainWnd = g_handler->GetBrowserHwnd();
@@ -69,7 +69,7 @@ static NSAutoreleasePool* g_autopool = nil;
   [self performSelectorOnMainThread:@selector(cleanup:)
                          withObject:window
                       waitUntilDone:NO];
- 
+
   return YES;
 }
 
@@ -116,7 +116,7 @@ MainWindow::MainWindow (char* url, Settings* settings) {
     g_autopool = [[NSAutoreleasePool alloc] init];
     // Initialize the Application instance.
     [AppjsApplication sharedApplication];
-    
+
     // Create the application delegate and window.
     AppjsAppDelegate* appDelegate = [[AppjsAppDelegate alloc] init];
     [NSApp setDelegate:appDelegate];
@@ -159,7 +159,7 @@ MainWindow::MainWindow (char* url, Settings* settings) {
     styles |= NSResizableWindowMask;
   }
 
-  // Create the main application window.  
+  // Create the main application window.
   NSRect window_rect = { {x, y} , {width, height} };
 
   // If we need fullscreen window, remove border and
@@ -202,6 +202,20 @@ MainWindow::MainWindow (char* url, Settings* settings) {
 
 }
 
+void MainWindow::OpenDevTools(){
+  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
+    NODE_ERROR("Browser window not available or not ready.");
+
+  g_handler->GetBrowser()->ShowDevTools();
+}
+
+void MainWindow::CloseDevTools(){
+  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
+    NODE_ERROR("Browser window not available or not ready.");
+
+  g_handler->GetBrowser()->CloseDevTools();
+}
+
 
 void MainWindow::show() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
@@ -213,7 +227,7 @@ void MainWindow::show() {
 void MainWindow::hide() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
-  
+
   [[window window] orderOut: nil];
 };
 
