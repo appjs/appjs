@@ -42,6 +42,11 @@ char* V8StringToFunctionChar(Handle<String> str) {
   return buf;
 }
 
+
+Local<String> CefStringToV8(const CefString& str) {
+  return String::New(reinterpret_cast<uint16_t*>(const_cast<CefString::char_type*>(str.c_str())), str.length());
+}
+
 Settings::Settings(Persistent<Object> settings):settings_(settings){};
 Settings::Settings(Local<Object> settings):settings_(Persistent<Object>::New(settings)){};
 

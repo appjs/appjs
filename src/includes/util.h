@@ -1,6 +1,7 @@
 #ifndef APPJS_UTIL
 #define APPJS_UTIL
 
+#include "include/cef_base.h"
 #include <node.h>
 
 namespace appjs {
@@ -11,6 +12,7 @@ WCHAR* V8StringToWCHAR(v8::Handle<v8::String> str);
 
 char* V8StringToChar(v8::Handle<v8::String> str);
 char* V8StringToFunctionChar(v8::Handle<v8::String> str);
+v8::Local<v8::String> CefStringToV8(const CefString& str);
 
 class Settings {
 public:

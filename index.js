@@ -2,7 +2,6 @@ var path = require('path'),
     router = require('./lib/router'),
     bindings = module.exports = require('./lib/bindings');
 
-
 var init = bindings.init;
 
 bindings.init = function() {
