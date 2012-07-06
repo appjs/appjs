@@ -17,7 +17,6 @@ void Cef::Init() {
     CefSettings settings;
     CefRefPtr<CefApp> app;
 
-    settings.pack_loading_disabled = true;
     settings.multi_threaded_message_loop = false;
 
     g_handler = new ClientHandler();
