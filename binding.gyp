@@ -165,7 +165,7 @@
             {
               'destination': '<(module_root_dir)/publish/',
               'files': [
-                '<(module_root_dir)/data/win/launch.exe',
+                '<(module_root_dir)/data/win/app.exe',
               ]
             },
             {
@@ -181,7 +181,7 @@
     {
       'target_name': 'appjs',
       'msvs_guid': 'A9D6DC71-C0DC-4549-AEB1-3B15B44E86A9',
-      'sources': [ 
+      'sources': [
         'src/main.cpp',
         'src/appjs.cpp',
         'src/appjs_app.cpp',
