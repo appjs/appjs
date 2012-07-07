@@ -21,13 +21,6 @@ Handle<Value> EmitReady(const Arguments& args) {
   return scope.Close(Undefined());
 }*/
 
-void destroy_handler(GtkWidget* widget, MainWindow* window) {
-  const int argc = 1;
-  Handle<Object> handle = window->getV8Handle();
-  Handle<Value> argv[argc] = {String::New("close")};
-  node::MakeCallback(handle,"emit",argc,argv);
-}
-
 ClientHandler::ClientHandler()
   : m_MainHwnd(NULL),
     m_BrowserHwnd(NULL) {
@@ -48,15 +41,6 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     m_BrowserHwnd = browser->GetWindowHandle();
 
   }
-
-  GtkWidget* window =
-      gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()),
-                              GTK_TYPE_WINDOW);
-
-  MainWindow* mainwindow = (MainWindow*)g_object_get_data(G_OBJECT(window),"mainwindow");
-
-  g_signal_connect(window, "destroy",
-                   G_CALLBACK(destroy_handler), mainwindow);
 
   const int argc = 1;
   Handle<Object> handle = this->GetV8WindowHandle(browser);

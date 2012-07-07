@@ -12,6 +12,13 @@ namespace appjs {
 
 using namespace v8;
 
+void destroy_handler(GtkWidget* widget, MainWindow* window) {
+  const int argc = 1;
+  Handle<Object> handle = window->getV8Handle();
+  Handle<Value> argv[argc] = {String::New("close")};
+  node::MakeCallback(handle,"emit",argc,argv);
+}
+
 MainWindow::MainWindow (char* url, Settings* settings) {
 
   int width = settings->getNumber("width",800);
@@ -84,6 +91,9 @@ MainWindow::MainWindow (char* url, Settings* settings) {
 
   GtkWidget* box = gtk_vbox_new(FALSE, 0);
   gtk_container_add(GTK_CONTAINER(window), box);
+
+  g_signal_connect(G_OBJECT(window), "destroy",
+                   G_CALLBACK(destroy_handler), this);
 
   this->window = window;
   g_object_set_data(G_OBJECT(window),"mainwindow",this);
