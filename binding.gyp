@@ -191,6 +191,7 @@
         'src/includes/cef.cpp',
         'src/includes/cef_loop.cpp',
         'src/includes/cef_scheme_handler.cpp',
+        'src/includes/cef_sync_handler.cpp',
         'src/includes/util.cpp',
       ],
       'dependencies': [
