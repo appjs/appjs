@@ -34,13 +34,15 @@ There is a complete example in the `examples` folder.
 ```javascript
 var appjs = require('appjs');
 
-var window;
-
 // Initialize appjs.
 var app = appjs.init();
 
+// Creates a new window. Its invisible until window.show() get called.
+// http://appjs/ is a special url. It is home for your application!
+var window = app.createWindow("http://appjs/",{autoResize:false});
+
 // Called when page load finishes.
-app.on("ready",function(){
+window.on("ready",function(){
     console.log("Event Ready called");
 
     // Runs a script in browser context.
@@ -67,10 +69,6 @@ app.get("/",function(req,res,next){
     </html>\
   ")
 });
-
-// Creates a new window. Its invisible until window.show() get called.
-// http://appjs/ is a special url. It is home for your application!
-window = app.createWindow("http://appjs/",{autoResize:false});
 ```
 
 ## Node Install
