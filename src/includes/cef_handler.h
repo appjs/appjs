@@ -6,6 +6,13 @@
 #include "include/cef_client.h"
 #include <assert.h>
 #include <node.h>
+#if defined(__LINUX__)
+#include "linux/mainwindow.h"
+#elif defined(__MAC__)
+#include "mac/mainwindow.h"
+#elif defined(__WIN__)
+#include "windows/mainwindow.h"
+#endif
 
 #ifndef NDEBUG
 #define ASSERT(condition) if (!(condition)) { assert(false); }
@@ -45,13 +52,16 @@ public:
     return this;
   }
 
+  static v8::Handle<v8::Object> CreatedBrowser(CefRefPtr<CefBrowser> browser);
+  static v8::Handle<v8::Object> GetV8WindowHandle(CefRefPtr<CefBrowser> browser);
+  static appjs::MainWindow* WindowFromHandle(CefWindowHandle handle);
+
   CefRefPtr<CefBrowser> GetBrowser() { return m_Browser; }
   CefWindowHandle GetBrowserHwnd() { return m_BrowserHwnd; }
   CefWindowHandle GetMainHwnd();
   void SetMainHwnd(CefWindowHandle&);
   void CloseMainWindow();
   void SetAutoResize(bool enable){ m_AutoResize = enable; }
-  v8::Handle<v8::Object> GetV8WindowHandle(CefRefPtr<CefBrowser> browser);
 
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;

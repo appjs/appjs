@@ -1,7 +1,7 @@
 #include "include/cef_browser.h"
 #include "includes/cef.h"
 #include "includes/cef_handler.h"
-#include "windows/mainwindow.h"
+
 
 using namespace v8;
 using namespace appjs;
@@ -10,12 +10,22 @@ CefWindowHandle ClientHandler::GetMainHwnd(){
   return m_MainHwnd;
 }
 
+
+Handle<Object> ClientHandler::CreatedBrowser(CefRefPtr<CefBrowser> browser) {
+  CefWindowHandle window = GetParent(browser->GetWindowHandle());
+  MainWindow* mainwindow = (MainWindow*)GetWindowLongPtr(window, GWLP_USERDATA);
+  mainwindow->setBrowser(browser);
+  return mainwindow->getV8Handle();
+}
+
 Handle<Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
   CefWindowHandle window = GetParent(browser->GetWindowHandle());
-  
-  MainWindow* mainwindow = (MainWindow*)GetWindowLongPtr(window,GWLP_USERDATA);
-
+  MainWindow* mainwindow = ((MainWindow*)GetWindowLongPtr(window, GWLP_USERDATA));
   return mainwindow->getV8Handle();
+}
+
+MainWindow* ClientHandler::WindowFromHandle(CefWindowHandle handle){
+   return (MainWindow*)GetWindowLongPtr(handle, GWLP_USERDATA);
 }
 
 void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
@@ -34,8 +44,8 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
 }
 
 void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<CefFrame> frame, 
-                                    int width, 
+                                    CefRefPtr<CefFrame> frame,
+                                    int width,
                                     int height)
 {
   REQUIRE_UI_THREAD();
@@ -54,7 +64,7 @@ void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
 
 }
 void ClientHandler::CloseMainWindow() {
-  
+
   REQUIRE_UI_THREAD();
   ::PostMessage(m_MainHwnd, WM_CLOSE, 0, 0);
   appjs::Cef::Shutdown();

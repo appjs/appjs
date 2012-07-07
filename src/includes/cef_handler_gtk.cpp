@@ -11,6 +11,18 @@ CefWindowHandle ClientHandler::GetMainHwnd(){
   return gtk_widget_get_ancestor(m_MainHwnd,GTK_TYPE_WINDOW);
 }
 
+
+Handle<Object> ClientHandler::CreatedBrowser(CefRefPtr<CefBrowser> browser) {
+  GtkWidget* window =
+      gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()),
+                              GTK_TYPE_WINDOW);
+
+  MainWindow* mainwindow = (MainWindow*)g_object_get_data(G_OBJECT(window),"mainwindow");
+  mainwindow.setBrowser(browser);
+  return mainwindow->getV8Handle();
+}
+
+
 Handle<Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
   GtkWidget* window =
       gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()),
@@ -20,6 +32,12 @@ Handle<Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
 
   return mainwindow->getV8Handle();
 }
+
+MainWindow* ClientHandler::WindowFromHandle(CefWindowHandle handle){
+  MainWindow* mainwindow = (MainWindow*)g_object_get_data(G_OBJECT(handle), "mainwindow");
+  return mainwindow;
+}
+
 
 void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
                                   const CefString& title)
@@ -34,8 +52,8 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
 }
 
 void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<CefFrame> frame, 
-                                    int width, 
+                                    CefRefPtr<CefFrame> frame,
+                                    int width,
                                     int height)
 {
   REQUIRE_UI_THREAD();
@@ -49,7 +67,7 @@ void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
   }
 }
 void ClientHandler::CloseMainWindow() {
-  
+
   REQUIRE_UI_THREAD();
   appjs::Cef::Shutdown();
 }

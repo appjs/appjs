@@ -1,4 +1,5 @@
 #include <node.h>
+#include "include/cef_base.h"
 #include "include/cef_browser.h"
 #include "include/cef_frame.h"
 #include "includes/cef_handler.h"
@@ -41,17 +42,16 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     m_BrowserHwnd = browser->GetWindowHandle();
   }
 
-  const int argc = 1;
-  Handle<Object> handle = this->GetV8WindowHandle(browser);
-  Handle<Value> argv[argc] = {String::New("create")};
-  node::MakeCallback(handle,"emit",argc,argv);
+  Handle<Object> handle = ClientHandler::CreatedBrowser(browser);
+  Handle<Value> argv[1] = {String::New("create")};
+  node::MakeCallback(handle,"emit", 1, argv);
 }
 
 void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
   REQUIRE_UI_THREAD();
   context->Enter();
   CefRefPtr<CefV8Value> func = CefV8Value::CreateFunction("sendSync", new AppjsSyncHandler(browser));
-  context->GetGlobal->Set("sendSync", func);
+  context->GetGlobal()->SetValue("sendSync", func, V8_PROPERTY_ATTRIBUTE_DONTENUM);
   context->Exit();
 }
 
@@ -81,7 +81,7 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 // when the code reaches here.
 #if not defined(__LINUX__)
   const int argc = 1;
-  Handle<Object> handle = this->GetV8WindowHandle(browser);
+  Handle<Object> handle = ClientHandler::GetV8WindowHandle(browser);
   Handle<Value> argv[argc] = {String::New("close")};
   node::MakeCallback(handle,"emit",argc,argv);
 #endif
@@ -112,7 +112,7 @@ void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
   if (m_Browser.get()) {
 
     const int argc = 1;
-    Handle<Object> handle = this->GetV8WindowHandle(browser);
+    Handle<Object> handle = ClientHandler::GetV8WindowHandle(browser);
     Handle<Value> argv[argc] = {String::New("ready")};
     node::MakeCallback(handle,"emit",argc,argv);
 

@@ -24,6 +24,16 @@ CefWindowHandle ClientHandler::GetMainHwnd(){
   return m_MainHwnd;
 }
 
+v8::Handle<v8::Object> ClientHandler::CreatedBrowser(CefRefPtr<CefBrowser> browser) {
+  NSView* view = (NSView*)browser->GetWindowHandle();
+  NSWindow* win = [view window];
+  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win,"mainwindow");
+  MainWindow* mainwindow = [wrap handle];
+  mainwindow.setBrowser(browser);
+
+  return mainwindow->getV8Handle();
+}
+
 v8::Handle<v8::Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
   NSView* view = (NSView*)browser->GetWindowHandle();
   NSWindow* win = [view window];
@@ -32,6 +42,14 @@ v8::Handle<v8::Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> br
 
   return mainwindow->getV8Handle();
 }
+
+MainWindow* ClientHandler::WindowFromHandle(CefWindowHandle handle){
+  NSWindow* win = (NSWindow*)handle;
+  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win, "mainwindow");
+  MainWindow* mainwindow = [wrap handle];
+  return mainwindow;
+}
+
 
 void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
                                   const CefString& title)
@@ -47,8 +65,8 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
 }
 
 void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<CefFrame> frame, 
-                                    int width, 
+                                    CefRefPtr<CefFrame> frame,
+                                    int width,
                                     int height)
 {
   REQUIRE_UI_THREAD();
@@ -64,7 +82,7 @@ void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
   }
 }
 void ClientHandler::CloseMainWindow() {
-  
+
   REQUIRE_UI_THREAD();
   appjs::Cef::Shutdown();
 }
