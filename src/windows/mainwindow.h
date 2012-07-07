@@ -20,15 +20,18 @@ public:
   void hide();
   void destroy();
 
-  void setV8Handle(v8::Handle<v8::Object>);
+  void setBrowser(CefRefPtr<CefBrowser> browser);
+  void setV8Handle(v8::Handle<v8::Object> v8handle);
+  CefRefPtr<CefBrowser> getBrowser();
   v8::Handle<v8::Object> getV8Handle();
 
   static int ScreenWidth();
   static int ScreenHeight();
 
 private:
-  CefWindowHandle window;
-  v8::Handle<v8::Object> jsObj;
+  CefWindowHandle handle_;
+  v8::Handle<v8::Object> v8handle_;
+  CefRefPtr<CefBrowser> browser_;
 };
 
 } /* appjs */

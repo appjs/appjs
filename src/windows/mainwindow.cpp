@@ -26,6 +26,7 @@ HICON smallIcon;
 HICON bigIcon;
 Settings* browserSettings;
 
+
 MainWindow::MainWindow (char* url, Settings* settings) {
 
   //TODO Take settings into account.
@@ -39,6 +40,7 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   bool show_resize_grip = settings->getBoolean("showResizeGrip",false);
   bool auto_resize = settings->getBoolean("autoResize",false);
   bool fullscreen = settings->getBoolean("fullscreen",false);
+
 
   if( !g_handler->GetBrowserHwnd() ) {
 
@@ -73,6 +75,7 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   browserSettings = settings;
   g_handler->SetAutoResize(auto_resize);
 
+
   if(!MyRegisterClass(hInstance)){
 	  //TODO send error to node
 	  if( GetLastError() != 1410 ) { //1410: Class Already Registered
@@ -83,7 +86,6 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   };
 
   DWORD commonStyle = WS_CLIPCHILDREN;
-
   DWORD style;
 
   // set resizable
@@ -105,11 +107,12 @@ MainWindow::MainWindow (char* url, Settings* settings) {
     y = (GetSystemMetrics(SM_CYSCREEN) - height) / 2;
   }
   // Perform application initialization
-  HWND hWnd = CreateWindowEx(NULL, szWindowClass,"",
-                      commonStyle, x, y, width,
-                      height, NULL, NULL, hInstance, NULL);
+  browser_ = NULL;
+  handle_ = CreateWindowEx(NULL, szWindowClass,"",
+                           commonStyle, x, y, width,
+                           height, NULL, NULL, hInstance, NULL);
 
-  if (!hWnd) {
+  if (!handle_) {
 	  //TODO send error to node
 	  fprintf(stderr,"Error occurred: ");
 	  fprintf(stderr,"%d\n",GetLastError());
@@ -117,43 +120,34 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   }
 
   //set window opacity
-  SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
-  SetWindowLongPtr(hWnd,GWLP_USERDATA,(LONG)this);
-  SetLayeredWindowAttributes(hWnd, 0, 255 * opacity, LWA_ALPHA);
+  SetWindowLong(handle_, GWL_EXSTYLE, GetWindowLong(handle_, GWL_EXSTYLE) | WS_EX_LAYERED);
+  SetWindowLongPtr(handle_,GWLP_USERDATA, (LONG)this);
+  SetLayeredWindowAttributes(handle_, 0, 255 * opacity, LWA_ALPHA);
 
-  this->window = hWnd;
-  UpdateWindow(hWnd);
+  UpdateWindow(handle_);
 
   Cef::Run();
 };
 
 
 void MainWindow::OpenDevTools(){
-  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
-    NODE_ERROR("Browser window not available or not ready.");
-
-  g_handler->GetBrowser()->ShowDevTools();
+  if (browser_) {
+    browser_->ShowDevTools();
+  }
 }
 
 void MainWindow::CloseDevTools(){
-  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
-    NODE_ERROR("Browser window not available or not ready.");
-
-  g_handler->GetBrowser()->CloseDevTools();
+  if (browser_) {
+    browser_->CloseDevTools();
+  }
 }
 
 void MainWindow::show() {
-  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
-    NODE_ERROR("Browser window not available or not ready.");
-
-  ShowWindow(window, SW_SHOW);
+  ShowWindow(handle_, SW_SHOW);
 };
 
 void MainWindow::hide() {
-  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
-    NODE_ERROR("Browser window not available or not ready.");
-
-  ShowWindow(window, SW_HIDE);
+  ShowWindow(handle_, SW_HIDE);
 };
 
 
@@ -166,18 +160,26 @@ int MainWindow::ScreenHeight() {
 }
 
 void MainWindow::destroy() {
- if (!g_handler.get() || !g_handler->GetBrowserHwnd())
+ if (!handle_)
     NODE_ERROR("Browser window not available or not ready.");
 
-  CloseWindow(window);
+  CloseWindow(handle_);
 };
 
-void MainWindow::setV8Handle(Handle<Object> obj) {
-  this->jsObj = obj;
+void MainWindow::setBrowser(CefRefPtr<CefBrowser> browser) {
+  browser_ = browser;
+}
+
+CefRefPtr<CefBrowser> MainWindow::getBrowser() {
+  return browser_;
+}
+
+void MainWindow::setV8Handle(Handle<Object> v8handle) {
+  v8handle_ = v8handle;
 }
 
 Handle<Object> MainWindow::getV8Handle() {
-  return this->jsObj;
+  return v8handle_;
 }
 
 // Register Class
@@ -202,7 +204,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance) {
 }
 
 // Processes messages for the main window.
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,
+LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam,
                          LPARAM lParam) {
   int wmId, wmEvent;
   PAINTSTRUCT ps;
@@ -214,20 +216,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,
   	  RECT rect;
   	  int x = 0;
 
-  	  GetClientRect(hWnd, &rect);
+	  GetClientRect(hwnd, &rect);
 
       // Initialize window info to the defaults for a child window
-  	  Cef::AddWebView(hWnd, rect,browserUrl,browserSettings);
+	    Cef::AddWebView(hwnd, rect, browserUrl, browserSettings);
 
       return 0;
     }
 
     case WM_COMMAND: {
-      CefRefPtr<CefBrowser> browser;
-
-      if (g_handler.get())
-        browser = g_handler->GetBrowser();
-
       wmId    = LOWORD(wParam);
       wmEvent = HIWORD(wParam);
 
@@ -235,8 +232,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,
     }
 
     case WM_PAINT:
-      hdc = BeginPaint(hWnd, &ps);
-      EndPaint(hWnd, &ps);
+      hdc = BeginPaint(hwnd, &ps);
+      EndPaint(hwnd, &ps);
       return 0;
 
     /*case WM_SETFOCUS:
@@ -246,14 +243,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,
       }
       return 0;*/
 
-    case WM_SIZE:
-      if (g_handler.get() && g_handler->GetBrowserHwnd()) {
+    case WM_SIZE: {
+      MainWindow* win = ClientHandler::WindowFromHandle(hwnd);
+      if (win->getBrowser()) {
         // Resize the browser window to match the new frame
         // window size
 
         //TODO this code only resizes main browser. What if we have multiple browsers?
         /*RECT rect;
-        GetClientRect(hWnd, &rect);
+        GetClientRect(handle_, &rect);
 
         HDWP hdwp = BeginDeferWindowPos(1);
         hdwp = DeferWindowPos(hdwp, g_handler->GetBrowserHwnd(), NULL,
@@ -262,15 +260,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,
         EndDeferWindowPos(hdwp);*/
       }
       break;
-
-    case WM_ERASEBKGND:
-      if (g_handler.get() && g_handler->GetBrowserHwnd()) {
+    }
+    case WM_ERASEBKGND: {
+      MainWindow* win = ClientHandler::WindowFromHandle(hwnd);
+      if (win->getBrowser()) {
         // Dont erase the background if the browser window has been loaded
         // (this avoids flashing)
         return 0;
       }
       break;
-
+    }
     /*case WM_CLOSE:
       if (g_handler.get()) {
         CefRefPtr<CefBrowser> browser = g_handler->GetBrowser();
@@ -287,7 +286,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,
     }
 
 
-    return DefWindowProc(hWnd, message, wParam, lParam);
+    return DefWindowProc(hwnd, message, wParam, lParam);
   }
 
 } /* appjs */
