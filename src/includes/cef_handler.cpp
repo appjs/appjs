@@ -2,6 +2,7 @@
 #include "include/cef_browser.h"
 #include "include/cef_frame.h"
 #include "includes/cef_handler.h"
+#include "includes/cef_sync_handler.h"
 #include "appjs_window.h"
 
 using namespace v8;
@@ -36,10 +37,8 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 
   // Set main browser of the application
   if (!m_Browser.get()) {
-
     m_Browser = browser;
     m_BrowserHwnd = browser->GetWindowHandle();
-
   }
 
   const int argc = 1;
@@ -50,7 +49,10 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 
 void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
   REQUIRE_UI_THREAD();
-
+  context->Enter();
+  CefRefPtr<CefV8Value> func = CefV8Value::CreateFunction("sendSync", new AppjsSyncHandler(browser));
+  context->GetGlobal->Set("sendSync", func);
+  context->Exit();
 }
 
 bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
@@ -104,7 +106,7 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 
 void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
                          CefRefPtr<CefFrame> frame,
-                         int httpStatusCode) 
+                         int httpStatusCode)
 {
   REQUIRE_UI_THREAD();
   if (m_Browser.get()) {
