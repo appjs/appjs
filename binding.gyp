@@ -187,6 +187,7 @@
         'src/appjs.cpp',
         'src/appjs_app.cpp',
         'src/appjs_window.cpp',
+	'src/base/nativewindow.cpp',
         'src/includes/cef_handler.cpp',
         'src/includes/cef.cpp',
         'src/includes/cef_loop.cpp',
@@ -211,7 +212,7 @@
           'sources': [
             'src/includes/cef_base_mac.mm',
             'src/includes/cef_handler_mac.mm',
-            'src/mac/mainwindow.mm'
+            'src/mac/nativewindow.mm'
           ],
           'defines': [
             '__MAC__',
@@ -230,7 +231,7 @@
           'sources': [
             'src/includes/cef_base_gtk.cpp',
             'src/includes/cef_handler_gtk.cpp',
-            'src/linux/mainwindow.cpp',
+            'src/linux/nativewindow.cpp',
           ],
           'defines': [
             '__LINUX__',
@@ -255,7 +256,7 @@
           'sources': [
             'src/includes/cef_base_win.cpp',
             'src/includes/cef_handler_win.cpp',
-            'src/windows/mainwindow.cpp'
+            'src/windows/nativewindow.cpp'
           ],
           'defines': [
             '__WIN__',

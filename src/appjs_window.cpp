@@ -38,7 +38,7 @@ Handle<Value> Window::New(const Arguments& args) {
   Persistent<Object> windowSettings = Persistent<Object>::New((args[1]->IsObject()) ? args[1]->ToObject() : Object::New());
 
   Settings* settings = new Settings(windowSettings);
-  MainWindow* obj = new MainWindow(url,settings);
+  NativeWindow* obj = new NativeWindow(url,settings);
   obj->setV8Handle(self);
 
   self->SetPointerInInternalField (0, obj);
@@ -66,8 +66,8 @@ Handle<Value> Window::NewInstance(const Arguments& args) {
 Handle<Value> Window::OpenDevTools(const Arguments& args) {
   HandleScope scope;
 
-  MainWindow *obj = ObjectWrap::Unwrap<MainWindow> (args.This());
-  obj->OpenDevTools();
+  NativeWindow *obj = ObjectWrap::Unwrap<NativeWindow> (args.This());
+  obj->openDevTools();
 
   return scope.Close(args.This());
 }
@@ -75,8 +75,8 @@ Handle<Value> Window::OpenDevTools(const Arguments& args) {
 Handle<Value> Window::CloseDevTools(const Arguments& args) {
   HandleScope scope;
 
-  MainWindow *obj = ObjectWrap::Unwrap<MainWindow> (args.This());
-  obj->CloseDevTools();
+  NativeWindow *obj = ObjectWrap::Unwrap<NativeWindow> (args.This());
+  obj->closeDevTools();
 
   return scope.Close(args.This());
 }
@@ -84,7 +84,7 @@ Handle<Value> Window::CloseDevTools(const Arguments& args) {
 Handle<Value> Window::Show(const Arguments& args) {
   HandleScope scope;
 
-  MainWindow *obj = ObjectWrap::Unwrap<MainWindow> (args.This());
+  NativeWindow *obj = ObjectWrap::Unwrap<NativeWindow> (args.This());
   obj->show();
 
   return scope.Close(args.This());
@@ -93,7 +93,7 @@ Handle<Value> Window::Show(const Arguments& args) {
 Handle<Value> Window::Hide(const Arguments& args) {
   HandleScope scope;
 
-  MainWindow *obj = ObjectWrap::Unwrap<MainWindow> (args.This());
+  NativeWindow *obj = ObjectWrap::Unwrap<NativeWindow> (args.This());
 
   obj->hide();
 
@@ -103,7 +103,7 @@ Handle<Value> Window::Hide(const Arguments& args) {
 Handle<Value> Window::Destroy(const Arguments& args) {
   HandleScope scope;
 
-  MainWindow *obj = ObjectWrap::Unwrap<MainWindow> (args.This());
+  NativeWindow *obj = ObjectWrap::Unwrap<NativeWindow> (args.This());
 
   obj->destroy();
 

@@ -1,5 +1,3 @@
-#include <node.h>
-#include "linux/mainwindow.h"
 #include "include/cef_browser.h"
 #include "includes/cef.h"
 #include "includes/cef_handler.h"
@@ -17,9 +15,9 @@ Handle<Object> ClientHandler::CreatedBrowser(CefRefPtr<CefBrowser> browser) {
       gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()),
                               GTK_TYPE_WINDOW);
 
-  MainWindow* mainwindow = (MainWindow*)g_object_get_data(G_OBJECT(window),"mainwindow");
-  mainwindow.setBrowser(browser);
-  return mainwindow->getV8Handle();
+  NativeWindow* nativewindow = (NativeWindow*)g_object_get_data(G_OBJECT(window),"nativewindow");
+  nativewindow->setBrowser(browser);
+  return nativewindow->getV8Handle();
 }
 
 
@@ -28,14 +26,14 @@ Handle<Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
       gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()),
                               GTK_TYPE_WINDOW);
 
-  MainWindow* mainwindow = (MainWindow*)g_object_get_data(G_OBJECT(window),"mainwindow");
+  NativeWindow* nativewindow = (NativeWindow*)g_object_get_data(G_OBJECT(window),"nativewindow");
 
-  return mainwindow->getV8Handle();
+  return nativewindow->getV8Handle();
 }
 
-MainWindow* ClientHandler::WindowFromHandle(CefWindowHandle handle){
-  MainWindow* mainwindow = (MainWindow*)g_object_get_data(G_OBJECT(handle), "mainwindow");
-  return mainwindow;
+NativeWindow* ClientHandler::WindowFromHandle(CefWindowHandle handle){
+  NativeWindow* nativewindow = (NativeWindow*)g_object_get_data(G_OBJECT(handle), "nativewindow");
+  return nativewindow;
 }
 
 

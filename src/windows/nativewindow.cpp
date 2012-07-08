@@ -8,7 +8,7 @@
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
-#include "windows/mainwindow.h"
+#include "windows/nativewindow.h"
 
 #define MAX_LOADSTRING 100
 
@@ -27,7 +27,7 @@ HICON bigIcon;
 Settings* browserSettings;
 
 
-MainWindow::MainWindow (char* url, Settings* settings) {
+NativeWindow::NativeWindow (char* url, Settings* settings) {
 
   //TODO Take settings into account.
   int width = settings->getNumber("width",800);
@@ -130,55 +130,55 @@ MainWindow::MainWindow (char* url, Settings* settings) {
 };
 
 
-void MainWindow::OpenDevTools(){
+void NativeWindow::OpenDevTools(){
   if (browser_) {
     browser_->ShowDevTools();
   }
 }
 
-void MainWindow::CloseDevTools(){
+void NativeWindow::CloseDevTools(){
   if (browser_) {
     browser_->CloseDevTools();
   }
 }
 
-void MainWindow::show() {
+void NativeWindow::show() {
   ShowWindow(handle_, SW_SHOW);
 };
 
-void MainWindow::hide() {
+void NativeWindow::hide() {
   ShowWindow(handle_, SW_HIDE);
 };
 
 
-int MainWindow::ScreenWidth() {
+int NativeWindow::ScreenWidth() {
   return GetSystemMetrics(SM_CXSCREEN);
 }
 
-int MainWindow::ScreenHeight() {
+int NativeWindow::ScreenHeight() {
   return GetSystemMetrics(SM_CYSCREEN);
 }
 
-void MainWindow::destroy() {
+void NativeWindow::destroy() {
  if (!handle_)
     NODE_ERROR("Browser window not available or not ready.");
 
   CloseWindow(handle_);
 };
 
-void MainWindow::setBrowser(CefRefPtr<CefBrowser> browser) {
+void NativeWindow::setBrowser(CefRefPtr<CefBrowser> browser) {
   browser_ = browser;
 }
 
-CefRefPtr<CefBrowser> MainWindow::getBrowser() {
+CefRefPtr<CefBrowser> NativeWindow::getBrowser() {
   return browser_;
 }
 
-void MainWindow::setV8Handle(Handle<Object> v8handle) {
+void NativeWindow::setV8Handle(Handle<Object> v8handle) {
   v8handle_ = v8handle;
 }
 
-Handle<Object> MainWindow::getV8Handle() {
+Handle<Object> NativeWindow::getV8Handle() {
   return v8handle_;
 }
 
@@ -244,7 +244,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam,
       return 0;*/
 
     case WM_SIZE: {
-      MainWindow* win = ClientHandler::WindowFromHandle(hwnd);
+      NativeWindow* win = ClientHandler::WindowFromHandle(hwnd);
       if (win->getBrowser()) {
         // Resize the browser window to match the new frame
         // window size
@@ -262,7 +262,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam,
       break;
     }
     case WM_ERASEBKGND: {
-      MainWindow* win = ClientHandler::WindowFromHandle(hwnd);
+      NativeWindow* win = ClientHandler::WindowFromHandle(hwnd);
       if (win->getBrowser()) {
         // Dont erase the background if the browser window has been loaded
         // (this avoids flashing)

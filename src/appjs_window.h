@@ -3,25 +3,7 @@
 #pragma once
 
 #include "appjs.h"
-
-// GTK+ binding for linux
-#if defined(__LINUX__)
-
-#include "linux/mainwindow.h"
-
-// Mac files
-#elif defined(__MAC__)
-
-#include "mac/mainwindow.h"
-
-// Windows necessary files
-#elif defined(__WIN__)
-
-#include "windows/mainwindow.h"
-
-#endif
-
-
+#include "base/nativewindow.h"
 namespace appjs {
 
 using namespace v8;

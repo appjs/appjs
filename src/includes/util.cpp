@@ -51,7 +51,6 @@ CefRefPtr<CefV8Value> V8StringToCef(Handle<Value> str){
   return CefV8Value::CreateString(V8StringToChar(str->ToString()));
 }
 
-
 Settings::Settings(Persistent<Object> settings):settings_(settings){};
 Settings::Settings(Local<Object> settings):settings_(Persistent<Object>::New(settings)){};
 

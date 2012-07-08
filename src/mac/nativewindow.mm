@@ -5,7 +5,7 @@
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
-#include "mac/mainwindow.h"
+#include "mac/nativewindow.h"
 
 // The global ClientHandler reference.
 extern CefRefPtr<ClientHandler> g_handler;
@@ -109,8 +109,8 @@ struct Wrap;
 Wrap* object_;
 
 }
-- (id)initWithV8Object:(appjs::MainWindow*)window;
-@property (nonatomic,readwrite,assign) appjs::MainWindow* handle;
+- (id)initWithV8Object:(appjs::NativeWindow*)window;
+@property (nonatomic,readwrite,assign) appjs::NativeWindow* handle;
 
 @end
 
@@ -124,11 +124,11 @@ Wrap* object_;
 
 struct Wrap {
 public:
-  Wrap(appjs::MainWindow* obj):handle(obj){};
-  appjs::MainWindow* handle;
+  Wrap(appjs::NativeWindow* obj):handle(obj){};
+  appjs::NativeWindow* handle;
 };
 
-- (id)initWithV8Object:(appjs::MainWindow*)window {
+- (id)initWithV8Object:(appjs::NativeWindow*)window {
   self = [super init];
   if(self != nil){
     self.object = new Wrap(window);
@@ -136,11 +136,11 @@ public:
   return self;
 }
 
-- (appjs::MainWindow*)handle {
+- (appjs::NativeWindow*)handle {
   return self.object->handle;
 }
 
-- (void)setHandle:(appjs::MainWindow*)window {
+- (void)setHandle:(appjs::NativeWindow*)window {
   object_->handle = window;
 }
 
@@ -150,10 +150,10 @@ namespace appjs {
 
 using namespace v8;
 
-MainWindow::MainWindow (char* url, Settings* settings) {
+NativeWindow::NativeWindow (char* url, Settings* settings) {
   mainWndSettings = settings;
   mainWndUrl = url;
-  // if it is the first time MainWindow is called, create the Application.
+  // if it is the first time NativeWindow is called, create the Application.
   if(!g_handler->GetBrowser().get()){
     // Initialize the AutoRelease pool.
     g_autopool = [[NSAutoreleasePool alloc] init];
@@ -184,8 +184,8 @@ MainWindow::MainWindow (char* url, Settings* settings) {
 
   // Center the window if user didn't specified x or y
   if( x < 0 || y < 0 ) {
-    x = (appjs::MainWindow::ScreenWidth() - width ) / 2;
-    y = (appjs::MainWindow::ScreenHeight() - height ) / 2;
+    x = (appjs::NativeWindow::ScreenWidth() - width ) / 2;
+    y = (appjs::NativeWindow::ScreenHeight() - height ) / 2;
   }
 
   NSUInteger styles;
@@ -232,9 +232,9 @@ MainWindow::MainWindow (char* url, Settings* settings) {
 
   // Add browser view to newly created window.
   NSView* contentView = [mainWnd contentView];
-  this->window = contentView;
+  this->window_ = contentView;
   Wrapper* wrap = [[Wrapper alloc] initWithV8Object:this];
-  objc_setAssociatedObject(mainWnd,"mainwindow",wrap,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  objc_setAssociatedObject(mainWnd,"nativewindow",wrap,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   appjs::Cef::AddWebView(contentView,url,settings);
 
   // Keep an instance of frame, we need it for show/hide methods.
@@ -249,14 +249,14 @@ MainWindow::MainWindow (char* url, Settings* settings) {
 
 }
 
-void MainWindow::OpenDevTools(){
+void NativeWindow::OpenDevTools(){
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
   g_handler->GetBrowser()->ShowDevTools();
 }
 
-void MainWindow::CloseDevTools(){
+void NativeWindow::CloseDevTools(){
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
@@ -264,45 +264,45 @@ void MainWindow::CloseDevTools(){
 }
 
 
-void MainWindow::show() {
+void NativeWindow::show() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
-  [[window window] makeKeyAndOrderFront: nil];
+  [[window_ window] makeKeyAndOrderFront: nil];
 };
 
-void MainWindow::hide() {
+void NativeWindow::hide() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
-  [[window window] orderOut: nil];
+  [[window_ window] orderOut: nil];
 };
 
-int MainWindow::ScreenWidth() {
+int NativeWindow::ScreenWidth() {
   NSRect screen_rect = [[NSScreen mainScreen] visibleFrame];
   return screen_rect.size.width;
 }
 
-int MainWindow::ScreenHeight() {
+int NativeWindow::ScreenHeight() {
   NSRect screen_rect = [[NSScreen mainScreen] visibleFrame];
   return screen_rect.size.height;
 }
 
-void MainWindow::destroy() {
+void NativeWindow::destroy() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
-  [[window window] performSelectorOnMainThread:@selector(performClose:)
+  [[window_ window] performSelectorOnMainThread:@selector(performClose:)
                          withObject:nil
                       waitUntilDone:NO];
 };
 
-void MainWindow::setV8Handle(v8::Handle<v8::Object> obj) {
-  this->jsObj = obj;
+void NativeWindow::setV8Handle(v8::Handle<v8::Object> obj) {
+  this->v8handle_ = obj;
 }
 
-v8::Handle<v8::Object> MainWindow::getV8Handle() {
-  return this->jsObj;
+v8::Handle<v8::Object> NativeWindow::getV8Handle() {
+  return this->v8handle_;
 }
 
 

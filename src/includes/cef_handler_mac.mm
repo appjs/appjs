@@ -1,10 +1,8 @@
 #import  <Cocoa/Cocoa.h>
 #import  <objc/runtime.h>
-#include <node.h>
 #include "include/cef_browser.h"
 #include "includes/cef.h"
 #include "includes/cef_handler.h"
-#include "mac/mainwindow.h"
 
 using namespace appjs;
 
@@ -14,8 +12,8 @@ struct Wrap;
 Wrap* object_;
 
 }
-- (id)initWithV8Object:(appjs::MainWindow*)window;
-@property (nonatomic,readwrite,assign) appjs::MainWindow* handle;
+- (id)initWithV8Object:(appjs::NativeWindow*)window;
+@property (nonatomic,readwrite,assign) appjs::NativeWindow* handle;
 
 @end
 
@@ -27,27 +25,27 @@ CefWindowHandle ClientHandler::GetMainHwnd(){
 v8::Handle<v8::Object> ClientHandler::CreatedBrowser(CefRefPtr<CefBrowser> browser) {
   NSView* view = (NSView*)browser->GetWindowHandle();
   NSWindow* win = [view window];
-  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win,"mainwindow");
-  MainWindow* mainwindow = [wrap handle];
-  mainwindow.setBrowser(browser);
+  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win,"NativeWindow");
+  NativeWindow* NativeWindow = [wrap handle];
+  NativeWindow.setBrowser(browser);
 
-  return mainwindow->getV8Handle();
+  return NativeWindow->getV8Handle();
 }
 
 v8::Handle<v8::Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
   NSView* view = (NSView*)browser->GetWindowHandle();
   NSWindow* win = [view window];
-  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win,"mainwindow");
-  MainWindow* mainwindow = [wrap handle];
+  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win,"NativeWindow");
+  NativeWindow* NativeWindow = [wrap handle];
 
-  return mainwindow->getV8Handle();
+  return NativeWindow->getV8Handle();
 }
 
-MainWindow* ClientHandler::WindowFromHandle(CefWindowHandle handle){
+NativeWindow* ClientHandler::WindowFromHandle(CefWindowHandle handle){
   NSWindow* win = (NSWindow*)handle;
-  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win, "mainwindow");
-  MainWindow* mainwindow = [wrap handle];
-  return mainwindow;
+  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win, "NativeWindow");
+  NativeWindow* NativeWindow = [wrap handle];
+  return NativeWindow;
 }
 
 

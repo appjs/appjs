@@ -13,19 +13,19 @@ CefWindowHandle ClientHandler::GetMainHwnd(){
 
 Handle<Object> ClientHandler::CreatedBrowser(CefRefPtr<CefBrowser> browser) {
   CefWindowHandle window = GetParent(browser->GetWindowHandle());
-  MainWindow* mainwindow = (MainWindow*)GetWindowLongPtr(window, GWLP_USERDATA);
-  mainwindow->setBrowser(browser);
-  return mainwindow->getV8Handle();
+  NativeWindow* NativeWindow = (NativeWindow*)GetWindowLongPtr(window, GWLP_USERDATA);
+  NativeWindow->setBrowser(browser);
+  return NativeWindow->getV8Handle();
 }
 
 Handle<Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
   CefWindowHandle window = GetParent(browser->GetWindowHandle());
-  MainWindow* mainwindow = ((MainWindow*)GetWindowLongPtr(window, GWLP_USERDATA));
-  return mainwindow->getV8Handle();
+  NativeWindow* NativeWindow = ((NativeWindow*)GetWindowLongPtr(window, GWLP_USERDATA));
+  return NativeWindow->getV8Handle();
 }
 
-MainWindow* ClientHandler::WindowFromHandle(CefWindowHandle handle){
-   return (MainWindow*)GetWindowLongPtr(handle, GWLP_USERDATA);
+NativeWindow* ClientHandler::WindowFromHandle(CefWindowHandle handle){
+   return (NativeWindow*)GetWindowLongPtr(handle, GWLP_USERDATA);
 }
 
 void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,

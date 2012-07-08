@@ -6,13 +6,8 @@
 #include "include/cef_client.h"
 #include <assert.h>
 #include <node.h>
-#if defined(__LINUX__)
-#include "linux/mainwindow.h"
-#elif defined(__MAC__)
-#include "mac/mainwindow.h"
-#elif defined(__WIN__)
-#include "windows/mainwindow.h"
-#endif
+
+#include "base/nativewindow.h"
 
 #ifndef NDEBUG
 #define ASSERT(condition) if (!(condition)) { assert(false); }
@@ -54,7 +49,7 @@ public:
 
   static v8::Handle<v8::Object> CreatedBrowser(CefRefPtr<CefBrowser> browser);
   static v8::Handle<v8::Object> GetV8WindowHandle(CefRefPtr<CefBrowser> browser);
-  static appjs::MainWindow* WindowFromHandle(CefWindowHandle handle);
+  static appjs::NativeWindow* WindowFromHandle(CefWindowHandle handle);
 
   CefRefPtr<CefBrowser> GetBrowser() { return m_Browser; }
   CefWindowHandle GetBrowserHwnd() { return m_BrowserHwnd; }

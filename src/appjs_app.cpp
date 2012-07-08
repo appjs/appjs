@@ -68,7 +68,7 @@ Handle<Value> App::ScreenWidth(const Arguments& args) {
 
   HandleScope scope;
 
-  Handle<Value> width = Integer::New(MainWindow::ScreenWidth());
+  Handle<Value> width = Integer::New(NativeWindow::ScreenWidth());
 
   return scope.Close(width);
 }
@@ -77,7 +77,7 @@ Handle<Value> App::ScreenHeight(const Arguments& args) {
 
   HandleScope scope;
 
-  Handle<Value> height = Integer::New(MainWindow::ScreenHeight());
+  Handle<Value> height = Integer::New(NativeWindow::ScreenHeight());
 
   return scope.Close(height);
 }

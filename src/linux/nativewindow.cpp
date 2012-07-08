@@ -1,7 +1,7 @@
 #include <node.h>
 #include <gtk/gtk.h>
 #include "appjs.h"
-#include "linux/mainwindow.h"
+#include "base/nativewindow.h"
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
@@ -12,31 +12,19 @@ namespace appjs {
 
 using namespace v8;
 
-void destroy_handler(GtkWidget* widget, MainWindow* window) {
+void destroy_handler(GtkWidget* widget, NativeWindow* window) {
   const int argc = 1;
   Handle<Object> handle = window->getV8Handle();
   Handle<Value> argv[argc] = {String::New("close")};
   node::MakeCallback(handle,"emit",argc,argv);
 }
 
-MainWindow::MainWindow (char* url, Settings* settings) {
-
-  int width = settings->getNumber("width",800);
-  int height = settings->getNumber("height",600);
-  int x = settings->getNumber("x",-1);
-  int y = settings->getNumber("y",-1);
-  double opacity = settings->getNumber("opacity",1);
-  bool show_chrome = settings->getBoolean("showChrome",true);
-  bool resizable = settings->getBoolean("resizable",true);
-  bool show_resize_grip = settings->getBoolean("showResizeGrip",false);
-  bool auto_resize = settings->getBoolean("autoResize",false);
-  bool fullscreen = settings->getBoolean("fullscreen",false);
+void NativeWindow::init (char* url,Settings* settings) {
 
   GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
   // Set default icon list
   if( !g_handler->GetBrowserHwnd() ) {
-    Settings icons(settings->getObject("icons",Object::New()));
 
     char* smallerIconPath = icons.getString("smaller","");
     char* smallIconPath = icons.getString("small","");
@@ -95,69 +83,42 @@ MainWindow::MainWindow (char* url, Settings* settings) {
   g_signal_connect(G_OBJECT(window), "destroy",
                    G_CALLBACK(destroy_handler), this);
 
-  this->window = window;
-  g_object_set_data(G_OBJECT(window),"mainwindow",this);
+  g_object_set_data(G_OBJECT(window),"nativewindow",this);
 
   Cef::AddWebView(box,url,settings);
 
-  Cef::Run();
 };
 
-
-void MainWindow::OpenDevTools(){
+void NativeWindow::show() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
-  g_handler->GetBrowser()->ShowDevTools();
-}
-
-void MainWindow::CloseDevTools(){
-  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
-    NODE_ERROR("Browser window not available or not ready.");
-
-  g_handler->GetBrowser()->CloseDevTools();
-}
-
-
-void MainWindow::show() {
-  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
-    NODE_ERROR("Browser window not available or not ready.");
-
-  gtk_widget_show_all(GTK_WIDGET(window));
+  gtk_widget_show_all(GTK_WIDGET(this->browser_->GetWindowHandle()));
 };
 
-void MainWindow::hide() {
+void NativeWindow::hide() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
-  gtk_widget_hide(GTK_WIDGET(window));
+  gtk_widget_hide(GTK_WIDGET(this->browser_->GetWindowHandle()));
 };
 
-int MainWindow::ScreenWidth() {
+int NativeWindow::ScreenWidth() {
   GdkScreen* screen = gdk_screen_get_default();
   return gdk_screen_get_width(screen);
 }
 
-int MainWindow::ScreenHeight() {
+int NativeWindow::ScreenHeight() {
   GdkScreen* screen = gdk_screen_get_default();
   return gdk_screen_get_height(screen);
 }
 
-void MainWindow::destroy() {
+void NativeWindow::destroy() {
  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
-  gtk_widget_destroy(GTK_WIDGET(window));
+  gtk_widget_destroy(GTK_WIDGET(this->browser_->GetWindowHandle()));
 
 };
 
-void MainWindow::setV8Handle(Handle<Object> obj) {
-  this->jsObj = obj;
-}
-
-Handle<Object> MainWindow::getV8Handle() {
-  return this->jsObj;
-}
-
 } /* appjs */
-

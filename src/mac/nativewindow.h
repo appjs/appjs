@@ -1,19 +1,18 @@
-#ifndef APPJS_MAIN_WINDOW_H
-#define APPJS_MAIN_WINDOW_H
-#pragma once
+#ifndef APPJS_NATIVE_WINDOW_H
+#define APPJS_NATIVE_WINDOW_H
 
 #include <node.h>
-#include <Windows.h>
 #include "include/cef_browser.h"
 #include "includes/util.h"
 
 namespace appjs {
 
-class MainWindow {
+class NativeWindow {
 
 public:
-  MainWindow(char*,Settings*);
-  ~MainWindow();
+  NativeWindow(char*,Settings*);
+  ~NativeWindow();
+
   void OpenDevTools();
   void CloseDevTools();
   void show();
@@ -21,7 +20,7 @@ public:
   void destroy();
 
   void setBrowser(CefRefPtr<CefBrowser> browser);
-  void setV8Handle(v8::Handle<v8::Object> v8handle);
+  void setV8Handle(v8::Handle<v8::Object>);
   CefRefPtr<CefBrowser> getBrowser();
   v8::Handle<v8::Object> getV8Handle();
 
@@ -29,11 +28,10 @@ public:
   static int ScreenHeight();
 
 private:
-  CefWindowHandle handle_;
+  CefWindowHandle window_;
   v8::Handle<v8::Object> v8handle_;
   CefRefPtr<CefBrowser> browser_;
 };
 
 } /* appjs */
-#endif /* end of APPJS_MAIN_WINDOW_H */
-
+#endif /* end of APPJS_NATIVE_WINDOW_H */
