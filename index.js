@@ -37,5 +37,3 @@ bindings.init = function() {
 
   return app;
 }
-
-bindings;
