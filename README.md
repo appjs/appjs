@@ -106,6 +106,11 @@ The follow are things we're currently working on solutions for and are high on t
 * distribution tools to help package up your apps for deployment
 * expanded platform APIs to cover the standard use-cases for desktop apps
 
+## A Preview
+
+![Browser/Node Cross Context](https://github.com/milani/appjs/raw/master/examples/node-in-browser.png "Browser/Node Cross Context")
+
+
 ## License
 ( The MIT License )
 
