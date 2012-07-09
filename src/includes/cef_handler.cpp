@@ -85,7 +85,6 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 // There is a bug in CEF for Linux I think that there is no window object
 // when the code reaches here.
 #if not defined(__LINUX__)
-  const int argc = 1;
   Handle<Object> handle = ClientHandler::GetV8WindowHandle(browser);
   Handle<Value> argv[1] = {String::New("close")};
   node::MakeCallback(handle,"emit",1,argv);
@@ -98,7 +97,7 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
 
     const int argc = 1;
-    Handle<Value> argv[1] = {String::New("close")};
+    Handle<Value> argv[1] = {String::New("exit")};
     node::MakeCallback(emitter,"emit",argc,argv);
 
     DoClose(browser);
