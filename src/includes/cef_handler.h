@@ -2,12 +2,12 @@
 #define APPJS_CEF_CLIENT_HANDLER_H
 #pragma once
 
-#include "include/cef_task.h"
-#include "include/cef_client.h"
 #include <assert.h>
 #include <node.h>
+#include "include/cef_task.h"
+#include "include/cef_client.h"
+#include "base/native_window.h"
 
-#include "base/nativewindow.h"
 
 #ifndef NDEBUG
 #define ASSERT(condition) if (!(condition)) { assert(false); }
@@ -69,8 +69,8 @@ public:
                                 CefRefPtr<CefV8Context> context) OVERRIDE;
 
   virtual void OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<CefFrame> frame, 
-                                    int width, 
+                                    CefRefPtr<CefFrame> frame,
+                                    int width,
                                     int height) OVERRIDE;
 
   virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser,

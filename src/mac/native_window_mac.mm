@@ -5,7 +5,7 @@
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
-#include "mac/nativewindow.h"
+#include "mac/native_window.h"
 
 // The global ClientHandler reference.
 extern CefRefPtr<ClientHandler> g_handler;
@@ -118,7 +118,7 @@ Wrap* object_;
 @property (nonatomic,readwrite,assign) Wrap* object;
 @end
 
-@implementation Wrapper 
+@implementation Wrapper
 
 @synthesize object = object_;
 
@@ -238,7 +238,7 @@ NativeWindow::NativeWindow (char* url, Settings* settings) {
   appjs::Cef::AddWebView(contentView,url,settings);
 
   // Keep an instance of frame, we need it for show/hide methods.
- 
+
   //[wrap setV8Handle:this->getV8Handle()];
 
   // Size the window.
@@ -249,29 +249,15 @@ NativeWindow::NativeWindow (char* url, Settings* settings) {
 
 }
 
-void NativeWindow::OpenDevTools(){
-  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
-    NODE_ERROR("Browser window not available or not ready.");
 
-  g_handler->GetBrowser()->ShowDevTools();
-}
-
-void NativeWindow::CloseDevTools(){
-  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
-    NODE_ERROR("Browser window not available or not ready.");
-
-  g_handler->GetBrowser()->CloseDevTools();
-}
-
-
-void NativeWindow::show() {
+void NativeWindow::Show() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
   [[window_ window] makeKeyAndOrderFront: nil];
 };
 
-void NativeWindow::hide() {
+void NativeWindow::Hide() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
@@ -288,7 +274,7 @@ int NativeWindow::ScreenHeight() {
   return screen_rect.size.height;
 }
 
-void NativeWindow::destroy() {
+void NativeWindow::Destroy() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 

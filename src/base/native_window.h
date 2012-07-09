@@ -10,30 +10,32 @@ namespace appjs {
 class NativeWindow {
 
 public:
-  NativeWindow(char* url,Settings*);
+  NativeWindow(char* url, Settings* settings);
   ~NativeWindow();
-  void init(char*,Settings*);
+  void Init(char* url, Settings* settings);
 
-  void show();
-  void hide();
-  void destroy();
+  void Show();
+  void Hide();
+  void Destroy();
 
   static int ScreenWidth();
   static int ScreenHeight();
 
-  void openDevTools();
-  void closeDevTools();
+  void OpenDevTools();
+  void CloseDevTools();
+  void RunInBrowser(char* script);
 
-  void setBrowser(CefRefPtr<CefBrowser> browser);
-  void setV8Handle(v8::Handle<v8::Object> v8handle);
-  CefRefPtr<CefBrowser> getBrowser();
-  v8::Handle<v8::Object> getV8Handle();
+  void SetBrowser(CefRefPtr<CefBrowser> browser);
+  void SetV8Handle(v8::Handle<v8::Object> v8handle);
+  CefRefPtr<CefBrowser> GetBrowser();
+  v8::Handle<v8::Object> GetV8Handle();
+  CefWindowHandle handle_;
+  bool auto_resize;
 
 private:
   v8::Handle<v8::Object> v8handle_;
   CefRefPtr<CefBrowser> browser_;
 
-  char* url;
   int width;
   int height;
   int x;
@@ -42,10 +44,8 @@ private:
   bool show_chrome;
   bool resizable;
   bool show_resize_grip;
-  bool auto_resize;
   bool fullscreen;
-  Settings icons;
-
+  Settings* icons;
 };
 
 } /* appjs */

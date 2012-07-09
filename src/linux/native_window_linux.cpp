@@ -1,7 +1,7 @@
 #include <node.h>
 #include <gtk/gtk.h>
 #include "appjs.h"
-#include "base/nativewindow.h"
+#include "base/native_window.h"
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
@@ -13,13 +13,12 @@ namespace appjs {
 using namespace v8;
 
 void destroy_handler(GtkWidget* widget, NativeWindow* window) {
-  const int argc = 1;
-  Handle<Object> handle = window->getV8Handle();
-  Handle<Value> argv[argc] = {String::New("close")};
-  node::MakeCallback(handle,"emit",argc,argv);
+  Handle<Object> handle = window->GetV8Handle();
+  Handle<Value> argv[1] = {String::New("close")};
+  node::MakeCallback(handle,"emit",1,argv);
 }
 
-void NativeWindow::init (char* url,Settings* settings) {
+void NativeWindow::init(char* url, Settings* settings) {
 
   GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
@@ -86,22 +85,25 @@ void NativeWindow::init (char* url,Settings* settings) {
   g_object_set_data(G_OBJECT(window),"nativewindow",this);
 
   Cef::AddWebView(box,url,settings);
+}
 
-};
+void NativeWindow::Show() {
+  if (browser_) {
+    gtk_widget_show_all(GTK_WIDGET(browser_->GetWindowHandle()));
+  }
+}
 
-void NativeWindow::show() {
-  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
-    NODE_ERROR("Browser window not available or not ready.");
+void NativeWindow::Hide() {
+  if (browser_) {
+    gtk_widget_hide(GTK_WIDGET(browser_->GetWindowHandle()));
+  }
+}
 
-  gtk_widget_show_all(GTK_WIDGET(this->browser_->GetWindowHandle()));
-};
-
-void NativeWindow::hide() {
-  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
-    NODE_ERROR("Browser window not available or not ready.");
-
-  gtk_widget_hide(GTK_WIDGET(this->browser_->GetWindowHandle()));
-};
+void NativeWindow::Destroy() {
+  if (browser_) {
+    gtk_widget_destroy(GTK_WIDGET(browser_->GetWindowHandle()));
+  }
+}
 
 int NativeWindow::ScreenWidth() {
   GdkScreen* screen = gdk_screen_get_default();
@@ -113,12 +115,5 @@ int NativeWindow::ScreenHeight() {
   return gdk_screen_get_height(screen);
 }
 
-void NativeWindow::destroy() {
- if (!g_handler.get() || !g_handler->GetBrowserHwnd())
-    NODE_ERROR("Browser window not available or not ready.");
-
-  gtk_widget_destroy(GTK_WIDGET(this->browser_->GetWindowHandle()));
-
-};
 
 } /* appjs */

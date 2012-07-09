@@ -26,26 +26,26 @@ v8::Handle<v8::Object> ClientHandler::CreatedBrowser(CefRefPtr<CefBrowser> brows
   NSView* view = (NSView*)browser->GetWindowHandle();
   NSWindow* win = [view window];
   Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win,"NativeWindow");
-  NativeWindow* NativeWindow = [wrap handle];
-  NativeWindow.setBrowser(browser);
+  NativeWindow* window = [wrap handle];
+  window->SetBrowser(browser);
 
-  return NativeWindow->getV8Handle();
+  return window->GetV8Handle();
 }
 
 v8::Handle<v8::Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
   NSView* view = (NSView*)browser->GetWindowHandle();
   NSWindow* win = [view window];
   Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win,"NativeWindow");
-  NativeWindow* NativeWindow = [wrap handle];
+  NativeWindow* window = [wrap handle];
 
-  return NativeWindow->getV8Handle();
+  return window->GetV8Handle();
 }
 
 NativeWindow* ClientHandler::WindowFromHandle(CefWindowHandle handle){
   NSWindow* win = (NSWindow*)handle;
   Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win, "NativeWindow");
-  NativeWindow* NativeWindow = [wrap handle];
-  return NativeWindow;
+  NativeWindow* window = [wrap handle];
+  return window;
 }
 
 

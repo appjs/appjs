@@ -12,16 +12,16 @@ CefWindowHandle ClientHandler::GetMainHwnd(){
 
 
 Handle<Object> ClientHandler::CreatedBrowser(CefRefPtr<CefBrowser> browser) {
-  CefWindowHandle window = GetParent(browser->GetWindowHandle());
-  NativeWindow* NativeWindow = (NativeWindow*)GetWindowLongPtr(window, GWLP_USERDATA);
-  NativeWindow->setBrowser(browser);
-  return NativeWindow->getV8Handle();
+  CefWindowHandle handle = GetParent(browser->GetWindowHandle());
+  NativeWindow* window = (NativeWindow*)GetWindowLongPtr(handle, GWLP_USERDATA);
+  window->SetBrowser(browser);
+  return window->GetV8Handle();
 }
 
 Handle<Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
-  CefWindowHandle window = GetParent(browser->GetWindowHandle());
-  NativeWindow* NativeWindow = ((NativeWindow*)GetWindowLongPtr(window, GWLP_USERDATA));
-  return NativeWindow->getV8Handle();
+  CefWindowHandle handle = GetParent(browser->GetWindowHandle());
+  NativeWindow* window = (NativeWindow*)GetWindowLongPtr(handle, GWLP_USERDATA);
+  return window->GetV8Handle();
 }
 
 NativeWindow* ClientHandler::WindowFromHandle(CefWindowHandle handle){
@@ -34,13 +34,12 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
   REQUIRE_UI_THREAD();
   // Set the frame window title bar
   CefWindowHandle hwnd = browser->GetWindowHandle();
-  if (m_BrowserHwnd == hwnd)   {
+  if (m_BrowserHwnd == hwnd) {
     // The frame window will be the parent of the browser window
     hwnd = GetParent(hwnd);
   }
   // TODO check to see if this type cast works in x86 systems.
   SetWindowText(hwnd,std::basic_string<TCHAR>(title).c_str());
-
 }
 
 void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
@@ -49,24 +48,21 @@ void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
                                     int height)
 {
   REQUIRE_UI_THREAD();
+  NativeWindow* window = (NativeWindow*)GetWindowLongPtr(GetParent(browser->GetWindowHandle()), GWLP_USERDATA);
 
-  if( this->m_AutoResize ) {
-    HWND window = GetParent(browser->GetWindowHandle());
+  if (window->auto_resize) {
     RECT rect;
-    GetClientRect(window, &rect);
+    GetClientRect(window->handle_, &rect);
 
     HDWP hdwp = BeginDeferWindowPos(1);
-    hdwp = DeferWindowPos(hdwp, window, NULL,
-         rect.left, rect.top, width, height,
-         SWP_NOZORDER);
+    hdwp = DeferWindowPos(hdwp, window->handle_, NULL, rect.left, rect.top, width, height, SWP_NOZORDER);
     EndDeferWindowPos(hdwp);
   }
 
 }
 void ClientHandler::CloseMainWindow() {
-
   REQUIRE_UI_THREAD();
-  ::PostMessage(m_MainHwnd, WM_CLOSE, 0, 0);
+  PostMessage(m_MainHwnd, WM_CLOSE, 0, 0);
   appjs::Cef::Shutdown();
 }
 

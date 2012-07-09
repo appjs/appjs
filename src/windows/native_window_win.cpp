@@ -8,7 +8,7 @@
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
-#include "windows/nativewindow.h"
+#include "base/native_window.h"
 
 #define MAX_LOADSTRING 100
 
@@ -21,36 +21,21 @@ using namespace v8;
 TCHAR szWindowClass[MAX_LOADSTRING];
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 ATOM MyRegisterClass(HINSTANCE hInstance);
-char* browserUrl;
 HICON smallIcon;
 HICON bigIcon;
 Settings* browserSettings;
+char* url_;
 
-
-NativeWindow::NativeWindow (char* url, Settings* settings) {
-
-  //TODO Take settings into account.
-  int width = settings->getNumber("width",800);
-  int height = settings->getNumber("height",600);
-  int x = settings->getNumber("x",-1);
-  int y = settings->getNumber("y",-1);
-  double opacity = settings->getNumber("opacity",1);
-  bool show_chrome = settings->getBoolean("showChrome",true);
-  bool resizable = settings->getBoolean("resizable",true);
-  bool show_resize_grip = settings->getBoolean("showResizeGrip",false);
-  bool auto_resize = settings->getBoolean("autoResize",false);
-  bool fullscreen = settings->getBoolean("fullscreen",false);
-
-
+void NativeWindow::Init(char* url, Settings* settings) {
+  url_ = url;
   if( !g_handler->GetBrowserHwnd() ) {
 
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;
     Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-    Settings icons(settings->getObject("icons",Object::New()));
-    WCHAR* wSmallIconPath = icons.getString("small",L"");
-    WCHAR* wBigIconPath = icons.getString("big",L"");
+    WCHAR* wSmallIconPath = icons->getString("small",L"");
+    WCHAR* wBigIconPath = icons->getString("big",L"");
 
     Gdiplus::Bitmap* smallIconBitmap = Gdiplus::Bitmap::FromFile(wSmallIconPath);
     Gdiplus::Bitmap* bigIconBitmap = Gdiplus::Bitmap::FromFile(wBigIconPath);
@@ -66,14 +51,11 @@ NativeWindow::NativeWindow (char* url, Settings* settings) {
       delete[] wBigIconPath;
       delete bigIconBitmap;
     }
-
   }
 
   HINSTANCE hInstance = GetModuleHandle(NULL);
   strcpy(szWindowClass,"AppjsWindow");
-  browserUrl = url;
   browserSettings = settings;
-  g_handler->SetAutoResize(auto_resize);
 
 
   if(!MyRegisterClass(hInstance)){
@@ -97,7 +79,7 @@ NativeWindow::NativeWindow (char* url, Settings* settings) {
 
   // set chrome
   if( show_chrome ) {
-     commonStyle |= style;
+    commonStyle |= style;
   } else {
     commonStyle |= WS_POPUP;
   }
@@ -108,9 +90,7 @@ NativeWindow::NativeWindow (char* url, Settings* settings) {
   }
   // Perform application initialization
   browser_ = NULL;
-  handle_ = CreateWindowEx(NULL, szWindowClass,"",
-                           commonStyle, x, y, width,
-                           height, NULL, NULL, hInstance, NULL);
+  handle_ = CreateWindowEx(NULL, szWindowClass,"", commonStyle, x, y, width, height, NULL, NULL, hInstance, NULL);
 
   if (!handle_) {
 	  //TODO send error to node
@@ -130,27 +110,6 @@ NativeWindow::NativeWindow (char* url, Settings* settings) {
 };
 
 
-void NativeWindow::OpenDevTools(){
-  if (browser_) {
-    browser_->ShowDevTools();
-  }
-}
-
-void NativeWindow::CloseDevTools(){
-  if (browser_) {
-    browser_->CloseDevTools();
-  }
-}
-
-void NativeWindow::show() {
-  ShowWindow(handle_, SW_SHOW);
-};
-
-void NativeWindow::hide() {
-  ShowWindow(handle_, SW_HIDE);
-};
-
-
 int NativeWindow::ScreenWidth() {
   return GetSystemMetrics(SM_CXSCREEN);
 }
@@ -159,27 +118,22 @@ int NativeWindow::ScreenHeight() {
   return GetSystemMetrics(SM_CYSCREEN);
 }
 
-void NativeWindow::destroy() {
- if (!handle_)
-    NODE_ERROR("Browser window not available or not ready.");
-
-  CloseWindow(handle_);
-};
-
-void NativeWindow::setBrowser(CefRefPtr<CefBrowser> browser) {
-  browser_ = browser;
+void NativeWindow::Show() {
+  if (browser_) {
+    ShowWindow(handle_, SW_SHOW);
+  }
 }
 
-CefRefPtr<CefBrowser> NativeWindow::getBrowser() {
-  return browser_;
+void NativeWindow::Hide() {
+  if (browser_) {
+    ShowWindow(handle_, SW_HIDE);
+  }
 }
 
-void NativeWindow::setV8Handle(Handle<Object> v8handle) {
-  v8handle_ = v8handle;
-}
-
-Handle<Object> NativeWindow::getV8Handle() {
-  return v8handle_;
+void NativeWindow::Destroy() {
+  if (browser_) {
+    CloseWindow(handle_);
+  }
 }
 
 // Register Class
@@ -187,7 +141,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance) {
   WNDCLASSEX wcex;
 
   wcex.cbSize = sizeof(WNDCLASSEX);
-
   wcex.style         = CS_HREDRAW | CS_VREDRAW;
   wcex.lpfnWndProc   = WndProc;
   wcex.cbClsExtra    = 0;
@@ -204,38 +157,26 @@ ATOM MyRegisterClass(HINSTANCE hInstance) {
 }
 
 // Processes messages for the main window.
-LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam,
-                         LPARAM lParam) {
-  int wmId, wmEvent;
-  PAINTSTRUCT ps;
-  HDC hdc;
+LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+
   // Callback for the main window
   switch (message) {
     case WM_CREATE: {
-      // Create the child windows used for navigation
-  	  RECT rect;
-  	  int x = 0;
-
-	  GetClientRect(hwnd, &rect);
+      NativeWindow* window = ClientHandler::WindowFromHandle(hwnd);
+	    RECT rect;
+	    GetClientRect(hwnd, &rect);
 
       // Initialize window info to the defaults for a child window
-	    Cef::AddWebView(hwnd, rect, browserUrl, browserSettings);
-
+	    Cef::AddWebView(hwnd, rect, url_, browserSettings);
       return 0;
     }
-
-    case WM_COMMAND: {
-      wmId    = LOWORD(wParam);
-      wmEvent = HIWORD(wParam);
-
-      break;
-    }
-
-    case WM_PAINT:
+    case WM_PAINT: {
+      PAINTSTRUCT ps;
+      HDC hdc;
       hdc = BeginPaint(hwnd, &ps);
       EndPaint(hwnd, &ps);
       return 0;
-
+    }
     /*case WM_SETFOCUS:
       if (g_handler.get() && g_handler->GetBrowserHwnd()) {
         // Pass focus to the browser window
@@ -244,8 +185,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam,
       return 0;*/
 
     case WM_SIZE: {
-      NativeWindow* win = ClientHandler::WindowFromHandle(hwnd);
-      if (win->getBrowser()) {
+      NativeWindow* window = ClientHandler::WindowFromHandle(hwnd);
+      if (window->GetBrowser()) {
         // Resize the browser window to match the new frame
         // window size
 
@@ -262,31 +203,27 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam,
       break;
     }
     case WM_ERASEBKGND: {
-      NativeWindow* win = ClientHandler::WindowFromHandle(hwnd);
-      if (win->getBrowser()) {
+      NativeWindow* window = ClientHandler::WindowFromHandle(hwnd);
+      if (window->GetBrowser()) {
         // Dont erase the background if the browser window has been loaded
         // (this avoids flashing)
         return 0;
       }
       break;
     }
-    /*case WM_CLOSE:
-      if (g_handler.get()) {
-        CefRefPtr<CefBrowser> browser = g_handler->GetBrowser();
-        if (browser.get()) {
-          // Let the browser window know we are about to destroy it.
-          browser->ParentWindowWillClose();
-        }
+    case WM_CLOSE: {
+      NativeWindow* window = ClientHandler::WindowFromHandle(hwnd);
+      if (window->GetBrowser()) {
+        window->GetBrowser()->ParentWindowWillClose();
       }
       break;
-
-      case WM_DESTROY:
-        //PostQuitMessage(0);*/
-      return 0;
     }
-
-
-    return DefWindowProc(hwnd, message, wParam, lParam);
+      /*case WM_DESTROY:
+        //PostQuitMessage(0);
+      return 0;*/
   }
+
+  return DefWindowProc(hwnd, message, wParam, lParam);
+}
 
 } /* appjs */

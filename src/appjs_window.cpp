@@ -38,10 +38,10 @@ Handle<Value> Window::New(const Arguments& args) {
   Persistent<Object> windowSettings = Persistent<Object>::New((args[1]->IsObject()) ? args[1]->ToObject() : Object::New());
 
   Settings* settings = new Settings(windowSettings);
-  NativeWindow* obj = new NativeWindow(url,settings);
-  obj->setV8Handle(self);
+  NativeWindow* window = new NativeWindow(url, settings);
+  window->SetV8Handle(self);
 
-  self->SetPointerInInternalField (0, obj);
+  self->SetPointerInInternalField (0, window);
 
   return scope.Close(args.This());
 }
@@ -66,8 +66,8 @@ Handle<Value> Window::NewInstance(const Arguments& args) {
 Handle<Value> Window::OpenDevTools(const Arguments& args) {
   HandleScope scope;
 
-  NativeWindow *obj = ObjectWrap::Unwrap<NativeWindow> (args.This());
-  obj->openDevTools();
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
+  window->OpenDevTools();
 
   return scope.Close(args.This());
 }
@@ -75,8 +75,8 @@ Handle<Value> Window::OpenDevTools(const Arguments& args) {
 Handle<Value> Window::CloseDevTools(const Arguments& args) {
   HandleScope scope;
 
-  NativeWindow *obj = ObjectWrap::Unwrap<NativeWindow> (args.This());
-  obj->closeDevTools();
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
+  window->CloseDevTools();
 
   return scope.Close(args.This());
 }
@@ -84,8 +84,8 @@ Handle<Value> Window::CloseDevTools(const Arguments& args) {
 Handle<Value> Window::Show(const Arguments& args) {
   HandleScope scope;
 
-  NativeWindow *obj = ObjectWrap::Unwrap<NativeWindow> (args.This());
-  obj->show();
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
+  window->Show();
 
   return scope.Close(args.This());
 }
@@ -93,9 +93,8 @@ Handle<Value> Window::Show(const Arguments& args) {
 Handle<Value> Window::Hide(const Arguments& args) {
   HandleScope scope;
 
-  NativeWindow *obj = ObjectWrap::Unwrap<NativeWindow> (args.This());
-
-  obj->hide();
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
+  window->Hide();
 
   return scope.Close(args.This());
 }
@@ -103,9 +102,8 @@ Handle<Value> Window::Hide(const Arguments& args) {
 Handle<Value> Window::Destroy(const Arguments& args) {
   HandleScope scope;
 
-  NativeWindow *obj = ObjectWrap::Unwrap<NativeWindow> (args.This());
-
-  obj->destroy();
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
+  window->Destroy();
 
   return scope.Close(args.This());
 }
@@ -116,12 +114,8 @@ Handle<Value> Window::RunInBrowser(const Arguments& args) {
   if(!args[0]->IsFunction())
     THROW_BAD_ARGS;
 
-  CefRefPtr<CefBrowser> browser = g_handler->GetBrowser();
-
-  if(browser) {
-    char* script = V8StringToFunctionChar(args[0]->ToString());
-    g_handler->GetBrowser()->GetMainFrame()->ExecuteJavaScript(script,"",0);
-  }
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
+  window->RunInBrowser(V8StringToFunctionChar(args[0]->ToString()));
 
   return scope.Close(args.This());
 }
@@ -130,26 +124,30 @@ Handle<Value> Window::RunInBrowser(const Arguments& args) {
 Handle<Value> Window::SendSync(const Arguments& args) {
   HandleScope scope;
 
-  // find browser's v8 context
-  CefRefPtr<CefV8Context> context = g_handler->GetBrowser()->GetMainFrame()->GetV8Context();
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
 
-  // ensure it's usable and enter
-  if (context.get() && context->Enter()) {
-    // try to get "window.appjs" function
-    CefRefPtr<CefV8Value> callback = context->GetGlobal()->GetValue("appjs");
-    if (callback.get()) {
+  if (window->GetBrowser()) {
+    // find browser's v8 context
+    CefRefPtr<CefV8Context> context = window->GetBrowser()->GetMainFrame()->GetV8Context();
 
-      // convert Node V8 string to Cef V8 string
-      CefV8ValueList argsOut;
-      argsOut.push_back(CefV8Value::CreateString(V8StringToChar(args[0]->ToString())));
+    // ensure it's usable and enter
+    if (context.get() && context->Enter()) {
+      // try to get "window.appjs" function
+      CefRefPtr<CefV8Value> callback = context->GetGlobal()->GetValue("appjs");
+      if (callback.get()) {
 
-      // execute window.appjs fuction, passing in the string,
-      // then convert the return value from a CefValue to a Node V8 string
-      Handle<String> ret = CefStringToV8(callback->ExecuteFunction(NULL, argsOut)->GetStringValue());
+        // convert Node V8 string to Cef V8 string
+        CefV8ValueList argsOut;
+        argsOut.push_back(CefV8Value::CreateString(V8StringToChar(args[0]->ToString())));
 
-      // exit browser v8 context, return string result to Node caller
-      context->Exit();
-      return scope.Close(ret);
+        // execute window.appjs fuction, passing in the string,
+        // then convert the return value from a CefValue to a Node V8 string
+        Handle<String> ret = CefStringToV8(callback->ExecuteFunction(NULL, argsOut)->GetStringValue());
+
+        // exit browser v8 context, return string result to Node caller
+        context->Exit();
+        return scope.Close(ret);
+      }
     }
   }
   // likely error condition
