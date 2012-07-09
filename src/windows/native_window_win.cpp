@@ -162,7 +162,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
   // Callback for the main window
   switch (message) {
     case WM_CREATE: {
-      NativeWindow* window = ClientHandler::WindowFromHandle(hwnd);
+      NativeWindow* window = ClientHandler::GetWindow(hwnd);
 	    RECT rect;
 	    GetClientRect(hwnd, &rect);
 
@@ -185,7 +185,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
       return 0;*/
 
     case WM_SIZE: {
-      NativeWindow* window = ClientHandler::WindowFromHandle(hwnd);
+      NativeWindow* window = ClientHandler::GetWindow(hwnd);
       if (window->GetBrowser()) {
         // Resize the browser window to match the new frame
         // window size
@@ -203,7 +203,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
       break;
     }
     case WM_ERASEBKGND: {
-      NativeWindow* window = ClientHandler::WindowFromHandle(hwnd);
+      NativeWindow* window = ClientHandler::GetWindow(hwnd);
       if (window->GetBrowser()) {
         // Dont erase the background if the browser window has been loaded
         // (this avoids flashing)
@@ -212,7 +212,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
       break;
     }
     case WM_CLOSE: {
-      NativeWindow* window = ClientHandler::WindowFromHandle(hwnd);
+      NativeWindow* window = ClientHandler::GetWindow(hwnd);
       if (window->GetBrowser()) {
         window->GetBrowser()->ParentWindowWillClose();
       }

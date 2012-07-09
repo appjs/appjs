@@ -9,32 +9,15 @@ CefWindowHandle ClientHandler::GetMainHwnd(){
   return gtk_widget_get_ancestor(m_MainHwnd,GTK_TYPE_WINDOW);
 }
 
-
-Handle<Object> ClientHandler::CreatedBrowser(CefRefPtr<CefBrowser> browser) {
-  GtkWidget* window =
-      gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()),
-                              GTK_TYPE_WINDOW);
-
-  NativeWindow* nativewindow = (NativeWindow*)g_object_get_data(G_OBJECT(window),"nativewindow");
-  nativewindow->SetBrowser(browser);
-  return nativewindow->GetV8Handle();
+NativeWindow* ClientHandler::GetWindow(CefWindowHandle handle){
+  return (NativeWindow*)g_object_get_data(G_OBJECT(handle), "nativewindow");
 }
 
-
-Handle<Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
-  GtkWidget* window =
-      gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()),
-                              GTK_TYPE_WINDOW);
-
-  NativeWindow* nativewindow = (NativeWindow*)g_object_get_data(G_OBJECT(window),"nativewindow");
-
-  return nativewindow->GetV8Handle();
+NativeWindow* ClientHandler::GetWindow(CefRefPtr<CefBrowser> browser){
+  GtkWidget* window = gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()), GTK_TYPE_WINDOW);
+  return ClientHandler::GetWindow(window);
 }
 
-NativeWindow* ClientHandler::WindowFromHandle(CefWindowHandle handle){
-  NativeWindow* nativewindow = (NativeWindow*)g_object_get_data(G_OBJECT(handle), "nativewindow");
-  return nativewindow;
-}
 
 
 void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,

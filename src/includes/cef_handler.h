@@ -52,7 +52,8 @@ public:
 
   static v8::Handle<v8::Object> CreatedBrowser(CefRefPtr<CefBrowser> browser);
   static v8::Handle<v8::Object> GetV8WindowHandle(CefRefPtr<CefBrowser> browser);
-  static appjs::NativeWindow* WindowFromHandle(CefWindowHandle handle);
+  static appjs::NativeWindow* GetWindow(CefWindowHandle handle);
+  static appjs::NativeWindow* GetWindow(CefRefPtr<CefBrowser> browser);
 
   CefRefPtr<CefBrowser> GetBrowser() { return m_Browser; }
   CefWindowHandle GetBrowserHwnd() { return m_BrowserHwnd; }

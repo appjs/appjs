@@ -8,20 +8,6 @@
 
 using namespace v8;
 using namespace appjs;
-/*
-Handle<Value> EmitReady(const Arguments& args) {
-  HandleScope scope;
-
-  Local<Object> global = Context::GetCurrent()->Global();
-  Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
-  Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
-
-  const int argc = 1;
-  Handle<Value> argv[argc] = {String::New("window_ready")};
-  node::MakeCallback(emitter,"emit",argc,argv);
-
-  return scope.Close(Undefined());
-}*/
 
 ClientHandler::ClientHandler()
   : m_MainHwnd(NULL),
@@ -30,6 +16,19 @@ ClientHandler::ClientHandler()
 
 ClientHandler::~ClientHandler() {
 }
+
+
+
+Handle<Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
+  return ClientHandler::GetWindow(browser)->GetV8Handle();
+}
+
+Handle<Object> ClientHandler::CreatedBrowser(CefRefPtr<CefBrowser> browser) {
+  NativeWindow* window = ClientHandler::GetWindow(browser);
+  window->SetBrowser(browser);
+  return window->GetV8Handle();
+}
+
 
 void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
   REQUIRE_UI_THREAD();
@@ -71,7 +70,6 @@ bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
     // Return true here so that we can skip closing the browser window
     // in this pass. (It will be destroyed due to the call to close
     // the parent above.)
-    return true;
   }
 
   // A popup browser window is not contained in another window, so we can let
@@ -87,18 +85,18 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 #if not defined(__LINUX__)
   const int argc = 1;
   Handle<Object> handle = ClientHandler::GetV8WindowHandle(browser);
-  Handle<Value> argv[argc] = {String::New("close")};
-  node::MakeCallback(handle,"emit",argc,argv);
+  Handle<Value> argv[1] = {String::New("close")};
+  node::MakeCallback(handle,"emit",1,argv);
 #endif
 
-  if (!browser->IsPopup()) {
+  if (m_BrowserHwnd == browser->GetWindowHandle()) {
 
     Local<Object> global = Context::GetCurrent()->Global();
     Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
     Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
 
     const int argc = 1;
-    Handle<Value> argv[1] = {String::New("exit")};
+    Handle<Value> argv[1] = {String::New("close")};
     node::MakeCallback(emitter,"emit",argc,argv);
 
     DoClose(browser);
