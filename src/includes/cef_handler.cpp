@@ -103,9 +103,11 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     DoClose(browser);
   }
 
+#if not defined(__LINUX__)
   if (!browser->IsPopup()) {
     delete ClientHandler::GetWindow(browser);
   }
+#endif
 }
 
 void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
