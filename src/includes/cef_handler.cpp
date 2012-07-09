@@ -100,9 +100,11 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     Handle<Value> argv[1] = {String::New("exit")};
     node::MakeCallback(emitter,"emit",argc,argv);
 
-    delete ClientHandler::GetWindow(browser);
-
     DoClose(browser);
+  }
+
+  if (!browser->IsPopup()) {
+    delete ClientHandler::GetWindow(browser);
   }
 }
 
