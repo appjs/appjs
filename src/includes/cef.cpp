@@ -22,7 +22,7 @@ void Cef::Init() {
     // the pack file in linux and it won't work.
     // settings.pack_file_path = filePath;
     settings.multi_threaded_message_loop = false;
-
+    CefString(&settings.javascript_flags) = " --harmony_proxies --harmony_collections --harmony_scoping";
 
     g_handler = new ClientHandler();
     CefInitialize(settings, app);
