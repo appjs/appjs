@@ -20,20 +20,20 @@ __AppJS is under heavy development. Expect many API changes and things to break.
 ## 30 Second Quickstart
 The below packages include everything needed to get started with AppJS, including Node.js, all dependencies, binaries, and a launcher ready to go out of the box. 1.) Extract to a folder. 2.) Double click on launch. 3.) Hello World.
 
-AppJS 0.0.13 Complete Distributables:
+__AppJS 0.0.13 Complete Distributables:__
 
 * [Windows](http://dists.appjs.org/0.0.13/appjs-0.0.13-win32-ia32.zip) -> launch.exe
 * Linux [32 bit](http://dists.appjs.org/0.0.13/appjs-0.0.13-linux-ia32.tar.gz) / [64 bit](http://dists.appjs.org/0.0.13/appjs-0.0.13-linux-x64.tar.gz) -> launch.sh
 * [Mac](http://dists.appjs.org/0.0.13/appjs-0.0.13-darwin-ia32.zip) -> launch.sh
 
 
-AppJS 0.0.14 Beta Distributables:
+__AppJS 0.0.14 Beta Distributables:__
 
 These are a work in progress.
 
 * [Windows](http://dists.appjs.org/0.0.14/appjs-0.0.14-win32-ia32.zip) -> app.exe
-* Linux [32 bit](http://dists.appjs.org/0.0.14/appjs-0.0.14-linux-ia32.tar.gz) / [64 bit](http://dists.appjs.org/0.0.14/appjs-0.0.14-linux-x64.tar.gz) -> launch.sh
-* [Mac](http://dists.appjs.org/0.0.14/appjs-0.0.14-darwin-ia32.zip) -> launch.sh
+* Linux 32 bit / [64 bit](http://dists.appjs.org/0.0.14/appjs-0.0.14-linux-x64.tar.gz) -> launch.sh
+* Mac -> launch.sh
 
 ![Hello World](https://github.com/milani/appjs/raw/master/examples/output.jpg "Hello World")
 
