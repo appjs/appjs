@@ -95,46 +95,50 @@ function initBrowser(){
       return { error: e };
     }
   }
+  window.appjs = {
+    events: {},
+    on: function on(types, handler){
+      types.split(/\s+/).forEach(function(type){
+        var listeners = appjs.events[type] || (appjs.events[type] = []);
+        if (!~listeners.indexOf(handler)) {
+          listeners.push(handler);
+        }
+      });
+    },
+    off: function off(types, handler){
+      types.split(/\s+/).forEach(function(type){
+        if (events[type]) {
+          var index = appjs.events[type].indexOf(handler);
+          ~index && appjs.events[type].splice(index, 1);
+        }
+      });
+    },
+    once: function once(types, handler){
+      appjs.on(types, function single(){
+        appjs.off(types, single);
+        return handler.apply(this, arguments);
+      });
+    },
+    onmessage: function onmessage(msg){
+      var result = {};
+      msg = decode(msg);
 
-
-  appjs.on = function on(types, handler){
-    types.split(/\s+/).forEach(function(type){
-      var listeners = events[type] || (events[type] = []);
-      if (!~listeners.indexOf(handler)) {
-        listeners.push(handler);
-      }
-    });
-  };
-
-  appjs.off = function off(types, handler){
-    types.split(/\s+/).forEach(function(type){
-      if (events[type]) {
-        var index = events[type].indexOf(type);
-        ~index && events[type].splice(index, 1);
-      }
-    });
-  };
-
-  appjs.onmessage = function message(msg){
-    var result = {};
-    msg = decode(msg);
-
-    if (msg && msg.type && events[msg.type]) {
-      var listeners = events[msg.type];
-      var temp;
-      for (var i=0; i < listeners.length; i++) {
-        temp = listeners[i].call(appjs, msg.msg, result);
-        if (temp != null) {
-          result = temp;
+      if (msg && msg.type && appjs.events[msg.type]) {
+        var listeners = appjs.events[msg.type];
+        var temp;
+        for (var i=0; i < listeners.length; i++) {
+          temp = listeners[i].call(appjs, msg.msg, result);
+          if (temp != null) {
+            result = temp;
+          }
         }
       }
+      return encode(result);
+    },
+    send: function send(type, msg){
+      msg = { type: type, msg: msg };
+      return decode(sendSync.call(appjs, encode(msg)));
     }
-    return encode(result);
-  };
-
-  appjs.send = function send(type, msg){
-    msg = { type: type, msg: msg };
-    return decode(sendSync.call(appjs, encode(msg)));
   };
 
   appjs.on('log', function(obj){
@@ -143,7 +147,6 @@ function initBrowser(){
 }
 
 var sendSync = Window.prototype.send;
-delete Window.prototype.sendSync;
 
 Window.prototype.__proto__ = process.EventEmitter.prototype;
 
@@ -152,11 +155,11 @@ extend(Window.prototype, {
     var result = {};
     msg = IPC.decode(msg);
 
-    if (msg && msg.type && this.listeners[msg.type]) {
+    if (msg && msg.type && this._events[msg.type]) {
       this.emit(msg.type, msg.msg, result);
     }
 
-    return IPC.encode(result);
+    return IPC.encode('result' in result ? result.result : result);
   },
   send: function send(type, msg){
     msg = { type: type, msg: msg };
