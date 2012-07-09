@@ -1,4 +1,4 @@
-var app = require('appjs').init();
+var app = module.exports = require('appjs').init();
 
 app.get('/',function(req,res,next){
   res.send(200,"Hello World!");
@@ -20,14 +20,14 @@ var window = app.createWindow("http://appjs/", {
 
 window.on("create",function(){
   console.log("Window Created");
-  // Make window visible
   this.show();
+  this.openDevTools();
 });
 
 window.on("ready",function(){
-  console.log("Page loaded.");
+  console.log("Page Loaded");
 });
 
-window.on('close',function(){
-  console.log("closed");
+window.on("close",function(){
+  console.log("Window Closed");
 });
