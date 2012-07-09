@@ -24,7 +24,7 @@ void Window::Init () {
   DEFINE_PROTOTYPE_METHOD("hide", Hide);
   DEFINE_PROTOTYPE_METHOD("destroy", Destroy);
   DEFINE_PROTOTYPE_METHOD("runInBrowser", RunInBrowser);
-  DEFINE_PROTOTYPE_METHOD("sendSync", SendSync);
+  DEFINE_PROTOTYPE_METHOD("send", SendSync);
 
   END_CONSTRUCTOR();
 }
@@ -52,13 +52,6 @@ Handle<Value> Window::NewInstance(const Arguments& args) {
   const unsigned argc = 2;
   Handle<Value> argv[argc] = { args[0],args[1] };
   Local<Object> instance = constructor->NewInstance(argc, argv);
-
-  Local<Object> global = Context::GetCurrent()->Global();
-  Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
-  Local<Function> emitterConstructor = Local<Function>::Cast(process->Get(String::NewSymbol("EventEmitter")));
-  Local<Value> emitterProto = emitterConstructor->Get(String::New("prototype"));
-  Local<Object> windowProto = Local<Object>::Cast(instance->GetPrototype());
-  windowProto->SetPrototype(emitterProto);
 
   return scope.Close(instance);
 }
@@ -132,8 +125,9 @@ Handle<Value> Window::SendSync(const Arguments& args) {
 
     // ensure it's usable and enter
     if (context.get() && context->Enter()) {
-      // try to get "window.appjs" function
-      CefRefPtr<CefV8Value> callback = context->GetGlobal()->GetValue("appjs");
+      // try to get "appjs.onmessage" function
+      CefRefPtr<CefV8Value> appjsObject = context->GetGlobal()->GetValue("appjs");
+      CefRefPtr<CefV8Value> callback = appjsObject->GetValue("onmessage");
       if (callback.get()) {
 
         // convert Node V8 string to Cef V8 string
@@ -142,7 +136,7 @@ Handle<Value> Window::SendSync(const Arguments& args) {
 
         // execute window.appjs fuction, passing in the string,
         // then convert the return value from a CefValue to a Node V8 string
-        Handle<String> ret = CefStringToV8(callback->ExecuteFunction(NULL, argsOut)->GetStringValue());
+        Handle<String> ret = CefStringToV8(callback->ExecuteFunction(appjsObject, argsOut)->GetStringValue());
 
         // exit browser v8 context, return string result to Node caller
         context->Exit();
