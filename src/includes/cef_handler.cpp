@@ -36,23 +36,27 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 
   AutoLock lock_scope(this);
 
-  // Set main browser of the application
-  if (!m_Browser.get()) {
-    m_Browser = browser;
-    m_BrowserHwnd = browser->GetWindowHandle();
-  }
+  if (!browser->IsPopup()) {
+    // Set main browser of the application
+    if (!m_Browser.get()) {
+      m_Browser = browser;
+      m_BrowserHwnd = browser->GetWindowHandle();
+    }
 
-  Handle<Object> handle = ClientHandler::CreatedBrowser(browser);
-  Handle<Value> argv[1] = {String::New("create")};
-  node::MakeCallback(handle,"emit", 1, argv);
+    Handle<Object> handle = ClientHandler::CreatedBrowser(browser);
+    Handle<Value> argv[1] = {String::New("create")};
+    node::MakeCallback(handle,"emit", 1, argv);
+  }
 }
 
 void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
   REQUIRE_UI_THREAD();
-  context->Enter();
-  CefRefPtr<CefV8Value> func = CefV8Value::CreateFunction("sendSync", new AppjsSyncHandler(browser));
-  context->GetGlobal()->SetValue("sendSync", func, V8_PROPERTY_ATTRIBUTE_DONTENUM);
-  context->Exit();
+  if (!browser->IsPopup()) {
+    context->Enter();
+    CefRefPtr<CefV8Value> func = CefV8Value::CreateFunction("sendSync", new AppjsSyncHandler(browser));
+    context->GetGlobal()->SetValue("sendSync", func, V8_PROPERTY_ATTRIBUTE_DONTENUM);
+    context->Exit();
+  }
 }
 
 bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
@@ -61,6 +65,7 @@ bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
   if (m_BrowserHwnd == browser->GetWindowHandle()) {
     // Since the main window contains the browser window, we need to close
     // the parent window instead of the browser window.
+    m_Browser = NULL;
     CloseMainWindow();
 
     // Return true here so that we can skip closing the browser window
@@ -86,22 +91,18 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   node::MakeCallback(handle,"emit",argc,argv);
 #endif
 
-  if (m_BrowserHwnd == browser->GetWindowHandle()) {
-    // Free the browser pointer so that the browser can be destroyed
-    m_Browser = NULL;
+  if (!browser->IsPopup()) {
 
     Local<Object> global = Context::GetCurrent()->Global();
     Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
     Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
 
     const int argc = 1;
-    Handle<Value> argv[argc] = {String::New("exit")};
+    Handle<Value> argv[1] = {String::New("exit")};
     node::MakeCallback(emitter,"emit",argc,argv);
 
     DoClose(browser);
-
   }
-
 }
 
 void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
@@ -109,13 +110,12 @@ void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
                          int httpStatusCode)
 {
   REQUIRE_UI_THREAD();
-  if (m_Browser.get()) {
 
+  if (!browser->IsPopup()) {
     const int argc = 1;
     Handle<Object> handle = ClientHandler::GetV8WindowHandle(browser);
     Handle<Value> argv[argc] = {String::New("ready")};
     node::MakeCallback(handle,"emit",argc,argv);
-
   }
 }
 

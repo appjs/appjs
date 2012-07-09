@@ -21,7 +21,6 @@ void Cef::Init() {
     // since it searches in execute path ( where node exists ) to find
     // the pack file in linux and it won't work.
     // settings.pack_file_path = filePath;
-    settings.pack_loading_disabled = true;
     settings.multi_threaded_message_loop = false;
 
 

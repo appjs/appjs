@@ -48,17 +48,19 @@ void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
                                     int height)
 {
   REQUIRE_UI_THREAD();
-  NativeWindow* window = (NativeWindow*)GetWindowLongPtr(GetParent(browser->GetWindowHandle()), GWLP_USERDATA);
+  LONG_PTR handle = GetWindowLongPtr(GetParent(browser->GetWindowHandle()), GWLP_USERDATA);
+  if (handle) {
+    NativeWindow* window = (NativeWindow*)handle;
 
-  if (window->auto_resize) {
-    RECT rect;
-    GetClientRect(window->handle_, &rect);
+    if (window != NULL && window->auto_resize) {
+      RECT rect;
+      GetClientRect(window->handle_, &rect);
 
-    HDWP hdwp = BeginDeferWindowPos(1);
-    hdwp = DeferWindowPos(hdwp, window->handle_, NULL, rect.left, rect.top, width, height, SWP_NOZORDER);
-    EndDeferWindowPos(hdwp);
+      HDWP hdwp = BeginDeferWindowPos(1);
+      hdwp = DeferWindowPos(hdwp, window->handle_, NULL, rect.left, rect.top, width, height, SWP_NOZORDER);
+      EndDeferWindowPos(hdwp);
+    }
   }
-
 }
 void ClientHandler::CloseMainWindow() {
   REQUIRE_UI_THREAD();
