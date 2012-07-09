@@ -48,12 +48,6 @@
           ]
         },
         {
-          'destination': '<(module_root_dir)/publish/node_modules/appjs-<(OS)/build/Release',
-          'files': [
-            '<(module_root_dir)/data/common/pak/'
-          ]
-        },
-        {
           'destination': '<(module_root_dir)/publish/',
           'files': [
             '<(module_root_dir)/data/common/app.js'
@@ -74,6 +68,7 @@
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
                 '<(module_root_dir)/deps/cef/Release/lib.target/ffmpegsumo.so',
+                '<(module_root_dir)/data/common/pak/',
                 '<(PRODUCT_DIR)/appjs.node'
               ],
             },
@@ -111,6 +106,12 @@
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.so',
                 '<(PRODUCT_DIR)/appjs.node'
               ],
+            },
+            {
+              'destination': '<(module_root_dir)/publish/bin',
+              'files': [
+                '<(module_root_dir)/data/common/pak/'
+              ]
             },
             {
               'destination': '<(module_root_dir)/publish/node_modules/appjs-linux/',
@@ -160,6 +161,7 @@
                 '<(module_root_dir)/deps/cef/Release/icudt.dll',
                 '<(module_root_dir)/deps/cef/Release/libEGL.dll',
                 '<(module_root_dir)/deps/cef/Release/libGLESv2.dll',
+                '<(module_root_dir)/data/common/pak/'
                 '<(PRODUCT_DIR)/appjs.node'
               ],
             },
