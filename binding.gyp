@@ -48,6 +48,12 @@
           ]
         },
         {
+          'destination': '<(module_root_dir)/publish/node_modules/appjs-<(OS)/build/Release',
+          'files': [
+            '<(module_root_dir)/data/common/pak/'
+          ]
+        },
+        {
           'destination': '<(module_root_dir)/publish/',
           'files': [
             '<(module_root_dir)/data/common/app.js'
