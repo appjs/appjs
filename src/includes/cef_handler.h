@@ -46,6 +46,9 @@ public:
   virtual CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE {
     return this;
   }
+  virtual CefRefPtr<CefV8ContextHandler> GetV8ContextHandler() OVERRIDE {
+    return this;
+  }
 
   static v8::Handle<v8::Object> CreatedBrowser(CefRefPtr<CefBrowser> browser);
   static v8::Handle<v8::Object> GetV8WindowHandle(CefRefPtr<CefBrowser> browser);
@@ -67,6 +70,10 @@ public:
   virtual void OnContextCreated(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefFrame> frame,
                                 CefRefPtr<CefV8Context> context) OVERRIDE;
+
+  virtual void OnContextReleased(CefRefPtr<CefBrowser> browser,
+                                 CefRefPtr<CefFrame> frame,
+                                 CefRefPtr<CefV8Context> context) {}
 
   virtual void OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
                                     CefRefPtr<CefFrame> frame,
