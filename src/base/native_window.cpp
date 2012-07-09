@@ -26,6 +26,10 @@ NativeWindow::NativeWindow(char* url, Settings* settings){
   Cef::Run();
 }
 
+NativeWindow::~NativeWindow(){
+  browser_ = NULL;
+}
+
 void NativeWindow::OpenDevTools(){
   if (browser_) {
     browser_->ShowDevTools();
