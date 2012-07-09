@@ -23,8 +23,17 @@ The below packages include everything needed to get started with AppJS, includin
 AppJS 0.0.13 Complete Distributables:
 
 * [Windows](http://dists.appjs.org/0.0.13/appjs-0.0.13-win32-ia32.zip) -> launch.exe
-* [Linux](http://dists.appjs.org/0.0.13/appjs-0.0.13-linux-x64.tar.gz) -> launch.sh
+* Linux [32 bit](http://dists.appjs.org/0.0.13/appjs-0.0.13-linux-ia32.tar.gz) / [64 bit](http://dists.appjs.org/0.0.13/appjs-0.0.13-linux-x64.tar.gz) -> launch.sh
 * [Mac](http://dists.appjs.org/0.0.13/appjs-0.0.13-darwin-ia32.zip) -> launch.sh
+
+
+AppJS 0.0.14 Beta Distributables:
+
+These are a work in progress.
+
+* [Windows](http://dists.appjs.org/0.0.14/appjs-0.0.14-win32-ia32.zip) -> app.exe
+* Linux [32 bit](http://dists.appjs.org/0.0.14/appjs-0.0.14-linux-ia32.tar.gz) / [64 bit](http://dists.appjs.org/0.0.14/appjs-0.0.14-linux-x64.tar.gz) -> launch.sh
+* [Mac](http://dists.appjs.org/0.0.14/appjs-0.0.14-darwin-ia32.zip) -> launch.sh
 
 ![Hello World](https://github.com/milani/appjs/raw/master/examples/output.jpg "Hello World")
 
