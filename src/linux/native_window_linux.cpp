@@ -18,17 +18,17 @@ void destroy_handler(GtkWidget* widget, NativeWindow* window) {
   node::MakeCallback(handle,"emit",1,argv);
 }
 
-void NativeWindow::init(char* url, Settings* settings) {
+void NativeWindow::Init(char* url, Settings* settings) {
 
   GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
   // Set default icon list
   if( !g_handler->GetBrowserHwnd() ) {
 
-    char* smallerIconPath = icons.getString("smaller","");
-    char* smallIconPath = icons.getString("small","");
-    char* bigIconPath = icons.getString("big","");
-    char* biggerIconPath = icons.getString("bigger","");
+    char* smallerIconPath = icons->getString("smaller","");
+    char* smallIconPath = icons->getString("small","");
+    char* bigIconPath = icons->getString("big","");
+    char* biggerIconPath = icons->getString("bigger","");
 
     GdkPixbuf* smallerIconBuf = gdk_pixbuf_new_from_file(smallerIconPath,NULL);
     GdkPixbuf* smallIconBuf = gdk_pixbuf_new_from_file(smallIconPath,NULL);
@@ -89,19 +89,25 @@ void NativeWindow::init(char* url, Settings* settings) {
 
 void NativeWindow::Show() {
   if (browser_) {
-    gtk_widget_show_all(GTK_WIDGET(browser_->GetWindowHandle()));
+    GtkWidget* window = gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
+                               GTK_TYPE_WINDOW);
+    gtk_widget_show_all(window);
   }
 }
 
 void NativeWindow::Hide() {
   if (browser_) {
-    gtk_widget_hide(GTK_WIDGET(browser_->GetWindowHandle()));
+    GtkWidget* window = gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
+                               GTK_TYPE_WINDOW);
+    gtk_widget_hide(window);
   }
 }
 
 void NativeWindow::Destroy() {
   if (browser_) {
-    gtk_widget_destroy(GTK_WIDGET(browser_->GetWindowHandle()));
+    GtkWidget* window = gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
+                               GTK_TYPE_WINDOW);
+    gtk_widget_destroy(window);
   }
 }
 
