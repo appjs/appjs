@@ -161,7 +161,7 @@
                 '<(module_root_dir)/deps/cef/Release/icudt.dll',
                 '<(module_root_dir)/deps/cef/Release/libEGL.dll',
                 '<(module_root_dir)/deps/cef/Release/libGLESv2.dll',
-                '<(module_root_dir)/data/common/pak/'
+                '<(module_root_dir)/data/common/pak/',
                 '<(PRODUCT_DIR)/appjs.node'
               ],
             },
