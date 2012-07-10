@@ -36,6 +36,17 @@ public:
   int GetWidth();
   int GetHeight();
 
+#if defined(__WIN__)
+  void Drag();
+  void SetNonclientWidth(int left, int right, int top, int bottom);
+  void SetNonclientWidth(int size);
+  void SetBlur(bool blur);
+  bool GetBlur();
+  void NativeWindow::SetStyle(long style);
+  long NativeWindow::GetStyle();
+  void NativeWindow::SetExStyle(long style);
+  long NativeWindow::GetExStyle();
+#endif
 
 
   void OpenDevTools();
@@ -62,6 +73,9 @@ private:
   bool show_resize_grip;
   bool fullscreen;
   Settings* icons;
+#if defined(__WIN__)
+  bool blur_;
+#endif
 #if defined(__LINUX__)
   double opacity;
 #else

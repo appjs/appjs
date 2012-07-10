@@ -32,6 +32,14 @@ void Window::Init () {
   CREATE_CPP_ACCESSOR("height", Height);
   CREATE_CPP_ACCESSOR("width", Width);
 
+#if defined(__WIN__)
+  DEFINE_PROTOTYPE_METHOD("drag", Drag);
+  DEFINE_PROTOTYPE_METHOD("setNonclientWidth", SetNonclientWidth);
+  CREATE_CPP_ACCESSOR("blur", Blur);
+  CREATE_CPP_ACCESSOR("style", Style);
+  CREATE_CPP_ACCESSOR("extendedStyle", ExStyle);
+#endif
+
   END_CONSTRUCTOR();
 }
 
@@ -228,5 +236,61 @@ void Window::SetHeight(Local<String> property, Local<Value> value, const Accesso
   window->SetHeight(value->Int32Value());
 }
 
+
+
+
+#if defined(__WIN__)
+Handle<Value> Window::Drag(const Arguments& args) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
+  window->Drag();
+  return scope.Close(args.This());
+}
+
+Handle<Value> Window::SetNonclientWidth(const Arguments& args) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+
+  if (args.Length() == 4) {
+    int top = args[0]->Int32Value();
+    int left = args[1]->Int32Value();
+    int right = args[2]->Int32Value();
+    int bottom = args[3]->Int32Value();
+    window->SetNonclientWidth(top, left, right, bottom);
+  } else {
+    window->SetNonclientWidth(args[0]->Int32Value());
+  }
+
+  return scope.Close(args.This());
+}
+
+Handle<Value> Window::GetBlur(Local<String> property, const AccessorInfo &info) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  return scope.Close(Boolean::New(window->GetBlur()));
+}
+Handle<Value> Window::GetStyle(Local<String> property, const AccessorInfo &info) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  return scope.Close(Integer::New(window->GetStyle()));
+}
+Handle<Value> Window::GetExStyle(Local<String> property, const AccessorInfo &info) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  return scope.Close(Integer::New(window->GetExStyle()));
+}
+void Window::SetBlur(Local<String> property, Local<Value> value, const AccessorInfo& info) {
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  window->SetBlur(value->BooleanValue());
+}
+void Window::SetStyle(Local<String> property, Local<Value> value, const AccessorInfo& info) {
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  window->SetStyle(value->Int32Value());
+}
+void Window::SetExStyle(Local<String> property, Local<Value> value, const AccessorInfo& info) {
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  window->SetExStyle(value->Int32Value());
+}
+#endif
 
 } /* appjs */

@@ -225,7 +225,7 @@ void NativeWindow::UpdatePosition(){
 }
 
 
-void NativeWindow::SetBorderWidth(int left, int right, int top, int bottom){
+void NativeWindow::SetNonclientWidth(int left, int right, int top, int bottom){
   if (handle_) {
     MARGINS margins = {left, right, top, bottom};
     DwmExtendFrameIntoClientArea(handle_, &margins);
@@ -234,7 +234,7 @@ void NativeWindow::SetBorderWidth(int left, int right, int top, int bottom){
 
 
 
-void NativeWindow::SetBorderWidth(int size){
+void NativeWindow::SetNonclientWidth(int size){
   if (handle_) {
     MARGINS margins = {size, size, size, size};
     DwmExtendFrameIntoClientArea(handle_, &margins);
