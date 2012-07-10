@@ -14,7 +14,14 @@
 
 // Easy method definition
 #define DEFINE_CPP_METHOD(Method) \
-    static v8::Handle<v8::Value> Method (const v8::Arguments& args)
+  static v8::Handle<v8::Value> Method (const v8::Arguments& args)
+
+#define CREATE_CPP_ACCESSOR(Name, Method) \
+  tpl->InstanceTemplate()->SetAccessor(String::New(Name), Get##Method, Set##Method)
+
+#define DEFINE_CPP_ACCESSOR(Method) \
+  static v8::Handle<v8::Value> Get##Method(v8::Local<v8::String> property, const v8::AccessorInfo &info); \
+  static void Set##Method(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo &info);
 
 // Better node prototype method
 #define DEFINE_PROTOTYPE_METHOD(Name, Method) \
@@ -41,6 +48,8 @@
 
 #define END_CONSTRUCTOR() \
     constructor = Persistent<Function>::New(tpl->GetFunction())
+
+
 
 namespace appjs {
 
