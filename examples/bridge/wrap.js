@@ -348,8 +348,8 @@ app.get('/',function(req,res,next){
 var window = app.createWindow("http://appjs/", {
   width: 640,
   height: 460,
-  x: -1,
-  y: -1,
+  left: -1,
+  top: -1,
   autoResize: false,
   resizable: false,
   showChrome: true,

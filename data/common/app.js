@@ -7,8 +7,8 @@ app.get('/',function(req,res,next){
 var window = app.createWindow("http://appjs/", {
   width: 640,
   height: 460,
-  x: -1, // remove x and y if you want to put window at center, -1 means the same
-  y: -1, // remove x and y if you want to put window at center, -1 means the same
+  left: -1, // remove x and y if you want to put window at center, -1 means the same
+  top: -1, // remove x and y if you want to put window at center, -1 means the same
   autoResize: false, // set to true if you want to change screen size dynamically using html elements
   resizable: false, // prevent users from changing screen width or height
   showChrome: true, // show border and title bar
