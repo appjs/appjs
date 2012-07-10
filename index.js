@@ -120,20 +120,16 @@ function initBrowser(){
       });
     },
     onmessage: function onmessage(msg){
-      var result = {};
+      var res = {};
       msg = decode(msg);
 
       if (msg && msg.type && appjs.events[msg.type]) {
         var listeners = appjs.events[msg.type];
-        var temp;
         for (var i=0; i < listeners.length; i++) {
-          temp = listeners[i].call(appjs, msg.msg, result);
-          if (temp != null) {
-            result = temp;
-          }
+          listeners[i].call(appjs, msg.msg, res);
         }
       }
-      return encode(result);
+      return encode(res.result === undefined ? {} : res.result);
     },
     send: function send(type, msg){
       msg = { type: type, msg: msg };
@@ -152,14 +148,14 @@ Window.prototype.__proto__ = process.EventEmitter.prototype;
 
 extend(Window.prototype, {
   onmessage: function onmessage(msg){
-    var result = {};
+    var res = {};
     msg = IPC.decode(msg);
 
     if (msg && msg.type && this._events[msg.type]) {
-      this.emit(msg.type, msg.msg, result);
+      this.emit(msg.type, msg.msg, res);
     }
 
-    return IPC.encode('result' in result ? result.result : result);
+    return IPC.encode(res.result === undefined ? {} : res.result);
   },
   send: function send(type, msg){
     msg = { type: type, msg: msg };
