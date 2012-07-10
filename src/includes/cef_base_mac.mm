@@ -16,10 +16,13 @@ void CefBase::AddWebView(CefWindowHandle ParentWidget,char* url,Settings* settin
   CefBrowserSettings browser_settings;
 
   browser_settings.web_security_disabled = settings->getBoolean("disableSecurity",false);
-  
+  if (settings->getBoolean("alphaCompositing", false)) {
+    window_info.SetTransparentPainting(TRUE);
+  }
+
   int width = settings->getNumber("width",800);
   int height = settings->getNumber("height",600);
-  
+
   window_info.SetAsChild(ParentWidget,0,0,width,height);
 
   CefBrowser::CreateBrowser(window_info,
