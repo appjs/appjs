@@ -283,13 +283,35 @@ void NativeWindow::Destroy() {
                       waitUntilDone:NO];
 };
 
-void NativeWindow::setV8Handle(v8::Handle<v8::Object> obj) {
+void NativeWindow::SetV8Handle(v8::Handle<v8::Object> obj) {
   this->v8handle_ = obj;
 }
 
 v8::Handle<v8::Object> NativeWindow::getV8Handle() {
   return this->v8handle_;
 }
+
+
+
+// begins drag, this may need to be changed
+void NativeWindow::Drag() {
+}
+void NativeWindow::SetPosition(int top, int left, int width, int height) {
+}
+void NativeWindow::SetPosition(int top, int left) {
+}
+void NativeWindow::SetSize(int width, int height) {
+}
+// update all dimension properties for window via platform api (top, left, width, height)
+// doesn't change actual dimensions, just refreshes data
+void NativeWindow::UpdatePosition(){
+}
+// optional, currently for windows since there's a particular useful API
+void NativeWindow::SetBorderWidth(int left, int right, int top, int bottom){
+}
+void NativeWindow::SetBorderWidth(int size){
+}
+
 
 
 } /* appjs */
