@@ -110,7 +110,7 @@ function download(url,onError) {
 }
 
 /**
- * Start installing CEF version 1.1092.585
+ * Start installing CEF version 1.1180.724 
  */
  
-install('1.1099.611');
+install('1.1180.724');
