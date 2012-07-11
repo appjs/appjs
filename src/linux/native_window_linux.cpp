@@ -50,7 +50,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
 //    delete biggerIconPath;
   }
 
-  gtk_window_set_default_size(GTK_WINDOW(window), width, height);
+  gtk_window_set_default_size(GTK_WINDOW(window), width_, height_);
   gtk_window_set_resizable(GTK_WINDOW(window), resizable);
   gtk_window_set_opacity(GTK_WINDOW(window), opacity);
   gtk_window_set_decorated(GTK_WINDOW(window), show_chrome);
@@ -65,16 +65,14 @@ void NativeWindow::Init(char* url, Settings* settings) {
   }
 
   if( !resizable ) {
-    gtk_widget_set_size_request(window,width,height);
+    gtk_widget_set_size_request(window,width_,height_);
   }
 
-  if( x > -1 && y > -1 ) {
-    gtk_window_move(GTK_WINDOW(window),x,y);
+  if( left_ > -1 && top_ > -1 ) {
+    gtk_window_move(GTK_WINDOW(window),left_,top_);
   } else {
     gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER_ALWAYS);
   }
-
-  g_handler->SetAutoResize(auto_resize);
 
   GtkWidget* box = gtk_vbox_new(FALSE, 0);
   gtk_container_add(GTK_CONTAINER(window), box);
@@ -121,27 +119,34 @@ int NativeWindow::ScreenHeight() {
   return gdk_screen_get_height(screen);
 }
 
-
-// begins drag, this may need to be changed
-void NativeWindow::Drag() {
-}
 void NativeWindow::SetPosition(int top, int left, int width, int height) {
+  if (handle_) {
+    GtkWindow* window = (GtkWindow*) gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
+                               GTK_TYPE_WINDOW);
+    gtk_window_move(window,top,left);
+    gtk_window_resize(window,width,height);
+  }
 }
+
 void NativeWindow::SetPosition(int top, int left) {
+  if (handle_) {
+    top_ = top;
+    left_ = left;
+    GtkWindow* window = (GtkWindow*) gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
+                               GTK_TYPE_WINDOW);
+    gtk_window_move(window,top,left);
+  }
 }
+
 void NativeWindow::SetSize(int width, int height) {
+  if (handle_) {
+    width_ = width;
+    height_ = height;
+    GtkWindow* window = (GtkWindow*) gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
+                               GTK_TYPE_WINDOW);
+    gtk_window_resize(window,width,height);
+  }
 }
-// update all dimension properties for window via platform api (top, left, width, height)
-// doesn't change actual dimensions, just refreshes data
-void NativeWindow::UpdatePosition(){
-}
-// optional, currently for windows since there's a particular useful API
-void NativeWindow::SetBorderWidth(int left, int right, int top, int bottom){
-}
-void NativeWindow::SetBorderWidth(int size){
-}
-
-
 
 
 } /* appjs */
