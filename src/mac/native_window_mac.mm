@@ -5,7 +5,7 @@
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
-#include "mac/native_window.h"
+#include "base/native_window.h"
 
 // The global ClientHandler reference.
 extern CefRefPtr<ClientHandler> g_handler;
@@ -150,7 +150,7 @@ namespace appjs {
 
 using namespace v8;
 
-NativeWindow::NativeWindow (char* url, Settings* settings) {
+void NativeWindow::Init (char* url, Settings* settings) {
   mainWndSettings = settings;
   mainWndUrl = url;
   // if it is the first time NativeWindow is called, create the Application.
@@ -169,23 +169,10 @@ NativeWindow::NativeWindow (char* url, Settings* settings) {
   // Create the delegate for browser window events.
   AppjsWindowDelegate* windowDelegate = [[AppjsWindowDelegate alloc] init];
 
-  int width = settings->getNumber("width",800);
-  int height = settings->getNumber("height",600);
-  int x = settings->getNumber("x",-1);
-  int y = settings->getNumber("y",-1);
-  double opacity = settings->getNumber("opacity",1);
-  bool show_chrome = settings->getBoolean("showChrome",true);
-  bool resizable = settings->getBoolean("resizable",true);
-  bool auto_resize = settings->getBoolean("autoResize",false);
-  bool fullscreen = settings->getBoolean("fullscreen",false);
-
-  // Set auto_resize on cef handler
-  g_handler->SetAutoResize(auto_resize);
-
   // Center the window if user didn't specified x or y
-  if( x < 0 || y < 0 ) {
-    x = (appjs::NativeWindow::ScreenWidth() - width ) / 2;
-    y = (appjs::NativeWindow::ScreenHeight() - height ) / 2;
+  if( top_ < 0 || left_ < 0 ) {
+    left_ = (appjs::NativeWindow::ScreenWidth() - width_ ) / 2;
+    top_ = (appjs::NativeWindow::ScreenHeight() - height_ ) / 2;
   }
 
   NSUInteger styles;
@@ -203,15 +190,12 @@ NativeWindow::NativeWindow (char* url, Settings* settings) {
   }
 
   // Create the main application window.
-  NSRect window_rect = { {x, y} , {width, height} };
+  NSRect window_rect = { {left_, top_} , {width_, height_} };
 
   // If we need fullscreen window, remove border and
   // set window rectangle to fit screen.
-  // TODO: there should be a better method to fullscreen
-  // window. on 10.7 we could use NSFullScreenWindowMask
   if( fullscreen ) {
     styles = NSBorderlessWindowMask;
-    window_rect = [[NSScreen mainScreen] frame];
   }
 
   // Create the window
@@ -223,27 +207,27 @@ NativeWindow::NativeWindow (char* url, Settings* settings) {
   [mainWnd setAlphaValue:opacity];
   [mainWnd setTitle:@"cefclient"];
   [mainWnd setDelegate:windowDelegate];
-
-  // Rely on the window delegate to clean us up rather than immediately
-  // releasing when the window gets closed. We use the delegate to do
-  // everything from the autorelease pool so the window isn't on the stack
-  // during cleanup (ie, a window close from javascript).
   [mainWnd setReleasedWhenClosed:YES];
+  [mainWnd setOpaque:NO];
+  [mainWnd setBackgroundColor:[NSColor clearColor]];
+
+  Wrapper* wrap = [[Wrapper alloc] initWithV8Object:this];
+  objc_setAssociatedObject(mainWnd,"nativewindow",wrap,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+
+  if(fullscreen) {
+    [mainWnd setCollectionBehavior:
+                NSWindowCollectionBehaviorFullScreenPrimary];
+    [mainWnd toggleFullScreen: nil];
+    [mainWnd setFrame:[mainWnd frameRectForContentRect:[[NSScreen mainScreen] frame]] display:YES];
+
+  }
 
   // Add browser view to newly created window.
   NSView* contentView = [mainWnd contentView];
-  this->window_ = contentView;
-  Wrapper* wrap = [[Wrapper alloc] initWithV8Object:this];
-  objc_setAssociatedObject(mainWnd,"nativewindow",wrap,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   appjs::Cef::AddWebView(contentView,url,settings);
 
-  // Keep an instance of frame, we need it for show/hide methods.
-
-  //[wrap setV8Handle:this->getV8Handle()];
-
   // Size the window.
-  [mainWnd setFrame:[mainWnd frameRectForContentRect:[mainWnd frame]] display:YES];
-
+  //[mainWnd setFrame:[mainWnd frameRectForContentRect:[mainWnd frame]] display:YES];
   // Run CEF message loop
   appjs::Cef::Run();
 
@@ -254,14 +238,14 @@ void NativeWindow::Show() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
-  [[window_ window] makeKeyAndOrderFront: nil];
+  [[browser_->GetWindowHandle() window] makeKeyAndOrderFront: nil];
 };
 
 void NativeWindow::Hide() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
-  [[window_ window] orderOut: nil];
+  [[browser_->GetWindowHandle() window] orderOut: nil];
 };
 
 int NativeWindow::ScreenWidth() {
@@ -278,24 +262,14 @@ void NativeWindow::Destroy() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
-  [[window_ window] performSelectorOnMainThread:@selector(performClose:)
+  [[browser_->GetWindowHandle() window] performSelectorOnMainThread:@selector(performClose:)
                          withObject:nil
                       waitUntilDone:NO];
 };
 
-void NativeWindow::SetV8Handle(v8::Handle<v8::Object> obj) {
-  this->v8handle_ = obj;
-}
-
-v8::Handle<v8::Object> NativeWindow::getV8Handle() {
-  return this->v8handle_;
-}
-
-
-
 // begins drag, this may need to be changed
-void NativeWindow::Drag() {
-}
+//void NativeWindow::Drag() {
+//}
 void NativeWindow::SetPosition(int top, int left, int width, int height) {
 }
 void NativeWindow::SetPosition(int top, int left) {
@@ -307,11 +281,8 @@ void NativeWindow::SetSize(int width, int height) {
 void NativeWindow::UpdatePosition(){
 }
 // optional, currently for windows since there's a particular useful API
-void NativeWindow::SetBorderWidth(int left, int right, int top, int bottom){
-}
-void NativeWindow::SetBorderWidth(int size){
-}
-
+//void NativeWindow::SetBorderWidth(int left, int right, int top, int bottom){
+//}
 
 
 } /* appjs */

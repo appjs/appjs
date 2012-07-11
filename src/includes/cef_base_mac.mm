@@ -1,3 +1,4 @@
+#import <Cocoa/Cocoa.h>
 #include "include/cef_app.h"
 #include "includes/cef_handler.h"
 #include "includes/cef_base_mac.h"
@@ -16,14 +17,14 @@ void CefBase::AddWebView(CefWindowHandle ParentWidget,char* url,Settings* settin
   CefBrowserSettings browser_settings;
 
   browser_settings.web_security_disabled = settings->getBoolean("disableSecurity",false);
+
   if (settings->getBoolean("alphaCompositing", false)) {
-    window_info.SetTransparentPainting(TRUE);
+    window_info.SetTransparentPainting(true);
   }
 
-  int width = settings->getNumber("width",800);
-  int height = settings->getNumber("height",600);
+  NSRect contentFrame = [ParentWidget frame];
 
-  window_info.SetAsChild(ParentWidget,0,0,width,height);
+  window_info.SetAsChild(ParentWidget,0,0,contentFrame.size.width,contentFrame.size.height);
 
   CefBrowser::CreateBrowser(window_info,
                                 g_handler.get(),

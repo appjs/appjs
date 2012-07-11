@@ -75,12 +75,9 @@ private:
   Settings* icons;
 #if defined(__WIN__)
   bool blur_;
-#endif
-#if defined(__LINUX__)
-  double opacity;
-#else
   bool alpha;
 #endif
+  double opacity;
 };
 
 } /* appjs */

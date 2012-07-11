@@ -32,6 +32,16 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
   gtk_window_set_title(GTK_WINDOW(window), titleStr.c_str());
 }
 
+bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, KeyEventType type, int code,
+                               int modifiers, bool isSystemKey, bool isAfterJavaScript) {
+
+  if (!browser->IsPopup() && type == KEYEVENT_RAWKEYDOWN && code == 123) {
+    browser->ShowDevTools();
+    return true;
+  }
+  return false;
+};
+
 void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
                                     CefRefPtr<CefFrame> frame,
                                     int width,

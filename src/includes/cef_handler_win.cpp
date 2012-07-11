@@ -33,6 +33,16 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
   SetWindowText(hwnd,std::basic_string<TCHAR>(title).c_str());
 }
 
+bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, KeyEventType type, int code,
+                               int modifiers, bool isSystemKey, bool isAfterJavaScript) {
+
+  if (!browser->IsPopup() && type == KEYEVENT_RAWKEYDOWN && code == VK_F12) {
+    browser->ShowDevTools();
+    return true;
+  }
+  return false;
+};
+
 void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
                                     CefRefPtr<CefFrame> frame,
                                     int width,

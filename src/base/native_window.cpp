@@ -13,9 +13,8 @@ NativeWindow::NativeWindow(char* url, Settings* settings){
   height_ = settings->getNumber("height",600);
   left_ = settings->getNumber("left",-1);
   top_ = settings->getNumber("top",-1);
-#if defined(__LINUX__)
   opacity = settings->getNumber("opacity",1);
-#else
+#if defined(__WIN__)
   alpha = settings->getBoolean("alpha",false);
 #endif
   show_chrome = settings->getBoolean("showChrome",true);
@@ -24,7 +23,7 @@ NativeWindow::NativeWindow(char* url, Settings* settings){
   auto_resize = settings->getBoolean("autoResize",false);
   fullscreen = settings->getBoolean("fullscreen",false);
   icons = new Settings(settings->getObject("icons", Object::New()));
-
+  g_handler->SetAutoResize(auto_resize);
   this->Init(url, settings);
 
   Cef::Run();

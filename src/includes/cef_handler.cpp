@@ -103,7 +103,7 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     DoClose(browser);
   }
 
-#if defined(__WIN__)
+#if not defined(__LINUX__)
   if (!browser->IsPopup()) {
     delete ClientHandler::GetWindow(browser);
   }
@@ -123,18 +123,6 @@ void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
     node::MakeCallback(handle,"emit",argc,argv);
   }
 }
-
-
-bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, KeyEventType type, int code,
-                               int modifiers, bool isSystemKey, bool isAfterJavaScript) {
-  if (!browser->IsPopup() && type == KEYEVENT_RAWKEYDOWN && code == VK_F12) {
-    browser->ShowDevTools();
-    return true;
-  }
-  return false;
-};
-
-
 
 void ClientHandler::SetMainHwnd(CefWindowHandle& hwnd) {
   AutoLock lock_scope(this);

@@ -26,14 +26,14 @@ CefWindowHandle ClientHandler::GetMainHwnd(){
 NativeWindow* ClientHandler::GetWindow(CefRefPtr<CefBrowser> browser){
   NSView* view = (NSView*)browser->GetWindowHandle();
   NSWindow* win = [view window];
-  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win, "NativeWindow");
+  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win, "nativewindow");
   NativeWindow* window = [wrap handle];
   return window;
 }
 
 NativeWindow* ClientHandler::GetWindow(CefWindowHandle handle){
   NSWindow* win = (NSWindow*)handle;
-  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win, "NativeWindow");
+  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win, "nativewindow");
   NativeWindow* window = [wrap handle];
   return window;
 }
@@ -51,6 +51,17 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
   NSString* str = [NSString stringWithUTF8String:titleStr.c_str()];
   [window setTitle:str];
 }
+
+bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, KeyEventType type, int code,
+                               int modifiers, bool isSystemKey, bool isAfterJavaScript) {
+
+  //TODO detect key squence to show dev tools.
+  if (!browser->IsPopup() && type == KEYEVENT_RAWKEYDOWN) {
+  //  browser->ShowDevTools();
+    //return true;
+  }
+  return false;
+};
 
 void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
                                     CefRefPtr<CefFrame> frame,
