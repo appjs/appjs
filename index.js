@@ -5,7 +5,6 @@ var path = require('path'),
 var App = bindings.App,
     Window = bindings.Window;
 
-
 function extend(obj){
   var desc = { enumerable: false, configurable: true, writable: true };
   for (var i=1; i < arguments.length; i++) {
@@ -37,6 +36,9 @@ extend(App.prototype, {
     var win = createWin.call(this, url, settings);
     this.windows.push(win);
     win.once('ready', function(){
+      if (process.platform === 'win32') {
+        require('./lib/windowStyles')(win);
+      }
       win.runInBrowser(initBrowser);
     });
     return win;

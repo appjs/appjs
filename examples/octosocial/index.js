@@ -11,12 +11,12 @@ var github = new Github({version: '3.0.0',debug:true})
 var windowSettings = {
   width: 460,
   height: 640,
-  x: -1, // remove x and y if you want to put window at center, -1 means the same
-  y: -1, // remove x and y if you want to put window at center, -1 means the same
+  left: -1, // remove x and y if you want to put window at center, -1 means the same
+  top: -1, // remove x and y if you want to put window at center, -1 means the same
   autoResize: false, // set to true if you want to change screen size dynamically using html elements
   resizable: false, // prevent users from changing screen width or height
   showChrome: true, // show border and title bar
-  opacity:1, // you can set opacity of window. 
+  opacity:1, // you can set opacity of window.
   fullscreen:false, // we don't need fullscreen window
   showResizeGrip:false, // resize grip is an annoying triangle at the right bottom corner of window
   disableSecurity:true, // allow cross origin requests
@@ -69,7 +69,7 @@ app.post('/login',function(req,res,next){
         res.send(401,{error:'Login Failed. Try Again.'});
         return;
       }
-      
+
       res.send(200,result);
   });
 
@@ -81,7 +81,7 @@ app.get('/followers',function(req,res,next){
       res.send(200,{error:'Could not get followers list'});
       return;
     }
-    
+
     res.send(200,result);
   })
 });
@@ -92,7 +92,7 @@ app.get('/following',function(req,res,next){
       res.send(200,{error:'Could not get following list'});
       return;
     }
-    
+
     res.send(200,result);
   })
 });

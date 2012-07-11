@@ -14,12 +14,40 @@ public:
   ~NativeWindow();
   void Init(char* url, Settings* settings);
 
+  static int ScreenWidth();
+  static int ScreenHeight();
+
   void Show();
   void Hide();
   void Destroy();
 
-  static int ScreenWidth();
-  static int ScreenHeight();
+  void SetPosition(int top, int left, int width, int height);
+  void SetPosition(int top, int left);
+  void SetSize(int width, int height);
+  void UpdatePosition(int top, int left, int width, int height);
+  void UpdatePosition();
+
+  void SetLeft(int left);
+  void SetTop(int top);
+  void SetWidth(int width);
+  void SetHeight(int height);
+  int GetLeft();
+  int GetTop();
+  int GetWidth();
+  int GetHeight();
+
+#if defined(__WIN__)
+  void Drag();
+  void SetNonclientWidth(int left, int right, int top, int bottom);
+  void SetNonclientWidth(int size);
+  void SetBlur(bool blur);
+  bool GetBlur();
+  void NativeWindow::SetStyle(long style);
+  long NativeWindow::GetStyle();
+  void NativeWindow::SetExStyle(long style);
+  long NativeWindow::GetExStyle();
+#endif
+
 
   void OpenDevTools();
   void CloseDevTools();
@@ -36,16 +64,23 @@ private:
   v8::Handle<v8::Object> v8handle_;
   CefRefPtr<CefBrowser> browser_;
 
-  int width;
-  int height;
-  int x;
-  int y;
-  double opacity;
+  int width_;
+  int height_;
+  int left_;
+  int top_;
   bool show_chrome;
   bool resizable;
   bool show_resize_grip;
   bool fullscreen;
   Settings* icons;
+#if defined(__WIN__)
+  bool blur_;
+#endif
+#if defined(__LINUX__)
+  double opacity;
+#else
+  bool alpha;
+#endif
 };
 
 } /* appjs */

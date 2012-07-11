@@ -25,6 +25,20 @@ void Window::Init () {
   DEFINE_PROTOTYPE_METHOD("destroy", Destroy);
   DEFINE_PROTOTYPE_METHOD("runInBrowser", RunInBrowser);
   DEFINE_PROTOTYPE_METHOD("send", SendSync);
+  DEFINE_PROTOTYPE_METHOD("setPosition", SetPosition);
+  DEFINE_PROTOTYPE_METHOD("setSize", SetSize);
+  CREATE_CPP_ACCESSOR("left", Left);
+  CREATE_CPP_ACCESSOR("top", Top);
+  CREATE_CPP_ACCESSOR("height", Height);
+  CREATE_CPP_ACCESSOR("width", Width);
+
+#if defined(__WIN__)
+  DEFINE_PROTOTYPE_METHOD("drag", Drag);
+  DEFINE_PROTOTYPE_METHOD("setNonclientWidth", SetNonclientWidth);
+  CREATE_CPP_ACCESSOR("blur", Blur);
+  CREATE_CPP_ACCESSOR("style", Style);
+  CREATE_CPP_ACCESSOR("extendedStyle", ExStyle);
+#endif
 
   END_CONSTRUCTOR();
 }
@@ -54,6 +68,36 @@ Handle<Value> Window::NewInstance(const Arguments& args) {
   Local<Object> instance = constructor->NewInstance(argc, argv);
 
   return scope.Close(instance);
+}
+
+
+
+Handle<Value> Window::SetPosition(const Arguments& args) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+
+  int top = args[0]->Int32Value();
+  int left = args[1]->Int32Value();
+  if (args[2]->IsNumber()) {
+    int width = args[2]->Int32Value();
+    int height = args[3]->Int32Value();
+    window->SetPosition(top, left, width, height);
+  } else {
+    window->SetPosition(top, left);
+  }
+
+  return scope.Close(args.This());
+}
+
+Handle<Value> Window::SetSize(const Arguments& args) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+
+  int width = args[0]->Int32Value();
+  int height = args[1]->Int32Value();
+  window->SetSize(width, height);
+
+  return scope.Close(args.This());
 }
 
 Handle<Value> Window::OpenDevTools(const Arguments& args) {
@@ -148,5 +192,105 @@ Handle<Value> Window::SendSync(const Arguments& args) {
   return scope.Close(Undefined());
 }
 
+
+Handle<Value> Window::GetLeft(Local<String> property, const AccessorInfo &info) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  return scope.Close(Integer::New(window->GetLeft()));
+}
+
+Handle<Value> Window::GetTop(Local<String> property, const AccessorInfo &info) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  return scope.Close(Integer::New(window->GetTop()));
+}
+
+Handle<Value> Window::GetWidth(Local<String> property, const AccessorInfo &info) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  return scope.Close(Integer::New(window->GetWidth()));
+}
+
+Handle<Value> Window::GetHeight(Local<String> property, const AccessorInfo &info) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  return scope.Close(Integer::New(window->GetHeight()));
+}
+
+
+void Window::SetLeft(Local<String> property, Local<Value> value, const AccessorInfo& info) {
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  window->SetLeft(value->Int32Value());
+}
+
+void Window::SetTop(Local<String> property, Local<Value> value, const AccessorInfo& info) {
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  window->SetTop(value->Int32Value());
+}
+void Window::SetWidth(Local<String> property, Local<Value> value, const AccessorInfo& info) {
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  window->SetWidth(value->Int32Value());
+}
+void Window::SetHeight(Local<String> property, Local<Value> value, const AccessorInfo& info) {
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  window->SetHeight(value->Int32Value());
+}
+
+
+
+
+#if defined(__WIN__)
+Handle<Value> Window::Drag(const Arguments& args) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
+  window->Drag();
+  return scope.Close(args.This());
+}
+
+Handle<Value> Window::SetNonclientWidth(const Arguments& args) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+
+  if (args.Length() == 4) {
+    int top = args[0]->Int32Value();
+    int left = args[1]->Int32Value();
+    int right = args[2]->Int32Value();
+    int bottom = args[3]->Int32Value();
+    window->SetNonclientWidth(top, left, right, bottom);
+  } else {
+    window->SetNonclientWidth(args[0]->Int32Value());
+  }
+
+  return scope.Close(args.This());
+}
+
+Handle<Value> Window::GetBlur(Local<String> property, const AccessorInfo &info) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  return scope.Close(Boolean::New(window->GetBlur()));
+}
+Handle<Value> Window::GetStyle(Local<String> property, const AccessorInfo &info) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  return scope.Close(Integer::New(window->GetStyle()));
+}
+Handle<Value> Window::GetExStyle(Local<String> property, const AccessorInfo &info) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  return scope.Close(Integer::New(window->GetExStyle()));
+}
+void Window::SetBlur(Local<String> property, Local<Value> value, const AccessorInfo& info) {
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  window->SetBlur(value->BooleanValue());
+}
+void Window::SetStyle(Local<String> property, Local<Value> value, const AccessorInfo& info) {
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  window->SetStyle(value->Int32Value());
+}
+void Window::SetExStyle(Local<String> property, Local<Value> value, const AccessorInfo& info) {
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  window->SetExStyle(value->Int32Value());
+}
+#endif
 
 } /* appjs */

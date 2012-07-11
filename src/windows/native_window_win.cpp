@@ -4,6 +4,7 @@
 #define min(left,right) std::min(left,right)
 #define max(left,right) std::max(left,right)
 #include <gdiplus.h>
+#include <dwmapi.h>
 #include "appjs.h"
 #include "includes/cef.h"
 #include "includes/util.h"
@@ -26,8 +27,28 @@ HICON bigIcon;
 Settings* browserSettings;
 char* url_;
 
+
+void UpdateStyle(HWND hwnd, int index, LONG value){
+  SetWindowLong(hwnd, index, value);
+  SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
+}
+
+void BlurBehind(HWND hwnd, bool enable){
+  DWM_BLURBEHIND bb = {0};
+  bb.fEnable = enable;
+  bb.hRgnBlur = NULL;
+  bb.dwFlags = DWM_BB_ENABLE;
+  DwmEnableBlurBehindWindow(hwnd, &bb);
+}
+
+
+
 void NativeWindow::Init(char* url, Settings* settings) {
+
   url_ = url;
+  blur_ = settings->getBoolean("blur", false);
+
+
   if( !g_handler->GetBrowserHwnd() ) {
 
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
@@ -59,24 +80,20 @@ void NativeWindow::Init(char* url, Settings* settings) {
 
 
   if(!MyRegisterClass(hInstance)){
-	  //TODO send error to node
-	  if( GetLastError() != 1410 ) { //1410: Class Already Registered
-	    fprintf(stderr,"Error occurred: ");
-	    fprintf(stderr,"%d\n",GetLastError());
-	    return;
-	  }
+    //TODO send error to node
+    if( GetLastError() != 1410 ) { //1410: Class Already Registered
+      fprintf(stderr,"Error occurred: ");
+      fprintf(stderr,"%d\n",GetLastError());
+      return;
+    }
   };
 
-  DWORD commonStyle = WS_CLIPCHILDREN;
+  DWORD commonStyle = WS_OVERLAPPEDWINDOW;
   DWORD style;
 
-  // set resizable
   if( !resizable ) {
-    style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
-  } else {
-    style = WS_OVERLAPPEDWINDOW;
+    style &= ~(WS_THICKFRAME);
   }
-
   // set chrome
   if( show_chrome ) {
     commonStyle |= style;
@@ -84,27 +101,29 @@ void NativeWindow::Init(char* url, Settings* settings) {
     commonStyle |= WS_POPUP;
   }
 
-  if( x < 0 || y < 0 ) {
-    x = (GetSystemMetrics(SM_CXSCREEN) - width) / 2;
-    y = (GetSystemMetrics(SM_CYSCREEN) - height) / 2;
+  if( left_ < 0 || top_ < 0 ) {
+    left_ = (GetSystemMetrics(SM_CXSCREEN) - width_) / 2;
+    top_ = (GetSystemMetrics(SM_CYSCREEN) - height_) / 2;
   }
   // Perform application initialization
   browser_ = NULL;
-  handle_ = CreateWindowEx(NULL, szWindowClass,"", commonStyle, x, y, width, height, NULL, NULL, hInstance, NULL);
+  handle_ = CreateWindowEx(WS_EX_APPWINDOW, szWindowClass,"", WS_THICKFRAME, top_, left_, width_, height_, NULL, NULL, hInstance, NULL);
 
   if (!handle_) {
-	  //TODO send error to node
-	  fprintf(stderr,"Error occurred: ");
-	  fprintf(stderr,"%d\n",GetLastError());
-	  return;
+    //TODO send error to node
+    fprintf(stderr,"Error occurred: ");
+    fprintf(stderr,"%d\n",GetLastError());
+    return;
   }
 
-  //set window opacity
-  SetWindowLong(handle_, GWL_EXSTYLE, GetWindowLong(handle_, GWL_EXSTYLE) | WS_EX_LAYERED);
   SetWindowLongPtr(handle_,GWLP_USERDATA, (LONG)this);
-  SetLayeredWindowAttributes(handle_, 0, 255 * opacity, LWA_ALPHA);
+
+  if (alpha) {
+    SetBlur(true);
+  }
 
   UpdateWindow(handle_);
+
 
   Cef::Run();
 };
@@ -136,23 +155,109 @@ void NativeWindow::Destroy() {
   }
 }
 
-// Register Class
-ATOM MyRegisterClass(HINSTANCE hInstance) {
-  WNDCLASSEX wcex;
+void NativeWindow::Drag() {
+  if (handle_) {
+    ReleaseCapture();
+    SendMessage(handle_, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+  }
+}
 
-  wcex.cbSize = sizeof(WNDCLASSEX);
+void NativeWindow::SetPosition(int top, int left, int width, int height) {
+  if (handle_) {
+    UpdatePosition(top, left, width, height);
+    SetWindowPos(handle_, NULL, top, left, width, height, NULL);
+  }
+}
+
+void NativeWindow::SetPosition(int top, int left) {
+  if (handle_) {
+    top_ = top;
+    left_ = left;
+    SetWindowPos(handle_, NULL, top, left, NULL, NULL, SWP_NOSIZE);
+  }
+}
+
+void NativeWindow::SetSize(int width, int height) {
+  if (handle_) {
+    width_ = width;
+    height_ = height;
+    SetWindowPos(handle_, NULL, NULL, NULL, width, height, SWP_NOMOVE);
+  }
+}
+
+
+
+long NativeWindow::GetStyle() {
+  return GetWindowLong(handle_, GWL_STYLE);
+}
+
+long NativeWindow::GetExStyle() {
+  return GetWindowLong(handle_, GWL_EXSTYLE);
+}
+
+void NativeWindow::SetStyle(long style) {
+  UpdateStyle(handle_, GWL_STYLE, style);
+}
+
+void NativeWindow::SetExStyle(long style) {
+  UpdateStyle(handle_, GWL_EXSTYLE, style);
+}
+
+
+
+bool NativeWindow::GetBlur() {
+  return blur_;
+}
+
+void NativeWindow::SetBlur(bool blur){
+  blur_ = blur;
+  BlurBehind(handle_, blur);
+}
+
+
+void NativeWindow::UpdatePosition(){
+  RECT rect;
+  GetClientRect(handle_, &rect);
+  width_ = rect.right - rect.left;
+  height_ = rect.bottom - rect.top;
+  left_ = rect.left;
+  top_ = rect.top;
+}
+
+
+void NativeWindow::SetNonclientWidth(int left, int right, int top, int bottom){
+  if (handle_) {
+    MARGINS margins = {left, right, top, bottom};
+    DwmExtendFrameIntoClientArea(handle_, &margins);
+  }
+}
+
+
+
+void NativeWindow::SetNonclientWidth(int size){
+  if (handle_) {
+    MARGINS margins = {size, size, size, size};
+    DwmExtendFrameIntoClientArea(handle_, &margins);
+  }
+}
+
+
+
+
+ATOM MyRegisterClass(HINSTANCE hInst) {
+  WNDCLASSEX wcex = {0};
+  wcex.cbSize        = sizeof(WNDCLASSEX);
   wcex.style         = CS_HREDRAW | CS_VREDRAW;
   wcex.lpfnWndProc   = WndProc;
   wcex.cbClsExtra    = 0;
   wcex.cbWndExtra    = 0;
-  wcex.hInstance     = hInstance;
+  wcex.hInstance     = hInst;
   wcex.hIcon         = bigIcon;
   wcex.hIconSm       = smallIcon;
   wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
-  wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
   wcex.lpszMenuName  = NULL;
+  wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
   wcex.lpszClassName = szWindowClass;
-
   return RegisterClassEx(&wcex);
 }
 
@@ -163,11 +268,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
   switch (message) {
     case WM_CREATE: {
       NativeWindow* window = ClientHandler::GetWindow(hwnd);
-	    RECT rect;
-	    GetClientRect(hwnd, &rect);
+      RECT rect;
+      GetClientRect(hwnd, &rect);
 
       // Initialize window info to the defaults for a child window
-	    Cef::AddWebView(hwnd, rect, url_, browserSettings);
+      Cef::AddWebView(hwnd, rect, url_, browserSettings);
       return 0;
     }
     case WM_PAINT: {
@@ -187,40 +292,33 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
     case WM_SIZE: {
       NativeWindow* window = ClientHandler::GetWindow(hwnd);
       if (window->GetBrowser()) {
-        // Resize the browser window to match the new frame
-        // window size
-
-        //TODO this code only resizes main browser. What if we have multiple browsers?
-        /*RECT rect;
-        GetClientRect(handle_, &rect);
-
+        RECT r;
+        GetClientRect(hwnd, &r);
         HDWP hdwp = BeginDeferWindowPos(1);
-        hdwp = DeferWindowPos(hdwp, g_handler->GetBrowserHwnd(), NULL,
-          rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top,
-          SWP_NOZORDER);
-        EndDeferWindowPos(hdwp);*/
+        hdwp = DeferWindowPos(hdwp, window->GetBrowser()->GetWindowHandle(), NULL, r.left, r.top, r.right - r.left, r.bottom - r.top, SWP_NOZORDER);
+        EndDeferWindowPos(hdwp);
       }
       break;
     }
-    case WM_ERASEBKGND: {
-      NativeWindow* window = ClientHandler::GetWindow(hwnd);
-      if (window->GetBrowser()) {
-        // Dont erase the background if the browser window has been loaded
-        // (this avoids flashing)
-        return 0;
-      }
-      break;
-    }
+    case WM_ERASEBKGND:
+      return 1;
+    // case WM_ERASEBKGND: {
+    //   NativeWindow* window = ClientHandler::GetWindow(hwnd);
+    //   if (window->GetBrowser()) {
+    //     // Dont erase the background if the browser window has been loaded
+    //     // (this avoids flashing)
+    //     return 0;
+    //   }
     case WM_CLOSE: {
       NativeWindow* window = ClientHandler::GetWindow(hwnd);
       if (window->GetBrowser()) {
         window->GetBrowser()->ParentWindowWillClose();
       }
-      break;
     }
-      /*case WM_DESTROY:
-        //PostQuitMessage(0);
-      return 0;*/
+    break;
+    //case WM_DESTROY:
+    //  PostQuitMessage(0);
+
   }
 
   return DefWindowProc(hwnd, message, wParam, lParam);

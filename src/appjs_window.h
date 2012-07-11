@@ -19,7 +19,20 @@ class Window : public node::ObjectWrap {
   DEFINE_CPP_METHOD(Destroy);
   DEFINE_CPP_METHOD(RunInBrowser);
   DEFINE_CPP_METHOD(SendSync);
+  DEFINE_CPP_METHOD(SetPosition);
+  DEFINE_CPP_METHOD(SetSize);
+  DEFINE_CPP_ACCESSOR(Left);
+  DEFINE_CPP_ACCESSOR(Top);
+  DEFINE_CPP_ACCESSOR(Height);
+  DEFINE_CPP_ACCESSOR(Width);
 
+#if defined(__WIN__)
+  DEFINE_CPP_METHOD(Drag);
+  DEFINE_CPP_METHOD(SetNonclientWidth);
+  DEFINE_CPP_ACCESSOR(Blur);
+  DEFINE_CPP_ACCESSOR(Style);
+  DEFINE_CPP_ACCESSOR(ExStyle);
+#endif
 };
 
 } /* appjs */

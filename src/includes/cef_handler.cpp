@@ -125,6 +125,17 @@ void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
 }
 
 
+bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, KeyEventType type, int code,
+                               int modifiers, bool isSystemKey, bool isAfterJavaScript) {
+  if (!browser->IsPopup() && type == KEYEVENT_RAWKEYDOWN && code == VK_F12) {
+    browser->ShowDevTools();
+    return true;
+  }
+  return false;
+};
+
+
+
 void ClientHandler::SetMainHwnd(CefWindowHandle& hwnd) {
   AutoLock lock_scope(this);
 

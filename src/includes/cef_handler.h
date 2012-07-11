@@ -85,6 +85,14 @@ public:
                          CefRefPtr<CefFrame> frame,
                          int httpStatusCode) OVERRIDE;
 
+
+  virtual bool OnKeyEvent(CefRefPtr<CefBrowser> browser,
+                          KeyEventType type,
+                          int code,
+                          int modifiers,
+                          bool isSystemKey,
+                          bool isAfterJavaScript) OVERRIDE;
+
   // The child browser window
   CefRefPtr<CefBrowser> m_Browser;
 
