@@ -11,3 +11,4 @@ data/win/node-bin/node
 *.sln
 node.exe
 /deps/
+.DS_Store
