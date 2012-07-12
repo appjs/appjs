@@ -124,7 +124,6 @@ void NativeWindow::Init(char* url, Settings* settings) {
 
   UpdateWindow(handle_);
 
-
   Cef::Run();
 };
 
@@ -137,31 +136,34 @@ int NativeWindow::ScreenHeight() {
   return GetSystemMetrics(SM_CYSCREEN);
 }
 
+void NativeWindow::Minimize() {
+  ShowWindow(handle_, SW_MINIMIZE);
+}
+
+void NativeWindow::Maximize() {
+  ShowWindow(handle_, SW_MAXIMIZE);
+}
+
+void NativeWindow::Restore() {
+  ShowWindow(handle_, SW_RESTORE);
+}
+
 void NativeWindow::Show() {
-  if (browser_) {
-    ShowWindow(handle_, SW_SHOW);
-  }
+  ShowWindow(handle_, SW_SHOW);
 }
 
 void NativeWindow::Hide() {
-  if (browser_) {
-    ShowWindow(handle_, SW_HIDE);
-  }
+  ShowWindow(handle_, SW_HIDE);
 }
 
 void NativeWindow::Destroy() {
-  if (browser_) {
-    CloseWindow(handle_);
-  }
+  CloseWindow(handle_);
 }
 
 void NativeWindow::Drag() {
-  if (handle_) {
-    ReleaseCapture();
-    SendMessage(handle_, WM_NCLBUTTONDOWN, HTCAPTION, 0);
-  }
+  ReleaseCapture();
+  SendMessage(handle_, WM_NCLBUTTONDOWN, HTCAPTION, 0);
 }
-
 void NativeWindow::SetPosition(int top, int left, int width, int height) {
   if (handle_) {
     UpdatePosition(top, left, width, height);
@@ -184,6 +186,18 @@ void NativeWindow::SetSize(int width, int height) {
     SetWindowPos(handle_, NULL, NULL, NULL, width, height, SWP_NOMOVE);
   }
 }
+
+void NativeWindow::UpdatePosition(){
+  RECT rect;
+  GetClientRect(handle_, &rect);
+  width_ = rect.right - rect.left;
+  height_ = rect.bottom - rect.top;
+  left_ = rect.left;
+  top_ = rect.top;
+}
+
+
+
 
 
 
@@ -214,15 +228,6 @@ void NativeWindow::SetBlur(bool blur){
   BlurBehind(handle_, blur);
 }
 
-
-void NativeWindow::UpdatePosition(){
-  RECT rect;
-  GetClientRect(handle_, &rect);
-  width_ = rect.right - rect.left;
-  height_ = rect.bottom - rect.top;
-  left_ = rect.left;
-  top_ = rect.top;
-}
 
 
 void NativeWindow::SetNonclientWidth(int left, int right, int top, int bottom){

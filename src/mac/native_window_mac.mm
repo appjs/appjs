@@ -267,9 +267,19 @@ void NativeWindow::Destroy() {
                       waitUntilDone:NO];
 };
 
+
+void NativeWindow::Minimize() {
+}
+
+void NativeWindow::Maximize() {
+}
+
+void NativeWindow::Restore() {
+}
+
 // begins drag, this may need to be changed
-//void NativeWindow::Drag() {
-//}
+void NativeWindow::Drag() {
+}
 void NativeWindow::SetPosition(int top, int left, int width, int height) {
 }
 void NativeWindow::SetPosition(int top, int left) {
@@ -280,10 +290,6 @@ void NativeWindow::SetSize(int width, int height) {
 // doesn't change actual dimensions, just refreshes data
 void NativeWindow::UpdatePosition(){
 }
-// optional, currently for windows since there's a particular useful API
-//void NativeWindow::SetBorderWidth(int left, int right, int top, int bottom){
-//}
-
 
 } /* appjs */
 

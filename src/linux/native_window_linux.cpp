@@ -148,5 +148,18 @@ void NativeWindow::SetSize(int width, int height) {
   }
 }
 
+// Start dragging and continue until mouse releases. API may need to change/be more complicated.
+void NativeWindow::Drag() {
+}
+
+void NativeWindow::Minimize() {
+}
+
+void NativeWindow::Maximize() {
+}
+
+void NativeWindow::Restore() {
+}
+
 
 } /* appjs */

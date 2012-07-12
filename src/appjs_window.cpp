@@ -20,6 +20,10 @@ void Window::Init () {
 
   DEFINE_PROTOTYPE_METHOD("openDevTools", OpenDevTools);
   DEFINE_PROTOTYPE_METHOD("closeDevTools", CloseDevTools);
+  DEFINE_PROTOTYPE_METHOD("minimize", Minimize);
+  DEFINE_PROTOTYPE_METHOD("maximize", Maximize);
+  DEFINE_PROTOTYPE_METHOD("restore", Restore);
+  DEFINE_PROTOTYPE_METHOD("drag", Drag);
   DEFINE_PROTOTYPE_METHOD("show", Show);
   DEFINE_PROTOTYPE_METHOD("hide", Hide);
   DEFINE_PROTOTYPE_METHOD("destroy", Destroy);
@@ -33,7 +37,6 @@ void Window::Init () {
   CREATE_CPP_ACCESSOR("width", Width);
 
 #if defined(__WIN__)
-  DEFINE_PROTOTYPE_METHOD("drag", Drag);
   DEFINE_PROTOTYPE_METHOD("setNonclientWidth", SetNonclientWidth);
   CREATE_CPP_ACCESSOR("blur", Blur);
   CREATE_CPP_ACCESSOR("style", Style);
@@ -118,6 +121,34 @@ Handle<Value> Window::CloseDevTools(const Arguments& args) {
   return scope.Close(args.This());
 }
 
+Handle<Value> Window::Drag(const Arguments& args) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+  window->Drag();
+  return scope.Close(args.This());
+}
+
+Handle<Value> Window::Minimize(const Arguments& args) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+  window->Minimize();
+  return scope.Close(args.This());
+}
+
+Handle<Value> Window::Maximize(const Arguments& args) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+  window->Maximize();
+  return scope.Close(args.This());
+}
+
+Handle<Value> Window::Restore(const Arguments& args) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+  window->Restore();
+  return scope.Close(args.This());
+}
+
 Handle<Value> Window::Show(const Arguments& args) {
   HandleScope scope;
 
@@ -193,6 +224,11 @@ Handle<Value> Window::SendSync(const Arguments& args) {
 }
 
 
+
+
+
+
+
 Handle<Value> Window::GetLeft(Local<String> property, const AccessorInfo &info) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
@@ -240,12 +276,6 @@ void Window::SetHeight(Local<String> property, Local<Value> value, const Accesso
 
 
 #if defined(__WIN__)
-Handle<Value> Window::Drag(const Arguments& args) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
-  window->Drag();
-  return scope.Close(args.This());
-}
 
 Handle<Value> Window::SetNonclientWidth(const Arguments& args) {
   HandleScope scope;

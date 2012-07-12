@@ -14,6 +14,10 @@ class Window : public node::ObjectWrap {
 
   DEFINE_CPP_METHOD(OpenDevTools);
   DEFINE_CPP_METHOD(CloseDevTools);
+  DEFINE_CPP_METHOD(Minimize);
+  DEFINE_CPP_METHOD(Maximize);
+  DEFINE_CPP_METHOD(Restore);
+  DEFINE_CPP_METHOD(Drag);
   DEFINE_CPP_METHOD(Show);
   DEFINE_CPP_METHOD(Hide);
   DEFINE_CPP_METHOD(Destroy);
@@ -27,7 +31,6 @@ class Window : public node::ObjectWrap {
   DEFINE_CPP_ACCESSOR(Width);
 
 #if defined(__WIN__)
-  DEFINE_CPP_METHOD(Drag);
   DEFINE_CPP_METHOD(SetNonclientWidth);
   DEFINE_CPP_ACCESSOR(Blur);
   DEFINE_CPP_ACCESSOR(Style);

@@ -17,6 +17,10 @@ public:
   static int ScreenWidth();
   static int ScreenHeight();
 
+  void Drag();
+  void Minimize();
+  void Maximize();
+  void Restore();
   void Show();
   void Hide();
   void Destroy();
@@ -36,16 +40,16 @@ public:
   int GetWidth();
   int GetHeight();
 
+
 #if defined(__WIN__)
-  void Drag();
   void SetNonclientWidth(int left, int right, int top, int bottom);
   void SetNonclientWidth(int size);
   void SetBlur(bool blur);
   bool GetBlur();
-  void NativeWindow::SetStyle(long style);
-  long NativeWindow::GetStyle();
-  void NativeWindow::SetExStyle(long style);
-  long NativeWindow::GetExStyle();
+  void SetStyle(long style);
+  long GetStyle();
+  void SetExStyle(long style);
+  long GetExStyle();
 #endif
 
 
