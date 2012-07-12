@@ -46,10 +46,8 @@ public:
   void SetNonclientWidth(int size);
   void SetBlur(bool blur);
   bool GetBlur();
-  void SetStyle(long style);
-  long GetStyle();
-  void SetExStyle(long style);
-  long GetExStyle();
+  void SetStyle(long style, bool extended);
+  long GetStyle(bool extended);
 #endif
 
 

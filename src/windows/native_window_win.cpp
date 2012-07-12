@@ -199,23 +199,15 @@ void NativeWindow::UpdatePosition(){
 
 
 
-
-
-long NativeWindow::GetStyle() {
-  return GetWindowLong(handle_, GWL_STYLE);
+long NativeWindow::GetStyle(bool extended) {
+  return GetWindowLong(handle_, extended ? GWL_EXSTYLE : GWL_STYLE);
 }
 
-long NativeWindow::GetExStyle() {
-  return GetWindowLong(handle_, GWL_EXSTYLE);
+void NativeWindow::SetStyle(long style, bool extended) {
+  UpdateStyle(handle_, extended ? GWL_EXSTYLE : GWL_STYLE, style);
 }
 
-void NativeWindow::SetStyle(long style) {
-  UpdateStyle(handle_, GWL_STYLE, style);
-}
 
-void NativeWindow::SetExStyle(long style) {
-  UpdateStyle(handle_, GWL_EXSTYLE, style);
-}
 
 
 
