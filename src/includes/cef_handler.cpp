@@ -90,6 +90,10 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     Handle<Object> handle = ClientHandler::GetV8WindowHandle(browser);
     Handle<Value> argv[1] = {String::New("close")};
     node::MakeCallback(handle,"emit",1,argv);
+#else
+    // How to define argv without {} ? it segfaults in linux
+    // if I define it like Handle<Value> argv; or Handle<Value> argv[];
+    Handle<Value> argv[1] = {String::New("exit")};
 #endif
 
     if (m_BrowserHwnd == browser->GetWindowHandle()) {
@@ -97,9 +101,8 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
       Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
       Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
 
-      argv[1] = String::New("exit");
+      argv[1] = {String::New("exit")};
       node::MakeCallback(emitter,"emit",1,argv);
-
       DoClose(browser);
     }
 
