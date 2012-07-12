@@ -137,23 +137,23 @@ int NativeWindow::ScreenHeight() {
 }
 
 void NativeWindow::Minimize() {
-  ShowWindow(handle_, SW_MINIMIZE);
+  ShowWindowAsync(handle_, SW_MINIMIZE);
 }
 
 void NativeWindow::Maximize() {
-  ShowWindow(handle_, SW_MAXIMIZE);
+  ShowWindowAsync(handle_, SW_MAXIMIZE);
 }
 
 void NativeWindow::Restore() {
-  ShowWindow(handle_, SW_RESTORE);
+  ShowWindowAsync(handle_, SW_RESTORE);
 }
 
 void NativeWindow::Show() {
-  ShowWindow(handle_, SW_SHOW);
+  ShowWindowAsync(handle_, SW_SHOW);
 }
 
 void NativeWindow::Hide() {
-  ShowWindow(handle_, SW_HIDE);
+  ShowWindowAsync(handle_, SW_HIDE);
 }
 
 void NativeWindow::Destroy() {
