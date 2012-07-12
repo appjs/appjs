@@ -37,9 +37,7 @@ void Window::Init () {
   CREATE_CPP_ACCESSOR("width", Width);
 
 #if defined(__WIN__)
-  DEFINE_PROTOTYPE_METHOD("setNonclientWidth", SetNonclientWidth);
   DEFINE_PROTOTYPE_METHOD("style", Style);
-  CREATE_CPP_ACCESSOR("blur", Blur);
 #endif
 
   END_CONSTRUCTOR();
@@ -276,22 +274,22 @@ void Window::SetHeight(Local<String> property, Local<Value> value, const Accesso
 
 #if defined(__WIN__)
 
-Handle<Value> Window::SetNonclientWidth(const Arguments& args) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+// Handle<Value> Window::SetNonclientWidth(const Arguments& args) {
+//   HandleScope scope;
+//   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
 
-  if (args.Length() == 4) {
-    int top = args[0]->Int32Value();
-    int left = args[1]->Int32Value();
-    int right = args[2]->Int32Value();
-    int bottom = args[3]->Int32Value();
-    window->SetNonclientWidth(top, left, right, bottom);
-  } else {
-    window->SetNonclientWidth(args[0]->Int32Value());
-  }
+//   if (args.Length() == 4) {
+//     int top = args[0]->Int32Value();
+//     int left = args[1]->Int32Value();
+//     int right = args[2]->Int32Value();
+//     int bottom = args[3]->Int32Value();
+//     window->SetNonclientWidth(top, left, right, bottom);
+//   } else {
+//     window->SetNonclientWidth(args[0]->Int32Value());
+//   }
 
-  return scope.Close(args.This());
-}
+//   return scope.Close(args.This());
+// }
 
 Handle<Value> Window::Style(const Arguments& args) {
   HandleScope scope;
@@ -313,16 +311,16 @@ Handle<Value> Window::Style(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-Handle<Value> Window::GetBlur(Local<String> property, const AccessorInfo &info) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  return scope.Close(Boolean::New(window->GetBlur()));
-}
+// Handle<Value> Window::GetBlur(Local<String> property, const AccessorInfo &info) {
+//   HandleScope scope;
+//   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+//   return scope.Close(Boolean::New(window->GetBlur()));
+// }
 
-void Window::SetBlur(Local<String> property, Local<Value> value, const AccessorInfo& info) {
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  window->SetBlur(value->BooleanValue());
-}
+// void Window::SetBlur(Local<String> property, Local<Value> value, const AccessorInfo& info) {
+//   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+//   window->SetBlur(value->BooleanValue());
+// }
 
 #endif
 
