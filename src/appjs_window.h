@@ -31,9 +31,7 @@ class Window : public node::ObjectWrap {
   DEFINE_CPP_ACCESSOR(Width);
 
 #if defined(__WIN__)
-  DEFINE_CPP_METHOD(SetNonclientWidth);
   DEFINE_CPP_METHOD(Style);
-  DEFINE_CPP_ACCESSOR(Blur);
 #endif
 };
 
