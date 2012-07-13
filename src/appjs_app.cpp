@@ -39,7 +39,8 @@ Handle<Value> App::New(const Arguments& args) {
 Handle<Value> App::NewInstance(const Arguments& args) {
   HandleScope scope;
 
-  Cef::Init();
+  char* locales_dir = V8StringToChar(Handle<String>::Cast(args[0]));
+  Cef::Init(locales_dir);
 
   const unsigned argc = 1;
   Handle<Value> argv[argc] = {args[0]};

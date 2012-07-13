@@ -109,7 +109,9 @@ _extend(Window.prototype, {
 
 module.exports = {
   init: function init() {
-    var app = bindings.init.apply(null, arguments);
+    var locales_dir = path.resolve(__dirname,'data','pak');
+
+    var app = bindings.init.call(null,locales_dir);
 
     app.windows = [];
 
