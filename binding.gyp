@@ -48,20 +48,6 @@
           ]
         },
         {
-          'destination': '<(module_root_dir)/publish/node_modules/appjs-<(OS)/data/pak',
-          'files': [
-            '<(module_root_dir)/data/<(OS)/pak/chrome.pak',
-            '<(module_root_dir)/data/<(OS)/pak/locales'
-          ]
-        },
-        {
-          'destination': '<(module_root_dir)/data/pak',
-          'files': [
-            '<(module_root_dir)/data/<(OS)/pak/chrome.pak',
-            '<(module_root_dir)/data/<(OS)/pak/locales'
-          ]
-        },
-        {
           'destination': '<(module_root_dir)/publish/',
           'files': [
             '<(module_root_dir)/data/common/app.js'
@@ -92,6 +78,24 @@
               ],
             },
             {
+              'destination': '<(module_root_dir)/publish/bin/Contents/',
+              'files': [
+                '<(module_root_dir)/data/mac/pak/Resources/'
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/publish/node_modules/appjs-<(OS)/data/pak',
+              'files': [
+                '<(module_root_dir)/data/<(OS)/pak/Resources/chrome.pak',
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/data/pak',
+              'files': [
+                '<(module_root_dir)/data/<(OS)/pak/Resources/chrome.pak',
+              ]
+            },
+            {
               'destination': '<(module_root_dir)/publish/',
               'files': [
                 '<(module_root_dir)/data/mac/launch.sh',
@@ -101,6 +105,23 @@
               'destination': '<(module_root_dir)/publish/bin/',
               'files': [
                 '<(module_root_dir)/data/mac/node-bin/node/',
+              ]
+            }
+          ]
+        },{ # !mac
+          'copies': [
+            {
+              'destination': '<(module_root_dir)/publish/node_modules/appjs-<(OS)/data/pak',
+              'files': [
+                '<(module_root_dir)/data/<(OS)/pak/chrome.pak',
+                '<(module_root_dir)/data/<(OS)/pak/locales'
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/data/pak',
+              'files': [
+                '<(module_root_dir)/data/<(OS)/pak/chrome.pak',
+                '<(module_root_dir)/data/<(OS)/pak/locales'
               ]
             }
           ]
