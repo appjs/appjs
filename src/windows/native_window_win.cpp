@@ -51,6 +51,13 @@ void SetNCWidth(HWND hwnd, int size){
   DwmExtendFrameIntoClientArea(hwnd, &margins);
 }
 
+void SetFullscreen(HWND hwnd){
+  DWORD style = GetWindowLong(hwnd, GWL_STYLE);
+  SetWindowLong(hwnd, GWL_STYLE, style & ~WS_OVERLAPPEDWINDOW);
+  SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+  HDC hDC = GetWindowDC(NULL);
+  SetWindowPos(hwnd, NULL, 0, 0, GetDeviceCaps(hDC, HORZRES), GetDeviceCaps(hDC, VERTRES), SWP_FRAMECHANGED);
+}
 
 void NativeWindow::Init(char* url, Settings* settings) {
   url_ = url;
@@ -104,12 +111,10 @@ void NativeWindow::Init(char* url, Settings* settings) {
     left_ = (GetSystemMetrics(SM_CXSCREEN) - width_) / 2;
     top_ = (GetSystemMetrics(SM_CYSCREEN) - height_) / 2;
   }
-  // Perform application initialization
   browser_ = NULL;
   handle_ = CreateWindowEx(NULL, szWindowClass,"", style, top_, left_, width_, height_, NULL, NULL, hInstance, NULL);
 
   if (!handle_) {
-    //TODO send error to node
     fprintf(stderr,"Error occurred: ");
     fprintf(stderr,"%d\n",GetLastError());
     return;
@@ -120,7 +125,10 @@ void NativeWindow::Init(char* url, Settings* settings) {
   if (alpha) {
     SetNCWidth(handle_, -1);
   }
-  if (!show_chrome) {
+
+  if (fullscreen) {
+    SetFullscreen(handle_);
+  } else if (!show_chrome) {
     UpdateStyle(handle_, GWL_STYLE, GetWindowLong(handle_, GWL_STYLE) & ~WS_CAPTION);
   }
 
@@ -232,8 +240,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
       NativeWindow* window = ClientHandler::GetWindow(hwnd);
       RECT rect;
       GetClientRect(hwnd, &rect);
-
-      // Initialize window info to the defaults for a child window
       Cef::AddWebView(hwnd, rect, url_, browserSettings);
       return 0;
     }
