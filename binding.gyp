@@ -84,7 +84,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs-<(OS)/data/pak',
+              'destination': '<(module_root_dir)/publish/node_modules/appjs-mac/data/pak',
               'files': [
                 '<(module_root_dir)/data/<(OS)/pak/Resources/chrome.pak',
               ]
