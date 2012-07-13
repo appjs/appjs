@@ -9,6 +9,14 @@ var App = bindings.App,
     _send = Window.prototype.send,
     _extend = require('./lib/utils').extend;
 
+
+// TODO: windows specific component is temporary
+if (process.platform === 'win32') {
+  var stylesForWindow = require('./lib/windowStyles')(Window);
+} else {
+  var stylesForWindow = function(){}
+}
+
 _extend(App.prototype, {
   extend: function extend(mod){
     _extend(this, mod.prototype);
@@ -35,10 +43,7 @@ _extend(App.prototype, {
     this.windows.push(window);
 
     window.once('ready', function(){
-      // TODO: windows specific component is temporary
-      if (process.platform === 'win32') {
-        require('./lib/windowStyles')(window);
-      }
+      stylesForWindow(window);
       window.runInBrowser(browserInit);
     });
 
