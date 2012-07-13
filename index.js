@@ -23,11 +23,11 @@ _extend(App.prototype, {
     mod.call(this);
   },
   createWindow: function createWindow(url, settings){
-    url = url || 'http://appjs/';
-    if (typeof url === 'object') {
+    if (url !== null && typeof url === 'object') {
       settings = url;
       url = settings.url;
     }
+    url = url || 'http://appjs/';
     settings = _extend({}, settings);
     if (settings.icons) {
       ['smaller', 'small', 'big', 'bigger'].forEach(function(size){
