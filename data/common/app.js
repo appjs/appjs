@@ -13,6 +13,7 @@ var window = app.createWindow("http://appjs/", {
   resizable: false, // prevent users from changing screen width or height
   showChrome: true, // show border and title bar
   opacity: 1, // you can set opacity of window.
+  alpha: false, // alpha compositing of the window background
   fullscreen: false, // we don't need fullscreen window
   showResizeGrip: false, // resize grip is an annoying triangle at the right bottom corner of window
   disableSecurity: true, // allow cross origin requests
