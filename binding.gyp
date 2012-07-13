@@ -51,14 +51,14 @@
           'destination': '<(module_root_dir)/publish/node_modules/appjs-<(OS)/data/pak',
           'files': [
             '<(module_root_dir)/data/<(OS)/pak/chrome.pak',
-            '<(module_root_dir)/data/<(OS)/pak/locales'
+            '<(module_root_dir)/data/<(OS)/pak/locales/'
           ]
         },
         {
           'destination': '<(module_root_dir)/data/pak',
           'files': [
             '<(module_root_dir)/data/<(OS)/pak/chrome.pak',
-            '<(module_root_dir)/data/<(OS)/pak/locales'
+            '<(module_root_dir)/data/<(OS)/pak/locales/'
           ]
         },
         {
