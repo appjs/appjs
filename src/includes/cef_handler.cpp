@@ -85,9 +85,11 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 // There is a bug in CEF for Linux I think that there is no window object
 // when the code reaches here.
 #if not defined(__LINUX__)
-  Handle<Object> handle = ClientHandler::GetV8WindowHandle(browser);
-  Handle<Value> argv[1] = {String::New("close")};
-  node::MakeCallback(handle,"emit",1,argv);
+  if(!browser->IsPopup()) {
+    Handle<Object> handle = ClientHandler::GetV8WindowHandle(browser);
+    Handle<Value> argv[1] = {String::New("close")};
+    node::MakeCallback(handle,"emit",1,argv);
+  }
 #endif
 
   if (m_BrowserHwnd == browser->GetWindowHandle()) {
