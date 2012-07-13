@@ -1,7 +1,7 @@
 var app = module.exports = require('appjs');
 
 app.get('/',function(req,res,next){
-  res.send(200,"Hello World!");
+  res.send("Hello World!");
 });
 
 var window = app.createWindow("http://appjs/", {
