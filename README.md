@@ -43,9 +43,6 @@ There is a complete example in the `examples` folder.
 ```javascript
 var appjs = require('appjs');
 
-// Initialize appjs.
-var app = appjs.init();
-
 // Creates a new window. Its invisible until window.show() get called.
 // http://appjs/ is a special url. It is home for your application!
 var window = app.createWindow("http://appjs/",{autoResize:false});

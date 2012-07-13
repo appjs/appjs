@@ -69,9 +69,7 @@ private:
   bool show_resize_grip;
   bool fullscreen;
   Settings* icons;
-#ifndef __LINUX__
   bool alpha;
-#endif
   double opacity;
 };
 

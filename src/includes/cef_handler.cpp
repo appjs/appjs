@@ -87,11 +87,9 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     // when the code reaches here.
   if(!browser->IsPopup()) {
 
-    Handle<Value> argv[1] = {String::New("close")};
-
 #ifndef __LINUX__
     Handle<Object> handle = ClientHandler::GetV8WindowHandle(browser);
-    argv[1] = String::New("close");
+    Handle<Value> argv[1] = {String::New("close")};
     node::MakeCallback(handle,"emit",1,argv);
 #endif
 
@@ -100,8 +98,8 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
       Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
       Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
 
-      argv[1] = String::New("exit");
-      node::MakeCallback(emitter,"emit",1,argv);
+      Handle<Value> exitArgv[1] = {String::New("exit")};
+      node::MakeCallback(emitter,"emit",1,exitArgv);
       DoClose(browser);
     }
 

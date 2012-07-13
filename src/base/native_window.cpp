@@ -14,9 +14,7 @@ NativeWindow::NativeWindow(char* url, Settings* settings){
   left_ = settings->getNumber("left",-1);
   top_ = settings->getNumber("top",-1);
   opacity = settings->getNumber("opacity",1);
-#ifndef __LINUX__
   alpha = settings->getBoolean("alpha",false);
-#endif
   show_chrome = settings->getBoolean("showChrome",true);
   resizable = settings->getBoolean("resizable",true);
   show_resize_grip = settings->getBoolean("showResizeGrip",false);

@@ -107,22 +107,18 @@ _extend(Window.prototype, {
 });
 
 
-module.exports = {
-  init: function init() {
-    var locales_dir = path.resolve(__dirname,'data','pak');
+var locales_dir = path.resolve(__dirname,'data','pak');
 
-    var app = bindings.init.call(null,locales_dir);
+var app = bindings.init.call(null,locales_dir);
 
-    app.windows = [];
+app.windows = [];
 
-    app.extend(router);
+app.extend(router);
 
-    app.on("exit",function(){
-      process.nextTick(function(){
-        process.exit();
-      });
-    });
+app.on("exit",function(){
+  process.nextTick(function(){
+    process.exit();
+  });
+});
 
-    return app;
-  }
-};
+module.exports = app;
