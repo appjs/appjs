@@ -31,7 +31,7 @@ __AppJS 0.0.14 Beta Distributables:__
 
 These are a work in progress.
 
-* [Windows](http://dists.appjs.org/0.0.14/appjs-0.0.14b2-win32-ia32.zip) -> app.exe
+* [Windows](http://dists.appjs.org/0.0.14/appjs-0.0.14b3-win32-ia32.zip) -> app.exe
 * Linux [32 bit](http://dists.appjs.org/0.0.14/appjs-0.0.14-linux-ia32.tar.gz) / [64 bit](http://dists.appjs.org/0.0.14/appjs-0.0.14-linux-x64.tar.gz) -> launch.sh
 * [Mac](http://dists.appjs.org/0.0.14/appjs-0.0.14-darwin-ia32.zip) -> launch.sh
 
