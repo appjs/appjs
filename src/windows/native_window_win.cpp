@@ -41,13 +41,19 @@ void BlurBehind(HWND hwnd, bool enable){
   DwmEnableBlurBehindWindow(hwnd, &bb);
 }
 
+void SetNCWidth(HWND hwnd, int left, int right, int top, int bottom){
+  MARGINS margins = {left, right, top, bottom};
+  DwmExtendFrameIntoClientArea(hwnd, &margins);
+}
+
+void SetNCWidth(HWND hwnd, int size){
+  MARGINS margins = {size, size, size, size};
+  DwmExtendFrameIntoClientArea(hwnd, &margins);
+}
 
 
 void NativeWindow::Init(char* url, Settings* settings) {
-
   url_ = url;
-  blur_ = settings->getBoolean("blur", false);
-
 
   if( !g_handler->GetBrowserHwnd() ) {
 
@@ -119,11 +125,10 @@ void NativeWindow::Init(char* url, Settings* settings) {
   SetWindowLongPtr(handle_,GWLP_USERDATA, (LONG)this);
 
   if (alpha) {
-    SetBlur(true);
+    SetNCWidth(handle_, -1);
   }
 
   UpdateWindow(handle_);
-
 
   Cef::Run();
 };
@@ -137,31 +142,34 @@ int NativeWindow::ScreenHeight() {
   return GetSystemMetrics(SM_CYSCREEN);
 }
 
+void NativeWindow::Minimize() {
+  ShowWindowAsync(handle_, SW_MINIMIZE);
+}
+
+void NativeWindow::Maximize() {
+  ShowWindowAsync(handle_, SW_MAXIMIZE);
+}
+
+void NativeWindow::Restore() {
+  ShowWindowAsync(handle_, SW_RESTORE);
+}
+
 void NativeWindow::Show() {
-  if (browser_) {
-    ShowWindow(handle_, SW_SHOW);
-  }
+  ShowWindowAsync(handle_, SW_SHOW);
 }
 
 void NativeWindow::Hide() {
-  if (browser_) {
-    ShowWindow(handle_, SW_HIDE);
-  }
+  ShowWindowAsync(handle_, SW_HIDE);
 }
 
 void NativeWindow::Destroy() {
-  if (browser_) {
-    CloseWindow(handle_);
-  }
+  CloseWindow(handle_);
 }
 
 void NativeWindow::Drag() {
-  if (handle_) {
-    ReleaseCapture();
-    SendMessage(handle_, WM_NCLBUTTONDOWN, HTCAPTION, 0);
-  }
+  ReleaseCapture();
+  SendMessage(handle_, WM_NCLBUTTONDOWN, HTCAPTION, 0);
 }
-
 void NativeWindow::SetPosition(int top, int left, int width, int height) {
   if (handle_) {
     UpdatePosition(top, left, width, height);
@@ -185,36 +193,6 @@ void NativeWindow::SetSize(int width, int height) {
   }
 }
 
-
-
-long NativeWindow::GetStyle() {
-  return GetWindowLong(handle_, GWL_STYLE);
-}
-
-long NativeWindow::GetExStyle() {
-  return GetWindowLong(handle_, GWL_EXSTYLE);
-}
-
-void NativeWindow::SetStyle(long style) {
-  UpdateStyle(handle_, GWL_STYLE, style);
-}
-
-void NativeWindow::SetExStyle(long style) {
-  UpdateStyle(handle_, GWL_EXSTYLE, style);
-}
-
-
-
-bool NativeWindow::GetBlur() {
-  return blur_;
-}
-
-void NativeWindow::SetBlur(bool blur){
-  blur_ = blur;
-  BlurBehind(handle_, blur);
-}
-
-
 void NativeWindow::UpdatePosition(){
   RECT rect;
   GetClientRect(handle_, &rect);
@@ -225,22 +203,15 @@ void NativeWindow::UpdatePosition(){
 }
 
 
-void NativeWindow::SetNonclientWidth(int left, int right, int top, int bottom){
-  if (handle_) {
-    MARGINS margins = {left, right, top, bottom};
-    DwmExtendFrameIntoClientArea(handle_, &margins);
-  }
+
+
+long NativeWindow::GetStyle(bool extended) {
+  return GetWindowLong(handle_, extended ? GWL_EXSTYLE : GWL_STYLE);
 }
 
-
-
-void NativeWindow::SetNonclientWidth(int size){
-  if (handle_) {
-    MARGINS margins = {size, size, size, size};
-    DwmExtendFrameIntoClientArea(handle_, &margins);
-  }
+void NativeWindow::SetStyle(long style, bool extended) {
+  UpdateStyle(handle_, extended ? GWL_EXSTYLE : GWL_STYLE, style);
 }
-
 
 
 

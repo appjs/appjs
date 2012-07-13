@@ -20,7 +20,7 @@ class Cef
 {
   
 public:
-  static void Init();
+  static void Init(char*);
   
 protected:
   Cef (const Cef&);

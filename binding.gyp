@@ -48,6 +48,20 @@
           ]
         },
         {
+          'destination': '<(module_root_dir)/publish/node_modules/appjs-<(OS)/data/pak',
+          'files': [
+            '<(module_root_dir)/data/<(OS)/pak/chrome.pak',
+            '<(module_root_dir)/data/<(OS)/pak/locales'
+          ]
+        },
+        {
+          'destination': '<(module_root_dir)/data/pak',
+          'files': [
+            '<(module_root_dir)/data/<(OS)/pak/chrome.pak',
+            '<(module_root_dir)/data/<(OS)/pak/locales'
+          ]
+        },
+        {
           'destination': '<(module_root_dir)/publish/',
           'files': [
             '<(module_root_dir)/data/common/app.js'
@@ -68,7 +82,6 @@
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
                 '<(module_root_dir)/deps/cef/Release/lib.target/ffmpegsumo.so',
-                '<(module_root_dir)/data/common/pak/',
                 '<(PRODUCT_DIR)/appjs.node'
               ],
             },
@@ -82,8 +95,6 @@
               'destination': '<(module_root_dir)/publish/',
               'files': [
                 '<(module_root_dir)/data/mac/launch.sh',
-                '<(module_root_dir)/data/mac/pak/chrome.pak',
-                '<(module_root_dir)/data/mac/pak/locales/'
               ]
             },
             {
@@ -125,8 +136,6 @@
               'destination': '<(module_root_dir)/publish/bin/',
               'files': [
                 '<(module_root_dir)/data/linux/node-bin/<!@(node -e "console.log(require(\'os\').arch())")/node',
-                '<(module_root_dir)/data/linux/pak/chrome.pak',
-                '<(module_root_dir)/data/linux/pak/locales/'
               ]
             }
           ]
@@ -159,8 +168,6 @@
                 '<(module_root_dir)/deps/cef/Release/icudt.dll',
                 '<(module_root_dir)/deps/cef/Release/libEGL.dll',
                 '<(module_root_dir)/deps/cef/Release/libGLESv2.dll',
-                '<(module_root_dir)/data/win/pak/locales/',
-                '<(module_root_dir)/data/win/pak/chrome.pak',
                 '<(PRODUCT_DIR)/appjs.node'
               ],
             },

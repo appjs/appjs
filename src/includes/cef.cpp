@@ -9,7 +9,7 @@ namespace appjs {
 
 bool Cef::initialized_;
 
-void Cef::Init() {
+void Cef::Init(char* locales_dir) {
 
   if( !Cef::initialized_ ) {
     CefLoop::Init();
@@ -17,12 +17,17 @@ void Cef::Init() {
     CefSettings settings;
     CefRefPtr<CefApp> app;
 
-    // TODO: Use settings.pack_file_path to set the correct chrome.pak path
-    // since it searches in execute path ( where node exists ) to find
-    // the pack file in linux and it won't work.
-    // settings.pack_file_path = filePath;
-    settings.multi_threaded_message_loop = false;
+    char* localesPath = new char[strlen(locales_dir)+9];
+    char* packPath = new char[strlen(locales_dir)+12];
+
+    sprintf(localesPath, "%s%s", locales_dir,"/locales");
+    sprintf(packPath,"%s%s",locales_dir,"/chrome.pak");
+
+    CefString(&settings.pack_file_path) = packPath;
+    CefString(&settings.locales_dir_path) = localesPath;
     CefString(&settings.javascript_flags) = " --harmony_proxies --harmony_collections --harmony_scoping";
+
+    settings.multi_threaded_message_loop = false;
 
     g_handler = new ClientHandler();
     CefInitialize(settings, app);

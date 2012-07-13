@@ -14,7 +14,7 @@ NativeWindow::NativeWindow(char* url, Settings* settings){
   left_ = settings->getNumber("left",-1);
   top_ = settings->getNumber("top",-1);
   opacity = settings->getNumber("opacity",1);
-#if defined(__WIN__)
+#ifndef __LINUX__
   alpha = settings->getBoolean("alpha",false);
 #endif
   show_chrome = settings->getBoolean("showChrome",true);

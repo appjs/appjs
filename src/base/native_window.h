@@ -17,6 +17,10 @@ public:
   static int ScreenWidth();
   static int ScreenHeight();
 
+  void Drag();
+  void Minimize();
+  void Maximize();
+  void Restore();
   void Show();
   void Hide();
   void Destroy();
@@ -36,19 +40,6 @@ public:
   int GetWidth();
   int GetHeight();
 
-#if defined(__WIN__)
-  void Drag();
-  void SetNonclientWidth(int left, int right, int top, int bottom);
-  void SetNonclientWidth(int size);
-  void SetBlur(bool blur);
-  bool GetBlur();
-  void NativeWindow::SetStyle(long style);
-  long NativeWindow::GetStyle();
-  void NativeWindow::SetExStyle(long style);
-  long NativeWindow::GetExStyle();
-#endif
-
-
   void OpenDevTools();
   void CloseDevTools();
   void RunInBrowser(char* script);
@@ -59,6 +50,11 @@ public:
   v8::Handle<v8::Object> GetV8Handle();
   CefWindowHandle handle_;
   bool auto_resize;
+
+#if defined(__WIN__)
+  void SetStyle(long style, bool extended);
+  long GetStyle(bool extended);
+#endif
 
 private:
   v8::Handle<v8::Object> v8handle_;
@@ -73,8 +69,7 @@ private:
   bool show_resize_grip;
   bool fullscreen;
   Settings* icons;
-#if defined(__WIN__)
-  bool blur_;
+#ifndef __LINUX__
   bool alpha;
 #endif
   double opacity;

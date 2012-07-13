@@ -63,7 +63,7 @@ void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
 bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
   REQUIRE_UI_THREAD();
 
-  if (m_BrowserHwnd == browser->GetWindowHandle()) {
+  if (!browser->IsPopup() && m_BrowserHwnd == browser->GetWindowHandle()) {
     // Since the main window contains the browser window, we need to close
     // the parent window instead of the browser window.
     m_Browser = NULL;
@@ -72,6 +72,7 @@ bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
     // Return true here so that we can skip closing the browser window
     // in this pass. (It will be destroyed due to the call to close
     // the parent above.)
+    return true;
   }
 
   // A popup browser window is not contained in another window, so we can let
@@ -82,34 +83,32 @@ bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
 void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   REQUIRE_UI_THREAD();
 
-// There is a bug in CEF for Linux I think that there is no window object
-// when the code reaches here.
-#if not defined(__LINUX__)
+    // There is a bug in CEF for Linux I think that there is no window object
+    // when the code reaches here.
   if(!browser->IsPopup()) {
-    Handle<Object> handle = ClientHandler::GetV8WindowHandle(browser);
+
     Handle<Value> argv[1] = {String::New("close")};
+
+#ifndef __LINUX__
+    Handle<Object> handle = ClientHandler::GetV8WindowHandle(browser);
+    argv[1] = String::New("close");
     node::MakeCallback(handle,"emit",1,argv);
-  }
 #endif
 
-  if (m_BrowserHwnd == browser->GetWindowHandle()) {
+    if (m_BrowserHwnd == browser->GetWindowHandle()) {
+      Local<Object> global = Context::GetCurrent()->Global();
+      Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
+      Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
 
-    Local<Object> global = Context::GetCurrent()->Global();
-    Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
-    Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
+      argv[1] = String::New("exit");
+      node::MakeCallback(emitter,"emit",1,argv);
+      DoClose(browser);
+    }
 
-    const int argc = 1;
-    Handle<Value> argv[1] = {String::New("exit")};
-    node::MakeCallback(emitter,"emit",argc,argv);
-
-    DoClose(browser);
-  }
-
-#if not defined(__LINUX__)
-  if (!browser->IsPopup()) {
+#ifndef __LINUX__
     delete ClientHandler::GetWindow(browser);
-  }
 #endif
+  }
 }
 
 void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
