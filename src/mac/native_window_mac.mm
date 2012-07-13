@@ -192,12 +192,6 @@ void NativeWindow::Init (char* url, Settings* settings) {
   // Create the main application window.
   NSRect window_rect = { {left_, top_} , {width_, height_} };
 
-  // If we need fullscreen window, remove border and
-  // set window rectangle to fit screen.
-  if( fullscreen ) {
-    styles = NSBorderlessWindowMask;
-  }
-
   // Create the window
   NSWindow* mainWnd = [[NSWindow alloc]
                        initWithContentRect:window_rect
@@ -215,11 +209,18 @@ void NativeWindow::Init (char* url, Settings* settings) {
   objc_setAssociatedObject(mainWnd,"nativewindow",wrap,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
   if(fullscreen) {
-    [mainWnd setCollectionBehavior:
-                NSWindowCollectionBehaviorFullScreenPrimary];
-    [mainWnd toggleFullScreen: nil];
-    [mainWnd setFrame:[mainWnd frameRectForContentRect:[[NSScreen mainScreen] frame]] display:YES];
 
+    if( floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6 ){
+      [mainWnd setCollectionBehavior:
+                NSWindowCollectionBehaviorFullScreenPrimary];
+      [mainWnd toggleFullScreen: nil];
+    } else {
+      styles = NSBorderlessWindowMask;
+      [mainWnd setStyleMask:(styles)];
+      [[NSApplication sharedApplication] setPresentationOptions: NSApplicationPresentationAutoHideDock | NSApplicationPresentationAutoHideMenuBar];
+    }
+
+    [mainWnd setFrame:[mainWnd frameRectForContentRect:[[NSScreen mainScreen] frame]] display:YES];
   }
 
   // Add browser view to newly created window.
