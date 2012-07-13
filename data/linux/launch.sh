@@ -1,1 +1,0 @@
-#!./bin/node app.js

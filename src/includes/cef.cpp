@@ -22,11 +22,11 @@ void Cef::Init(char* locales_dir) {
 
     sprintf(localesPath, "%s%s", locales_dir,"/locales");
     sprintf(packPath,"%s%s",locales_dir,"/chrome.pak");
-
     CefString(&settings.pack_file_path) = packPath;
     CefString(&settings.locales_dir_path) = localesPath;
     CefString(&settings.javascript_flags) = " --harmony_proxies --harmony_collections --harmony_scoping";
 
+    settings.log_severity = LOGSEVERITY_DISABLE;
     settings.multi_threaded_message_loop = false;
 
     g_handler = new ClientHandler();

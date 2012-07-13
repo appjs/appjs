@@ -62,6 +62,7 @@ int WINAPI WinMain(HINSTANCE hinst, HINSTANCE, LPSTR szArgs, int nCmdShow){
   DWORD len = GetModuleFileNameW(0, execPath, MAX_PATH);
   std::wstring path(execPath);
   path.resize(len - 4);
-  path.insert(0, L"--harmony ");
-  return Launch(std::wstring(L".\\bin\\node.exe"), path, 1);
+  path.erase(0, path.find_last_of(L"\\") + 1);
+  path.insert(0, L"--harmony .\\data\\");
+  return Launch(std::wstring(L".\\data\\bin\\node.exe"), path, 1);
 }
