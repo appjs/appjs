@@ -1,1 +1,3 @@
-#!./data/bin/node --harmony ./data/app.js
+#!/bin/sh
+
+./data/bin/node --harmony ./data/app.js 

@@ -1,1 +1,3 @@
-#!./data/bin/node --harmony ./data/app.js & wait
+#!/bin/sh
+
+./data/bin/node --harmony ./data/app.js & wait

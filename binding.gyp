@@ -86,13 +86,13 @@
             {
               'destination': '<(module_root_dir)/app/data/node_modules/appjs-mac/data/pak',
               'files': [
-                '<(module_root_dir)/data/<(OS)/pak/Resources/chrome.pak',
+                '<(module_root_dir)/deps/cef/Release/Resources/chrome.pak',
               ]
             },
             {
               'destination': '<(module_root_dir)/data/pak',
               'files': [
-                '<(module_root_dir)/data/<(OS)/pak/Resources/chrome.pak',
+                '<(module_root_dir)/deps/cef/Release/Resources/chrome.pak',
               ]
             },
             {
@@ -113,15 +113,15 @@
             {
               'destination': '<(module_root_dir)/app/data/node_modules/appjs-<(OS)/data/pak',
               'files': [
-                '<(module_root_dir)/data/<(OS)/pak/chrome.pak',
-                '<(module_root_dir)/data/<(OS)/pak/locales/'
+                '<(module_root_dir)/deps/cef/Release/chrome.pak',
+                '<(module_root_dir)/deps/cef/Release/locales/'
               ]
             },
             {
               'destination': '<(module_root_dir)/data/pak',
               'files': [
-                '<(module_root_dir)/data/<(OS)/pak/chrome.pak',
-                '<(module_root_dir)/data/<(OS)/pak/locales/'
+                '<(module_root_dir)/deps/cef/Release/chrome.pak',
+                '<(module_root_dir)/deps/cef/Release/locales/'
               ]
             }
           ]
