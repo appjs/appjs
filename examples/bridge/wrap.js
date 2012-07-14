@@ -31,100 +31,65 @@ function initPipe(win){
   }
 
   setTimeout(function(){
-    var o = {}; o[bid] = 0;
-    pipe.context = unwrap(o);
+    pipe.context = unwrap([bid, 0]);
   }, 100);
 
-  function FarJSON(id){
-    this[bid] = id;
-    this.json = {};
-    this.json[bid] = id;
-    this.type = pipe.send('mirror-type', this).type;
-  }
 
-  FarJSON.prototype = {
-    constructor: FarJSON,
-    toJSON: function toJSON(){
-      return this.json;
-    },
-    keyJSON: function keyJSON(key, value, desc){
-      var o = {};
-      o[bid] = this[bid];
-      o.key = key;
-      if (2 in arguments) {
-        o.desc = desc;
-      } else if (1 in arguments) {
-        o.val = value;
-      }
-      return o;
-    },
-    argJSON: function argJSON(args, receiver){
-      var o = {};
-      o[bid] = this[bid];
-      o.args = args;
-      if (1 in arguments) {
-        o.receiver = receiver;
-      }
-      return o;
-    }
-  };
-
-  var TRUE = { ø: true },
-      FALSE = { ø: false },
-      UNDEFINED = { ø: '_Δ' },
-      NULL = { ø: null },
-      NAN = { ø: '_ƒ' },
-      INFINITY = { ø: '_Ω' },
-      NEGINFINITY = { ø: '_-Ω' },
-      NEGZERO = { ø: '_π' },
-      ZERO = { ø: 0 };
+  var TRUE        = [ 'ø', true ],
+      FALSE       = [ 'ø', false ],
+      UNDEFINED   = [ 'ø', '_Δ' ],
+      NULL        = [ 'ø', null ],
+      NAN         = [ 'ø', '_ƒ' ],
+      INFINITY    = [ 'ø', '_Ω' ],
+      NEGINFINITY = [ 'ø', '_-Ω' ],
+      NEGZERO     = [ 'ø', '_π' ],
+      ZERO        = [ 'ø', 0 ];
 
   function encodePrimitive(o){
     switch (typeof o) {
       case 'boolean':      return o ? TRUE : FALSE;
       case 'undefined':    return UNDEFINED;
       case 'object':       return NULL;
-      case 'string':       return { ø: o };
+      case 'string':       return ['ø', o];
       case 'number':
         switch (o) {
           case Infinity:   return INFINITY;
           case -Infinity:  return NEGINFINITY;
           case NaN:        return NAN;
           case 0:          return 1 / o === -Infinity ? NEGZERO : ZERO;
-          default:         return o !== o ? NAN : { ø: o };
+          default:         return o !== o ? NAN : ['ø', o];
         }
     }
   }
 
   function decodePrimitive(o){
-    switch (o.ø) {
+    switch (o[1]) {
       case '_Δ': return undefined;
       case '_ƒ': return NaN;
       case '_Ω': return Infinity;
       case '_-Ω': return -Infinity;
       case '_π': return -0;
-      default: return o.ø;
+      default: return o[1];
     }
   }
 
   function unwrap(obj){
     if (!isObject(obj)) {
       return obj;
-    } else if (_hasOwn.call(obj, 'ø')) {
+    } else if (obj[0] == 'ø') {
       return decodePrimitive(obj);
-    } else if (_hasOwn.call(obj, bid)) {
-      if (obj[bid] in mirrors) {
-        return farIDs.get(mirrors[obj[bid]]);
+    } else if (obj[0] === bid) {
+      if (obj[1] in mirrors) {
+        return farIDs.get(mirrors[obj[1]]);
       } else {
-        var json = new FarJSON(obj[bid]);
-        var proxy = new Mirror(json);
-        proxies.set(proxy, json);
-        farIDs.set(json, proxy);
-        mirrors[json[bid]] = json;
+        var proxy = new Mirror(obj);
+        proxies.set(proxy, obj);
+        farIDs.set(obj, proxy);
+        mirrors[obj[1]] = obj;
         return proxy;
       }
-    } else if (_hasOwn.call(obj, nid)) {
-      return items[obj[nid]];
+    } else if (obj[0] === nid) {
+      return items[obj[1]];
     } else {
       return obj;
     }
@@ -141,127 +106,132 @@ function initPipe(win){
         nearIDs.set(obj, id = items.length);
         items.push(obj);
       }
-      var o = {};
-      o[nid] = id;
-      return o;
+      return [nid, id];
     }
   }
 
   var mirror = {
     type: function type(obj){
-      return { type: typeof obj };
+      return [typeof obj];
     },
-    keys: function keys(obj, o){
+    keys: function keys(obj){
       return Object.keys(obj);
     },
-    enumerate: function enumerate(obj, o){
+    enumerate: function enumerate(obj){
       var i=0, k=[];
       for (k[i++] in obj);
       return k;
     },
-    properties: function properties(obj, o){
+    properties: function properties(obj){
       return Object.getOwnPropertyNames(obj);
     },
-    get: function get(obj, o){
-      return wrap(obj[o.key]);
+    get: function get(obj, key){
+      return wrap(obj[key]);
     },
-    proto: function proto(obj, o){
+    proto: function proto(obj){
       return wrap(obj.__proto__);
     },
-    set: function set(obj, o){
-      obj[o.key] = unwrap(o.val);
+    set: function set(obj, key, value){
+      obj[key] = unwrap(value);
       return TRUE;
     },
-    has: function has(obj, o){
-      return wrap(o.key in obj);
+    has: function has(obj, key){
+      return wrap(key in obj);
     },
-    hasOwn: function hasOwn(obj, o){
-      return wrap(_hasOwn.call(obj, o.key));
+    hasOwn: function hasOwn(obj, key){
+      return wrap(_hasOwn.call(obj, key));
     },
-    delete: function delete_(obj, o){
-      delete obj[o.key];
+    delete: function delete_(obj, key){
+      delete obj[key];
       return TRUE;
     },
-    define: function define(obj, o){
-      if (_hasOwn.call(o.desc, 'value')) {
-        o.desc.value = unwrap(o.desc.value);
+    define: function define(obj, key, desc){
+      if (_hasOwn.call(desc, 'value')) {
+        desc.value = unwrap(desc.value);
       } else {
-        o.desc.get = unwrap(o.desc.get);
-        o.desc.set = unwrap(o.desc.set);
+        desc.get = unwrap(desc.get);
+        desc.set = unwrap(desc.set);
       }
-      Object.defineProperty(obj, o.key, o.desc);
+      Object.defineProperty(obj, key, desc);
       return TRUE;
     },
-    describe: function describe(obj, o){
-      var desc = Object.getOwnPropertyDescriptor(obj, o.key);
+    describe: function describe(obj, key){
+      var desc = Object.getOwnPropertyDescriptor(obj, key);
       if (desc) {
         desc.configurable = true;
         if (_hasOwn.call(desc, 'value')) {
-          if (desc.value === undefined) desc.value = obj[o.key];
+          if (desc.value === undefined) desc.value = obj[key];
           desc.value = wrap(desc.value);
         } else {
           desc.get = wrap(desc.get);
           desc.set = wrap(desc.set);
         }
         return desc;
-      } else if (desc === undefined && _hasOwn.call(obj, o.key)) {
+      } else if (desc === undefined && _hasOwn.call(obj, key)) {
         return { configurable: true,
                  enumerable: true,
                  writable: true,
-                 value: wrap(obj[o.key]) };
+                 value: wrap(obj[key]) };
       } else {
         return UNDEFINED;
       }
     },
-    apply: function apply(obj, o){
+    apply: function apply(obj, receiver, args){
       try {
-        return wrap(_apply.call(obj, unwrap(o.receiver), o.args.map(unwrap)));
+        return wrap(_apply.call(obj, unwrap(receiver), args.map(unwrap)));
       } catch (e) {
         return wrap(e);
       }
     },
-    construct: function construct(obj, o){
+    construct: function construct(obj, args){
       try {
-        return wrap(new (_bind.apply(obj, [null].concat(o.args.map(unwrap)))));
+        return wrap(new (_bind.apply(obj, [null].concat(args.map(unwrap)))));
       } catch (e) {
         return wrap(e);
       }
     },
   };
 
-  function Mirror(json){
+  function Mirror(obj){
     var self = this;
-    this.json = json;
-    if (json.type === 'function') {
+    var type = pipe.send('mirror-type', obj)[0];
+    this.a = obj;
+    this.b = obj.concat(null);
+    this.c = obj.concat(null, null);
+    if (type === 'function') {
       return Proxy.createFunction(this,
         function(){ return self.apply(this, _slice.call(arguments)) },
         function(){ return self.construct(_slice.call(arguments)) }
       );
     } else {
-      return Proxy.create(this, unwrap(pipe.send('mirror-proto', this.json)));
+      return Proxy.create(this, unwrap(pipe.send('mirror-proto', this.a)));
     }
   }
 
 
   Mirror.prototype = {
     keys: function keys(){
-      return pipe.send('mirror-keys', this.json);
+      return pipe.send('mirror-keys', this.a);
     },
     enumerate: function enumerate(){
-      return pipe.send('mirror-enumerate', this.json);
+      return pipe.send('mirror-enumerate', this.a);
     },
     getOwnPropertyNames: function getOwnPropertyNames(){
-      return pipe.send('mirror-properties', this.json);
+      return pipe.send('mirror-properties', this.a);
     },
     get: function get(rcvr, key){
-      return unwrap(pipe.send('mirror-get', this.json.keyJSON(key)));
+      this.b[2] = key;
+      return unwrap(pipe.send('mirror-get', this.b));
     },
     set: function set(rcvr, key, value){
-      pipe.send('mirror-set', this.json.keyJSON(key, wrap(value)));
+      this.c[2] = key;
+      this.c[3] = wrap(value);
+      pipe.send('mirror-set', this.c);
       return true;
     },
     getOwnPropertyDescriptor: function getOwnPropertyDescriptor(key){
-      var desc = pipe.send('mirror-describe', this.json.keyJSON(key));
+      this.b[2] = key;
+      var desc = pipe.send('mirror-describe', this.b);
       if (desc) {
         desc.configurable = true;
         if (isObject(desc.value)) {
@@ -274,36 +244,43 @@ function initPipe(win){
       return desc;
     },
     has: function has(key){
-      return pipe.send('mirror-has', this.json.keyJSON(key));
+      this.b[2] = key;
+      return pipe.send('mirror-has', this.b);
     },
     hasOwn: function hasOwn(key){
-      return pipe.send('mirror-hasOwn', this.json.keyJSON(key));
+      this.b[2] = key;
+      return pipe.send('mirror-hasOwn', this.b);
     },
     delete: function delete_(key){
-      pipe.send('mirror-delete', this.json.keyJSON(key));
+      this.b[2] = key;
+      pipe.send('mirror-delete', this.b);
       return true;
     },
     defineProperty: function defineProperty(key, desc){
-      desc = wrap(desc);
+      this.c[2] = key;
+      this.c[3] = desc = wrap(desc);
       if (_hasOwn.call(desc, 'value')) {
         desc.value = wrap(desc.value);
       } else {
         desc.get = wrap(desc.get);
         desc.set = wrap(desc.set);
       }
-      pipe.send('mirror-define', this.json.keyJSON(key, null, desc));
+      pipe.send('mirror-define', this.c);
     },
     apply: function apply(receiver, args){
-      return unwrap(pipe.send('mirror-apply', this.json.argJSON(args.map(wrap), wrap(receiver))));
+      this.c[2] = wrap(receiver);
+      this.c[3] = args.map(wrap);
+      return unwrap(pipe.send('mirror-apply', this.c));
     },
     construct: function construct(args){
-      return unwrap(pipe.send('mirror-construct', this.json.argJSON(args.map(wrap))));
+      this.b[2] = args.map(wrap);
+      return unwrap(pipe.send('mirror-construct', this.b));
     }
   };
 
   Object.keys(mirror).forEach(function(key){
     pipe.on('mirror-'+key, function(val, res){
-      res.result = mirror[key](unwrap(val), val);
+      res.result = mirror[key](unwrap(val), val[2], val[3]);
     });
   });
 }
