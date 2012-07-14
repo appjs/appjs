@@ -1,7 +1,8 @@
 var path = require('path'),
     router = require('./lib/router'),
     bindings = require('./lib/bindings'),
-    browserInit = require('./lib/browser-init');
+    browserInit = require('./lib/browser-init'),
+    bridge = require('./lib/bridge');
 
 var App = bindings.App,
     Window = bindings.Window,
@@ -50,15 +51,16 @@ _extend(App.prototype, {
       window.runInBrowser(browserInit);
     });
 
+    window.once('ready', function(){
+      bridge(window);
+      window.runInBrowser(bridge);
+    });
+
     window.on('close', function(){
       var id = this.id;
       process.nextTick(function(){
         self.windows[id] = null;
       });
-    });
-
-    window.on('log', function(obj){
-      console.log(this.id, obj);
     });
 
     return window;
@@ -112,9 +114,6 @@ _extend(Window.prototype, {
   send: function send(type, msg){
     msg = { type: type, msg: msg };
     return IPC.decode(_send.call(this, IPC.encode(msg)));
-  },
-  log: function log(o){
-    this.send('log', o);
   }
 });
 
