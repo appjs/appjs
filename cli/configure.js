@@ -46,7 +46,8 @@ function downloadCef(version,cb){
       , tar = require('tar')
       , distUrl = 'https://github.com/downloads/milani/appjs'
       , version = version
-      , fileName = 'cef_binary_' + version + '_' + platform + '_' + arch + '.tar.gz';
+      , dirname = 'cef_binary_' + version + '_' + platform + '_' + arch
+      , fileName = dirname + '.tar.gz';
 
     var tarballUrl = distUrl + '/' + fileName
       , gunzip     = zlib.createGunzip()
@@ -56,32 +57,39 @@ function downloadCef(version,cb){
         if ( err || res.statusCode != 200 ) {
             cb(err || new Error(res.statusCode + ' status code downloading tarball'));
         }
-    }
+    };
+
+    var finish = function() {
+      if(platform == 'win32') {
+
+        try {
+          fs.rmdirSync( path.join(depsDir,'cef') );
+        } catch(e) {};
+
+        fs.rename(path.join(depsDir, dirname), path.join(depsDir,'cef'),cb);
+      } else {
+
+        try {
+          fs.unlinkSync( path.join(depsDir,'cef') );
+        } catch(e) {};
+
+        fs.symlink( path.join(depsDir, dirname), path.join(depsDir,'cef') ,cb);
+      }
+    };
 
     gunzip.on('error', errorHandler)
     extracter.on('error', errorHandler)
-    extracter.on('end', function(){
+    extracter.on('end', finish)
 
-        if(platform == 'win32') {
-          
-          try {
-            fs.rmdirSync( path.join(depsDir,'cef') );
-          } catch(e) {};
-
-          fs.rename(path.join(depsDir,fileName.replace('.tar.gz','')), path.join(depsDir,'cef'),cb);
-        } else {
-          
-          try {
-            fs.unlinkSync( path.join(depsDir,'cef') );
-          } catch(e) {};
-
-          fs.symlink( path.join(depsDir,fileName.replace('.tar.gz','')), path.join(depsDir,'cef') ,cb);
-        }
-    })
-
-    download(tarballUrl,errorHandler)
-      .pipe(gunzip)
-      .pipe(extracter);
+    fs.exists(path.join(depsDir, dirname), function(exists) {
+      if (!exists) {
+        download(tarballUrl,errorHandler)
+          .pipe(gunzip)
+          .pipe(extracter);
+      } else {
+        finish();
+      }
+    });
 }
 
 /**
@@ -110,7 +118,7 @@ function download(url,onError) {
 }
 
 /**
- * Start installing CEF version 1.1180.724 
+ * Start installing CEF version 1.1180.724
  */
- 
+
 install('1.1180.724');
