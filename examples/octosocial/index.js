@@ -1,4 +1,4 @@
-var  appjs = require('../../index.js')
+var  app = require('../../index.js')
   , Github = require('github');
 
 var github = new Github({version: '3.0.0',debug:true})
