@@ -41,9 +41,10 @@
     "node": "0.6 || 0.8"
   },
   "dependencies": {
-    "mime":"1.2.5",
-    "request":"2.9.x",
-    "tar":">= 0.1.13"
+    "mime": "1.2.5",
+    "request": "2.9.x",
+    "tar": ">= 0.1.13",
+    "npm": "~1.1.41"
   },
   "devDependencies": {},
   "optionalDependencies": {},
