@@ -1,24 +1,14 @@
-
-function initPipe(){
-  var FP         = Function.prototype,
-      bindbind   = FP.bind.bind(FP.bind),
-      callbind   = bindbind(FP.call),
-      applybind  = bindbind(FP.apply),
-      bindapply  = applybind(FP.bind),
-      _call      = callbind(FP.call),
-      _apply     = callbind(FP.apply),
-      _bind      = callbind(FP.bind),
-      slice      = callbind(Array.prototype.slice),
-      _hasOwn    = callbind(Object.prototype.hasOwnProperty);
-
-
+function initPipe(win){
   function isObject(o){
     if (o == null) return o !== null && o !== undefined;
     return typeof o === 'object' || typeof o === 'function';
   }
 
-  var BROWSER = 'browser',
-      NODE = 'node';
+  var _call      = Function.prototype.call,
+      _apply     = Function.prototype.apply,
+      _bind      = Function.prototype.bind,
+      _slice     = Array.prototype.slice,
+      _hasOwn    = Object.prototype.hasOwnProperty;
 
 
   var proxies = new WeakMap,
@@ -26,28 +16,24 @@ function initPipe(){
       nearIDs = new WeakMap,
       mirrors = Object.create(null);
 
-  if (typeof global === 'undefined') {
+  if (!arguments.length) {
     var items = [window],
-        context = BROWSER,
         pipe = appjs,
         nid = 'bid',
-        bid = 'nid',
-        cross = 'node';
+        bid = 'nid';
     nearIDs.set(window, 0);
   } else {
     var items = [global],
-        context = NODE,
-        pipe = window,
+        pipe = win,
         nid = 'nid',
-        bid = 'bid',
-        cross = 'window';
+        bid = 'bid';
     nearIDs.set(global, 0);
   }
 
   setTimeout(function(){
     var o = {}; o[bid] = 0;
-    window[cross] = unwrap(o);
-  }, 1000);
+    pipe.context = unwrap(o);
+  }, 100);
 
   function FarJSON(id){
     this[bid] = id;
@@ -83,34 +69,50 @@ function initPipe(){
     }
   };
 
-  function decodePrimitive(o){
-    switch (o.__val__) {
-      case '__UND__': return undefined;
-      case '__NaN__': return NaN;
-      case '__Infinity__': return Infinity;
-      case '__-Infinity__': return -Infinity;
-      case '__-0__': return -0;
-      default: return o.__val__;
+  var TRUE = { ø: true },
+      FALSE = { ø: false },
+      UNDEFINED = { ø: '_Δ' },
+      NULL = { ø: null },
+      NAN = { ø: '_ƒ' },
+      INFINITY = { ø: '_Ω' },
+      NEGINFINITY = { ø: '_-Ω' },
+      NEGZERO = { ø: '_π' },
+      ZERO = { ø: 0 };
+
+  function encodePrimitive(o){
+    switch (typeof o) {
+      case 'boolean':      return o ? TRUE : FALSE;
+      case 'undefined':    return UNDEFINED;
+      case 'object':       return NULL;
+      case 'string':       return { ø: o };
+      case 'number':
+        switch (o) {
+          case Infinity:   return INFINITY;
+          case -Infinity:  return NEGINFINITY;
+          case NaN:        return NAN;
+          case 0:          return 1 / o === -Infinity ? NEGZERO : ZERO;
+          default:         return o !== o ? NAN : { ø: o };
+        }
     }
   }
 
-  function encodePrimitive(o){
-    switch (o) {
-      case undefined:  return { __val__: '__UND__' };
-      case Infinity:   return { __val__: '__Infinity__' };
-      case -Infinity:  return { __val__: '__-Infinity__' };
-      case NaN:        return { __val__: '__NaN__' };
-      case 0:          return { __val__: 1 / o === -Infinity ? '__-0__' : 0 };
-      default:         return { __val__: o === o ? o : '__NaN__' };
+  function decodePrimitive(o){
+    switch (o.ø) {
+      case '_Δ': return undefined;
+      case '_ƒ': return NaN;
+      case '_Ω': return Infinity;
+      case '_-Ω': return -Infinity;
+      case '_π': return -0;
+      default: return o.ø;
     }
   }
 
   function unwrap(obj){
     if (!isObject(obj)) {
       return obj;
-    } else if (_hasOwn(obj, '__val__')) {
+    } else if (_hasOwn.call(obj, 'ø')) {
       return decodePrimitive(obj);
-    } else if (_hasOwn(obj, bid)) {
+    } else if (_hasOwn.call(obj, bid)) {
       if (obj[bid] in mirrors) {
         return farIDs.get(mirrors[obj[bid]]);
       } else {
@@ -121,7 +123,7 @@ function initPipe(){
         mirrors[json[bid]] = json;
         return proxy;
       }
-    } else if (_hasOwn(obj, nid)) {
+    } else if (_hasOwn.call(obj, nid)) {
       return items[obj[nid]];
     } else {
       return obj;
@@ -168,33 +170,33 @@ function initPipe(){
     },
     set: function set(obj, o){
       obj[o.key] = unwrap(o.val);
-      return wrap(true);
+      return TRUE;
     },
     has: function has(obj, o){
       return wrap(o.key in obj);
     },
     hasOwn: function hasOwn(obj, o){
-      return wrap(_hasOwn(obj, o.key));
+      return wrap(_hasOwn.call(obj, o.key));
     },
     delete: function delete_(obj, o){
       delete obj[o.key];
-      return wrap(true);
+      return TRUE;
     },
     define: function define(obj, o){
-      if (_hasOwn(o.desc, 'value')) {
+      if (_hasOwn.call(o.desc, 'value')) {
         o.desc.value = unwrap(o.desc.value);
       } else {
         o.desc.get = unwrap(o.desc.get);
         o.desc.set = unwrap(o.desc.set);
       }
       Object.defineProperty(obj, o.key, o.desc);
-      return wrap(true);
+      return TRUE;
     },
     describe: function describe(obj, o){
       var desc = Object.getOwnPropertyDescriptor(obj, o.key);
       if (desc) {
         desc.configurable = true;
-        if (_hasOwn(desc, 'value')) {
+        if (_hasOwn.call(desc, 'value')) {
           if (desc.value === undefined) desc.value = obj[o.key];
           desc.value = wrap(desc.value);
         } else {
@@ -202,25 +204,25 @@ function initPipe(){
           desc.set = wrap(desc.set);
         }
         return desc;
-      } else if (desc === undefined && _hasOwn(obj, o.key)) {
+      } else if (desc === undefined && _hasOwn.call(obj, o.key)) {
         return { configurable: true,
                  enumerable: true,
                  writable: true,
                  value: wrap(obj[o.key]) };
       } else {
-        return wrap(desc);
+        return UNDEFINED;
       }
     },
     apply: function apply(obj, o){
       try {
-        return wrap(_apply(obj, unwrap(o.receiver), o.args.map(unwrap)));
+        return wrap(_apply.call(obj, unwrap(o.receiver), o.args.map(unwrap)));
       } catch (e) {
         return wrap(e);
       }
     },
     construct: function construct(obj, o){
       try {
-        return wrap(new (bindapply(obj, [null].concat(o.args.map(unwrap)))));
+        return wrap(new (_bind.apply(obj, [null].concat(o.args.map(unwrap)))));
       } catch (e) {
         return wrap(e);
       }
@@ -232,8 +234,8 @@ function initPipe(){
     this.json = json;
     if (json.type === 'function') {
       return Proxy.createFunction(this,
-        function(){ return self.apply(this, slice(arguments)) },
-        function(){ return self.construct(slice(arguments)) }
+        function(){ return self.apply(this, _slice.call(arguments)) },
+        function(){ return self.construct(_slice.call(arguments)) }
       );
     } else {
       return Proxy.create(this, unwrap(pipe.send('mirror-proto', this.json)));
@@ -283,7 +285,7 @@ function initPipe(){
     },
     defineProperty: function defineProperty(key, desc){
       desc = wrap(desc);
-      if (_hasOwn(desc, 'value')) {
+      if (_hasOwn.call(desc, 'value')) {
         desc.value = wrap(desc.value);
       } else {
         desc.get = wrap(desc.get);
