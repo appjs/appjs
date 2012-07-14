@@ -198,25 +198,18 @@ function initPipe(){
           if (desc.value === undefined) desc.value = obj[o.key];
           desc.value = wrap(desc.value);
         } else {
-          try {
-            desc.value = wrap(typeof desc.get === 'function' ? _call(desc.get, obj) : undefined)
-          } catch (e) {
-            desc.value = wrap(e);
-          }
-          return {
-            enumerable: desc.enumerable,
-            configurable: true,
-            writable: typeof desc.set === 'function',
-            value: desc.value
-          };
+          desc.get = wrap(desc.get);
+          desc.set = wrap(desc.set);
         }
+        return desc;
       } else if (desc === undefined && _hasOwn(obj, o.key)) {
         return { configurable: true,
                  enumerable: true,
                  writable: true,
                  value: wrap(obj[o.key]) };
+      } else {
+        return wrap(desc);
       }
-      return desc;
     },
     apply: function apply(obj, o){
       try {
