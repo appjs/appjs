@@ -26,7 +26,7 @@
           'destination': '<(module_root_dir)/app/data/node_modules/',
           'files': [
             '<(module_root_dir)/data/common/appjs/',
-            '<(module_root_dir)/data/common/npm/'
+            '<(module_root_dir)/node_modules/npm/'
           ]
         }
       ]
