@@ -23,11 +23,11 @@ _extend(App.prototype, {
     mod.call(this);
   },
   createWindow: function createWindow(url, settings){
-    url = url || 'http://appjs/';
-    if (typeof url === 'object') {
+    if (url !== null && typeof url === 'object') {
       settings = url;
       url = settings.url;
     }
+    url = url || 'http://appjs/';
     settings = _extend({}, settings);
     if (settings.icons) {
       ['smaller', 'small', 'big', 'bigger'].forEach(function(size){
@@ -39,10 +39,13 @@ _extend(App.prototype, {
 
     var self = this;
     var window = _createWindow.call(this, url, settings);
-    Object.defineProperty(window, 'id', { value: this.windows.length });
+    Object.defineProperties(window, {
+      id: { value: this.windows.length },
+      _events: { value: {} }
+    });
     this.windows.push(window);
 
-    window.once('ready', function(){
+    window.once('create', function(){
       stylesForWindow(window);
       window.runInBrowser(browserInit);
     });
@@ -55,8 +58,9 @@ _extend(App.prototype, {
     });
 
     window.on('log', function(obj){
-      self.emit('log', this.id, obj);
+      console.log(this.id, obj);
     });
+
     return window;
   },
   send: function send(id, type, msg){
@@ -108,6 +112,9 @@ _extend(Window.prototype, {
   send: function send(type, msg){
     msg = { type: type, msg: msg };
     return IPC.decode(_send.call(this, IPC.encode(msg)));
+  },
+  log: function log(o){
+    this.send('log', o);
   }
 });
 

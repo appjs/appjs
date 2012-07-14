@@ -13,3 +13,4 @@ data/win/node-bin/node
 node.exe
 /deps/
 .DS_Store
+/app/

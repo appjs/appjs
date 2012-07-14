@@ -51,6 +51,13 @@ void SetNCWidth(HWND hwnd, int size){
   DwmExtendFrameIntoClientArea(hwnd, &margins);
 }
 
+void SetFullscreen(HWND hwnd){
+  DWORD style = GetWindowLong(hwnd, GWL_STYLE);
+  SetWindowLong(hwnd, GWL_STYLE, style & ~WS_OVERLAPPEDWINDOW);
+  SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+  HDC hDC = GetWindowDC(NULL);
+  SetWindowPos(hwnd, NULL, 0, 0, GetDeviceCaps(hDC, HORZRES), GetDeviceCaps(hDC, VERTRES), SWP_FRAMECHANGED);
+}
 
 void NativeWindow::Init(char* url, Settings* settings) {
   url_ = url;
@@ -94,38 +101,35 @@ void NativeWindow::Init(char* url, Settings* settings) {
     }
   };
 
-  DWORD commonStyle = WS_OVERLAPPEDWINDOW;
-  DWORD style;
+  DWORD style = show_chrome ? WS_OVERLAPPEDWINDOW : WS_SIZEBOX | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU;
 
-  if( !resizable ) {
-    style &= ~(WS_THICKFRAME);
-  }
-  // set chrome
-  if( show_chrome ) {
-    commonStyle |= style;
-  } else {
-    commonStyle |= WS_POPUP;
+  if (!resizable) {
+    style &= ~WS_SIZEBOX;
   }
 
-  if( left_ < 0 || top_ < 0 ) {
+  if (left_ < 0 || top_ < 0) {
     left_ = (GetSystemMetrics(SM_CXSCREEN) - width_) / 2;
     top_ = (GetSystemMetrics(SM_CYSCREEN) - height_) / 2;
   }
-  // Perform application initialization
   browser_ = NULL;
-  handle_ = CreateWindowEx(WS_EX_APPWINDOW, szWindowClass,"", WS_THICKFRAME, top_, left_, width_, height_, NULL, NULL, hInstance, NULL);
+  handle_ = CreateWindowEx(NULL, szWindowClass,"", style, top_, left_, width_, height_, NULL, NULL, hInstance, NULL);
 
   if (!handle_) {
-    //TODO send error to node
     fprintf(stderr,"Error occurred: ");
     fprintf(stderr,"%d\n",GetLastError());
     return;
   }
 
-  SetWindowLongPtr(handle_,GWLP_USERDATA, (LONG)this);
+  SetWindowLongPtr(handle_, GWLP_USERDATA, (LONG)this);
 
   if (alpha) {
     SetNCWidth(handle_, -1);
+  }
+
+  if (fullscreen) {
+    SetFullscreen(handle_);
+  } else if (!show_chrome) {
+    UpdateStyle(handle_, GWL_STYLE, GetWindowLong(handle_, GWL_STYLE) & ~WS_CAPTION);
   }
 
   UpdateWindow(handle_);
@@ -143,23 +147,23 @@ int NativeWindow::ScreenHeight() {
 }
 
 void NativeWindow::Minimize() {
-  ShowWindowAsync(handle_, SW_MINIMIZE);
+  ShowWindow(handle_, SW_MINIMIZE);
 }
 
 void NativeWindow::Maximize() {
-  ShowWindowAsync(handle_, SW_MAXIMIZE);
+  ShowWindow(handle_, SW_MAXIMIZE);
 }
 
 void NativeWindow::Restore() {
-  ShowWindowAsync(handle_, SW_RESTORE);
+  ShowWindow(handle_, SW_RESTORE);
 }
 
 void NativeWindow::Show() {
-  ShowWindowAsync(handle_, SW_SHOW);
+  ShowWindow(handle_, SW_SHOW);
 }
 
 void NativeWindow::Hide() {
-  ShowWindowAsync(handle_, SW_HIDE);
+  ShowWindow(handle_, SW_HIDE);
 }
 
 void NativeWindow::Destroy() {
@@ -170,32 +174,27 @@ void NativeWindow::Drag() {
   ReleaseCapture();
   SendMessage(handle_, WM_NCLBUTTONDOWN, HTCAPTION, 0);
 }
+
 void NativeWindow::SetPosition(int top, int left, int width, int height) {
-  if (handle_) {
-    UpdatePosition(top, left, width, height);
-    SetWindowPos(handle_, NULL, top, left, width, height, NULL);
-  }
+  UpdatePosition(top, left, width, height);
+  SetWindowPos(handle_, NULL, left, top, width, height, NULL);
 }
 
 void NativeWindow::SetPosition(int top, int left) {
-  if (handle_) {
-    top_ = top;
-    left_ = left;
-    SetWindowPos(handle_, NULL, top, left, NULL, NULL, SWP_NOSIZE);
-  }
+  top_ = top;
+  left_ = left;
+  SetWindowPos(handle_, NULL, left, top, NULL, NULL, SWP_NOSIZE);
 }
 
 void NativeWindow::SetSize(int width, int height) {
-  if (handle_) {
-    width_ = width;
-    height_ = height;
-    SetWindowPos(handle_, NULL, NULL, NULL, width, height, SWP_NOMOVE);
-  }
+  width_ = width;
+  height_ = height;
+  SetWindowPos(handle_, NULL, NULL, NULL, width, height, SWP_NOMOVE);
 }
 
 void NativeWindow::UpdatePosition(){
   RECT rect;
-  GetClientRect(handle_, &rect);
+  GetWindowRect(handle_, &rect);
   width_ = rect.right - rect.left;
   height_ = rect.bottom - rect.top;
   left_ = rect.left;
@@ -241,8 +240,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
       NativeWindow* window = ClientHandler::GetWindow(hwnd);
       RECT rect;
       GetClientRect(hwnd, &rect);
-
-      // Initialize window info to the defaults for a child window
       Cef::AddWebView(hwnd, rect, url_, browserSettings);
       return 0;
     }
@@ -269,8 +266,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         hdwp = DeferWindowPos(hdwp, window->GetBrowser()->GetWindowHandle(), NULL, r.left, r.top, r.right - r.left, r.bottom - r.top, SWP_NOZORDER);
         EndDeferWindowPos(hdwp);
       }
+      window->UpdatePosition();
       break;
     }
+    case WM_MOVE:
+      ClientHandler::GetWindow(hwnd)->UpdatePosition();
+      break;
     case WM_ERASEBKGND:
       return 1;
     // case WM_ERASEBKGND: {

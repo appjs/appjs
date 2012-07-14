@@ -13,17 +13,17 @@
           'outputs':[''],
           'conditions':[
             ['OS!="win"', {
-              'action':['<(module_root_dir)/data/add-dependencies.sh','<(module_root_dir)/publish/node_modules/appjs-<(OS)']
+              'action':['<(module_root_dir)/data/add-dependencies.sh','<(module_root_dir)/app/data/node_modules/appjs-<(OS)']
             }],
             ['OS=="win"', {
-              'action':['"<(module_root_dir)/data/add-dependencies.bat"','<(module_root_dir)/publish/node_modules/appjs-<(OS)']
+              'action':['"<(module_root_dir)/data/add-dependencies.bat"','<(module_root_dir)/app/data/node_modules/appjs-<(OS)']
             }]
           ]
         },
       ],
       'copies':[
         {
-          'destination': '<(module_root_dir)/publish/node_modules/',
+          'destination': '<(module_root_dir)/app/data/node_modules/',
           'files': [
             '<(module_root_dir)/data/common/appjs/',
             '<(module_root_dir)/data/common/npm/'
@@ -39,7 +39,7 @@
       ],
       'copies':[
         {
-          'destination': '<(module_root_dir)/publish/node_modules/appjs-<(OS)',
+          'destination': '<(module_root_dir)/app/data/node_modules/appjs-<(OS)',
           'files': [
             '<(module_root_dir)/lib/',
             '<(module_root_dir)/index.js',
@@ -48,7 +48,7 @@
           ]
         },
         {
-          'destination': '<(module_root_dir)/publish/',
+          'destination': '<(module_root_dir)/app/data/',
           'files': [
             '<(module_root_dir)/data/common/app.js'
           ]
@@ -64,7 +64,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs-mac/build/Release',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-mac/build/Release',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
                 '<(module_root_dir)/deps/cef/Release/lib.target/ffmpegsumo.so',
@@ -72,19 +72,19 @@
               ],
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs-mac',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-mac',
               'files': [
                 '<(module_root_dir)/data/mac/package.json',
               ],
             },
             {
-              'destination': '<(module_root_dir)/publish/bin/Contents/',
+              'destination': '<(module_root_dir)/app/data/bin/Contents/',
               'files': [
                 '<(module_root_dir)/data/mac/pak/Resources/'
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs-mac/data/pak',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-mac/data/pak',
               'files': [
                 '<(module_root_dir)/data/<(OS)/pak/Resources/chrome.pak',
               ]
@@ -96,13 +96,13 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/',
+              'destination': '<(module_root_dir)/app/',
               'files': [
-                '<(module_root_dir)/data/mac/launch.sh',
+                '<(module_root_dir)/data/mac/app.sh',
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/bin/',
+              'destination': '<(module_root_dir)/app/data/bin/',
               'files': [
                 '<(module_root_dir)/data/mac/node-bin/node/',
               ]
@@ -111,7 +111,7 @@
         },{ # !mac
           'copies': [
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs-<(OS)/data/pak',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-<(OS)/data/pak',
               'files': [
                 '<(module_root_dir)/data/<(OS)/pak/chrome.pak',
                 '<(module_root_dir)/data/<(OS)/pak/locales/'
@@ -135,26 +135,26 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs-linux/build/Release/',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-linux/build/Release/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.so',
                 '<(PRODUCT_DIR)/appjs.node'
               ],
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs-linux/',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-linux/',
               'files': [
                 '<(module_root_dir)/data/linux/package.json',
               ],
             },
             {
-              'destination': '<(module_root_dir)/publish/',
+              'destination': '<(module_root_dir)/app/',
               'files': [
-                '<(module_root_dir)/data/linux/launch.sh',
+                '<(module_root_dir)/data/linux/app.sh',
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/bin/',
+              'destination': '<(module_root_dir)/app/data/bin/',
               'files': [
                 '<(module_root_dir)/data/linux/node-bin/<!@(node -e "console.log(require(\'os\').arch())")/node',
               ]
@@ -178,7 +178,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs-win/build/Release/',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win/build/Release/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/libcef.dll',
                 '<(module_root_dir)/deps/cef/Release/avcodec-54.dll',
@@ -193,19 +193,19 @@
               ],
             },
             {
-              'destination': '<(module_root_dir)/publish/node_modules/appjs-win/',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win/',
               'files': [
                 '<(module_root_dir)/data/win/package.json',
               ],
             },
             {
-              'destination': '<(module_root_dir)/publish/',
+              'destination': '<(module_root_dir)/app/',
               'files': [
                 '<(module_root_dir)/data/win/app.exe',
               ]
             },
             {
-              'destination': '<(module_root_dir)/publish/bin/',
+              'destination': '<(module_root_dir)/app/data/bin/',
               'files': [
                 '<(module_root_dir)/data/win/node-bin/node.exe',
               ]

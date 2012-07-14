@@ -23,12 +23,13 @@
     "name": "Morteza Milani",
     "email": "mrtz.milani@gmail.com"
   },
-  "contributors": [
-    {
-        "name": "Ali Farhadi",
-        "email": "a.farhadi@gmail.com"
-    }
-  ],
+  "contributors": [{
+    "name": "Ali Farhadi",
+    "email": "a.farhadi@gmail.com"
+  }, {
+    "name": "Brandon Benvie",
+    "email": "brandon@bbenvie.com"
+  }],
   "directories": {
     "doc": "./doc",
     "lib": "./lib",
