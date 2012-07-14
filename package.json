@@ -48,7 +48,7 @@
   "devDependencies": {},
   "optionalDependencies": {},
   "scripts": {
-    "install": "node cli/configure.js && node-gyp rebuild"
+    "install": "node cli/configure.js && node cli/build.js"
   },
   "licenses": [
     {
