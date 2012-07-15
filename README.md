@@ -107,6 +107,7 @@ The follow are things we're currently working on solutions for and are high on t
 
 ![Browser/Node Cross Context](https://github.com/milani/appjs/raw/master/examples/node-in-browser.png "Browser/Node Cross Context")
 
+![DOM Event Listener in Node](https://github.com/milani/appjs/raw/master/examples/shared-context.jpg "DOM Event Listener in Node")
 
 ## License
 ( The MIT License )
