@@ -16,6 +16,11 @@ var util     = require('../cli/util')
   , depsDir  = path.join(__dirname,'../deps')
   , env      = process.env.NODE_ENV || 'Debug';
 
+// TODO: remove me after CEF supports building under OSX as 64bit
+if (platform === 'darwin' && arch === 'x64') {
+  arch='ia32'
+}
+
 /**
  * Starts installing CEF libraries
  */
