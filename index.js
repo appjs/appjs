@@ -2,18 +2,19 @@ var path = require('path'),
     router = require('./lib/router'),
     bindings = require('./lib/bindings'),
     browserInit = require('./lib/browser-init'),
-    bridge = require('./lib/bridge');
+    bridge = require('./lib/bridge'),
+    Window = require('./lib/window');
 
 var App = bindings.App,
-    Window = bindings.Window,
+    NativeWindow = bindings.Window,
     _createWindow = App.prototype.createWindow,
-    _send = Window.prototype.send,
+    _send = NativeWindow.prototype.send,
     _extend = require('./lib/utils').extend;
 
 
 // TODO: windows specific component is temporary
 if (process.platform === 'win32') {
-  var stylesForWindow = require('./lib/windowStyles')(Window);
+  var stylesForWindow = require('./lib/windowStyles')(NativeWindow);
 } else {
   var stylesForWindow = function(){}
 }
@@ -39,41 +40,35 @@ _extend(App.prototype, {
     }
 
     var self = this;
+    var id = this.windows.length;
     var window = _createWindow.call(this, url, settings);
-    Object.defineProperties(window, {
-      id: { value: this.windows.length },
-      _events: { value: {} }
-    });
-    this.windows.push(window);
+    window.id = id;
+    window._events = {};
+    var wrapped = new Window(window);
+    wrapped._events = {};
+    Object.defineProperty(wrapped, '_events', { enumerable: false });
+    this.windows.push(wrapped);
 
-    window.once('create', function(){
+    window.on('create', function(){
       stylesForWindow(window);
       window.runInBrowser(browserInit);
+      process.nextTick(function(){ wrapped.emit('create') });
     });
 
-    window.once('ready', function(){
-      bridge(window);
+
+    window.on('ready', function(){
       window.runInBrowser(bridge);
+      bridge(window);
     });
 
     window.on('close', function(){
-      var id = this.id;
+      wrapped.emit('close');
       process.nextTick(function(){
         self.windows[id] = null;
       });
     });
 
-    return window;
-  },
-  send: function send(id, type, msg){
-    if (arguments.length === 2) {
-      msg = type;
-      type = id;
-      id = 0;
-    }
-    if (id in this.windows) {
-      return this.windows[id].send(type, msg);
-    }
+    return wrapped;
   }
 });
 
@@ -98,9 +93,9 @@ var IPC = {
 };
 
 
-Window.prototype.__proto__ = process.EventEmitter.prototype;
+NativeWindow.prototype.__proto__ = process.EventEmitter.prototype;
 
-_extend(Window.prototype, {
+_extend(NativeWindow.prototype, {
   onmessage: function onmessage(msg){
     var res = {};
     msg = IPC.decode(msg);
