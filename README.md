@@ -35,6 +35,13 @@ These are a work in progress.
 * Linux [32 bit](http://dists.appjs.org/0.0.14/appjs-0.0.14-linux-ia32.tar.gz) / [64 bit](http://dists.appjs.org/0.0.14/appjs-0.0.14-linux-x64.tar.gz) -> launch.sh
 * [Mac](http://dists.appjs.org/0.0.14/appjs-0.0.14-darwin-ia32.zip) -> launch.sh
 
+
+## Shared Contexts
+
+![Browser/Node Cross Context](https://github.com/milani/appjs/raw/master/examples/node-in-browser.png "Browser/Node Cross Context")
+
+![DOM Event Listener in Node](https://github.com/milani/appjs/raw/master/examples/shared-context.jpg "DOM Event Listener in Node")
+
 ![Hello World](https://github.com/milani/appjs/raw/master/examples/output.jpg "Hello World")
 
 ## One Minute Usage Overview
@@ -99,15 +106,9 @@ Currently the binaries require Node for the following architectures:
 ## Coming Soon
 The follow are things we're currently working on solutions for and are high on the priority list to fix/address.
 
-* bridging of Node and browser JS context so sharing of objects directly is possible
 * distribution tools to help package up your apps for deployment
 * expanded platform APIs to cover the standard use-cases for desktop apps
 
-## A Preview
-
-![Browser/Node Cross Context](https://github.com/milani/appjs/raw/master/examples/node-in-browser.png "Browser/Node Cross Context")
-
-![DOM Event Listener in Node](https://github.com/milani/appjs/raw/master/examples/shared-context.jpg "DOM Event Listener in Node")
 
 ## License
 ( The MIT License )
