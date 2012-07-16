@@ -29,7 +29,7 @@ char* url_;
 
 
 void UpdateStyle(HWND hwnd, int index, LONG value){
-  SetWindowLong(hwnd, index, value);
+  SetWindowLongPtr(hwnd, index, value);
   SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
 }
 
@@ -53,7 +53,7 @@ void SetNCWidth(HWND hwnd, int size){
 
 void SetFullscreen(HWND hwnd){
   DWORD style = GetWindowLong(hwnd, GWL_STYLE);
-  SetWindowLong(hwnd, GWL_STYLE, style & ~WS_OVERLAPPEDWINDOW);
+  SetWindowLongPtr(hwnd, GWL_STYLE, style & ~WS_OVERLAPPEDWINDOW);
   SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
   HDC hDC = GetWindowDC(NULL);
   SetWindowPos(hwnd, NULL, 0, 0, GetDeviceCaps(hDC, HORZRES), GetDeviceCaps(hDC, VERTRES), SWP_FRAMECHANGED);
@@ -129,7 +129,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
   if (fullscreen) {
     SetFullscreen(handle_);
   } else if (!show_chrome) {
-    UpdateStyle(handle_, GWL_STYLE, GetWindowLong(handle_, GWL_STYLE) & ~WS_CAPTION);
+    UpdateStyle(handle_, GWL_STYLE, GetWindowLongPtr(handle_, GWL_STYLE) & ~WS_CAPTION);
   }
 
   UpdateWindow(handle_);
@@ -160,6 +160,8 @@ void NativeWindow::Restore() {
 
 void NativeWindow::Show() {
   ShowWindow(handle_, SW_SHOW);
+  ShowWindow(handle_, SW_MINIMIZE);
+  ShowWindow(handle_, SW_RESTORE);
 }
 
 void NativeWindow::Hide() {
@@ -233,11 +235,14 @@ ATOM MyRegisterClass(HINSTANCE hInst) {
 
 // Processes messages for the main window.
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+  NativeWindow* window = ClientHandler::GetWindow(hwnd);
+  CefRefPtr<CefBrowser> browser;
+  if (window) {
+    browser = window->GetBrowser();
+  }
 
-  // Callback for the main window
   switch (message) {
     case WM_CREATE: {
-      NativeWindow* window = ClientHandler::GetWindow(hwnd);
       RECT rect;
       GetClientRect(hwnd, &rect);
       Cef::AddWebView(hwnd, rect, url_, browserSettings);
@@ -250,43 +255,37 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
       EndPaint(hwnd, &ps);
       return 0;
     }
-    /*case WM_SETFOCUS:
-      if (g_handler.get() && g_handler->GetBrowserHwnd()) {
-        // Pass focus to the browser window
-        PostMessage(g_handler->GetBrowserHwnd(), WM_SETFOCUS, wParam, NULL);
+    case WM_SETFOCUS:
+      if (browser.get()) {
+        PostMessage(browser->GetWindowHandle(), WM_SETFOCUS, wParam, NULL);
+        return 0;
       }
-      return 0;*/
-
     case WM_SIZE: {
-      NativeWindow* window = ClientHandler::GetWindow(hwnd);
-      if (window->GetBrowser()) {
-        RECT r;
-        GetClientRect(hwnd, &r);
+      if (browser.get()) {
+        RECT rect;
+        GetClientRect(hwnd, &rect);
         HDWP hdwp = BeginDeferWindowPos(1);
-        hdwp = DeferWindowPos(hdwp, window->GetBrowser()->GetWindowHandle(), NULL, r.left, r.top, r.right - r.left, r.bottom - r.top, SWP_NOZORDER);
+        hdwp = DeferWindowPos(hdwp, browser->GetWindowHandle(), NULL,
+                              rect.left, rect.top, rect.right - rect.left,
+                              rect.bottom - rect.top, SWP_NOZORDER);
         EndDeferWindowPos(hdwp);
       }
       window->UpdatePosition();
       break;
     }
     case WM_MOVE:
-      ClientHandler::GetWindow(hwnd)->UpdatePosition();
+      window->UpdatePosition();
       break;
+    // case WM_ERASEBKGND:
+    //   return 1;
     case WM_ERASEBKGND:
-      return 1;
-    // case WM_ERASEBKGND: {
-    //   NativeWindow* window = ClientHandler::GetWindow(hwnd);
-    //   if (window->GetBrowser()) {
-    //     // Dont erase the background if the browser window has been loaded
-    //     // (this avoids flashing)
-    //     return 0;
-    //   }
-    case WM_CLOSE: {
-      NativeWindow* window = ClientHandler::GetWindow(hwnd);
-      if (window->GetBrowser()) {
-        window->GetBrowser()->ParentWindowWillClose();
+      if (browser.get()) {
+        return 0;
       }
-    }
+    case WM_CLOSE:
+      if (browser.get()) {
+        browser->ParentWindowWillClose();
+      }
     break;
     //case WM_DESTROY:
     //  PostQuitMessage(0);
