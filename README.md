@@ -20,31 +20,22 @@ __AppJS is under heavy development. Expect many API changes and things to break.
 ## 30 Second Quickstart
 The below packages include everything needed to get started with AppJS, including Node.js, all dependencies, binaries, and a launcher ready to go out of the box. 1.) Extract to a folder. 2.) Double click on launch. 3.) Hello World.
 
-__AppJS 0.0.13 Complete Distributables:__
-
-* [Windows](http://dists.appjs.org/0.0.13/appjs-0.0.13-win32-ia32.zip) -> launch.exe
-* Linux [32 bit](http://dists.appjs.org/0.0.13/appjs-0.0.13-linux-ia32.tar.gz) / [64 bit](http://dists.appjs.org/0.0.13/appjs-0.0.13-linux-x64.tar.gz) -> launch.sh
-* [Mac](http://dists.appjs.org/0.0.13/appjs-0.0.13-darwin-ia32.zip) -> launch.sh
-
-
-__AppJS 0.0.14 Beta Distributables:__
-
-These are a work in progress.
+__AppJS 0.0.14 Distributables:__
 
 * Linux [32 bit](http://dists.appjs.org/0.0.14/appjs-0.0.14-linux-ia32.tar.gz) / [64 bit](http://dists.appjs.org/0.0.14/appjs-0.0.14-linux-x64.tar.gz) -> launch.sh
 * [Mac](http://dists.appjs.org/0.0.14/appjs-0.0.14-darwin-ia32.zip) -> launch.sh
 
-__AppJS 0.0.15 Beta Distributables:__
+__AppJS 0.0.15 Distributables:__
 
 * [Windows](http://dists.appjs.org/0.0.15/appjs-0.0.15-win32-ia32.zip) -> app.exe
 
 ## Shared Contexts
 
-![Browser/Node Cross Context](https://github.com/milani/appjs/raw/master/examples/node-in-browser.png "Browser/Node Cross Context")
+![Browser/Node Cross Context](https://github.com/appjs/appjs/raw/master/examples/node-in-browser.png "Browser/Node Cross Context")
 
-![DOM Event Listener in Node](https://github.com/milani/appjs/raw/master/examples/shared-context.jpg "DOM Event Listener in Node")
+![DOM Event Listener in Node](https://github.com/appjs/appjs/raw/master/examples/shared-context.jpg "DOM Event Listener in Node")
 
-![Hello World](https://github.com/milani/appjs/raw/master/examples/output.jpg "Hello World")
+![Hello World](https://github.com/appjs/appjs/raw/master/examples/output.jpg "Hello World")
 
 ## One Minute Usage Overview
 There is a complete example in the `examples` folder.
