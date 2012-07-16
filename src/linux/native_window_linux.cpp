@@ -90,6 +90,34 @@ void NativeWindow::Init(char* url, Settings* settings) {
   Cef::AddWebView(box,url,settings);
 }
 
+int NativeWindow::ScreenWidth() {
+  GdkScreen* screen = gdk_screen_get_default();
+  return gdk_screen_get_width(screen);
+}
+
+int NativeWindow::ScreenHeight() {
+  GdkScreen* screen = gdk_screen_get_default();
+  return gdk_screen_get_height(screen);
+}
+
+void NativeWindow::Minimize() {
+  GtkWindow* window = (GtkWindow*) gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
+                               GTK_TYPE_WINDOW);
+  gtk_window_iconify(window); 
+}
+
+void NativeWindow::Maximize() {
+  GtkWindow* window = (GtkWindow*) gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
+                               GTK_TYPE_WINDOW);
+  gtk_window_maximize(window);
+}
+
+void NativeWindow::Restore() {
+  GtkWindow* window = (GtkWindow*) gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
+                               GTK_TYPE_WINDOW);
+  gtk_window_deiconify(window);
+}
+
 void NativeWindow::Show() {
   if (browser_) {
     GtkWidget* window = gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
@@ -114,14 +142,8 @@ void NativeWindow::Destroy() {
   }
 }
 
-int NativeWindow::ScreenWidth() {
-  GdkScreen* screen = gdk_screen_get_default();
-  return gdk_screen_get_width(screen);
-}
-
-int NativeWindow::ScreenHeight() {
-  GdkScreen* screen = gdk_screen_get_default();
-  return gdk_screen_get_height(screen);
+// Start dragging and continue until mouse releases. API may need to change/be more complicated.
+void NativeWindow::Drag() {
 }
 
 void NativeWindow::SetPosition(int top, int left, int width, int height) {
@@ -151,19 +173,6 @@ void NativeWindow::SetSize(int width, int height) {
                                GTK_TYPE_WINDOW);
     gtk_window_resize(window,width,height);
   }
-}
-
-// Start dragging and continue until mouse releases. API may need to change/be more complicated.
-void NativeWindow::Drag() {
-}
-
-void NativeWindow::Minimize() {
-}
-
-void NativeWindow::Maximize() {
-}
-
-void NativeWindow::Restore() {
 }
 
 
