@@ -83,7 +83,7 @@ bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
     // in this pass. (It will be destroyed due to the call to close
     // the parent above.)
     return true;
-  } 
+  }
 
   // A popup browser window is not contained in another window, so we can let
   // these windows close by themselves.
@@ -96,7 +96,7 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   if(!browser->IsPopup()) {
 
 // There is a bug in CEF for Linux I think that there is no window object
-// when the code reaches here.  
+// when the code reaches here.
 #ifndef __LINUX__
     Handle<Object> handle = ClientHandler::GetV8WindowHandle(browser);
     Handle<Value> argv[1] = {String::New("close")};
@@ -104,9 +104,9 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 #endif
 
     DoClose(browser);
-//#ifdef __WIN__
-    //delete ClientHandler::GetWindow(browser);
-//#endif
+#ifdef __WIN__
+    delete ClientHandler::GetWindow(browser);
+#endif
   }
 }
 
