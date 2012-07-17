@@ -52,6 +52,7 @@ _extend(App.prototype, {
     window.on('create', function(){
       stylesForWindow(window);
       window.runInBrowser(browserInit);
+      wrapped.emit('create');
     });
 
     window.on('ready', function(){
