@@ -4,19 +4,20 @@ app.get('/',function(req,res,next){
   res.send("Hello World!");
 });
 
+app.serveFilesFrom('./content');  // serves files to browser requests to "http://appjs/*"
+
 var window = app.createWindow("http://appjs/", {
-  width: 640,
-  height: 460,
-  left: -1, // remove x and y if you want to put window at center, -1 means the same
-  top: -1, // remove x and y if you want to put window at center, -1 means the same
-  autoResize: false, // set to true if you want to change screen size dynamically using html elements
-  resizable: false, // prevent users from changing screen width or height
-  showChrome: true, // show border and title bar
-  opacity: 1, // you can set opacity of window.
-  alpha: false, // alpha compositing of the window background
-  fullscreen: false, // we don't need fullscreen window
-  showResizeGrip: false, // resize grip is an annoying triangle at the right bottom corner of window
-  disableSecurity: true, // allow cross origin requests
+  width           : 640,
+  height          : 460,
+  left            : -1,    // optional, -1 centers
+  top             : -1,    // optional, -1 centers
+  autoResize      : false, // resizes in response to html content
+  resizable       : false, // controls whether window is resiable by user
+  showChrome      : true,  // show border and title bar
+  opacity         : 1,     // opacity from 0 to 1 (Linux)
+  alpha           : false, // alpha compositing based on window content (Windows & Mac)
+  fullscreen      : false, // covers whole screen and has no chrome
+  disableSecurity : true,  // allow cross origin requests
 });
 
 

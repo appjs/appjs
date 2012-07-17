@@ -50,6 +50,7 @@
         {
           'destination': '<(module_root_dir)/app/data/',
           'files': [
+            '<(module_root_dir)/data/common/content/',
             '<(module_root_dir)/data/common/app.js'
           ]
         }
