@@ -19,14 +19,10 @@ var window = app.createWindow("http://appjs/", {
   disableSecurity: true, // allow cross origin requests
 });
 
-window.on("create",function(){
-  console.log("Window Created");
-  this.show();
-//  this.openDevTools();
-});
 
 window.on("ready",function(){
-  console.log("Page Loaded");
+  console.log("Window Created");
+  this.show();
 });
 
 window.on("close",function(){
