@@ -49,7 +49,7 @@ function downloadCef(version,cb){
 
     var zlib = require('zlib')
       , tar = require('tar')
-      , distUrl = 'https://github.com/downloads/milani/appjs'
+      , distUrl = 'https://github.com/downloads/appjs/appjs'
       , version = version
       , dirname = 'cef_binary_' + version + '_' + platform + '_' + arch
       , fileName = dirname + '.tar.gz';
