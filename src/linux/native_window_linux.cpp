@@ -153,6 +153,9 @@ void NativeWindow::Drag() {
 
 }
 
+void NativeWindow::Drop() {
+}
+
 void NativeWindow::SetPosition(int top, int left, int width, int height) {
   GtkWindow* window = (GtkWindow*)handle_;
   gtk_window_move(window,top,left);

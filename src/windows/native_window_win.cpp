@@ -190,6 +190,10 @@ void NativeWindow::Drag() {
   SendMessage(handle_, WM_NCLBUTTONDOWN, HTCAPTION, 0);
 }
 
+void NativeWindow::Drop() {
+  ReleaseCapture();
+}
+
 const char* NativeWindow::GetTitle() {
   TCHAR title[80];
   GetWindowText(handle_, title, 80);

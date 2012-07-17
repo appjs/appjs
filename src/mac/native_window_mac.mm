@@ -282,13 +282,18 @@ void NativeWindow::Maximize() {
 void NativeWindow::Restore() {
 }
 
-// begins drag, this may need to be changed
 void NativeWindow::Drag() {
 }
+
+void NativeWindow::Drop() {
+}
+
 void NativeWindow::SetPosition(int top, int left, int width, int height) {
 }
+
 void NativeWindow::SetPosition(int top, int left) {
 }
+
 void NativeWindow::SetSize(int width, int height) {
 }
 // update all dimension properties for window via platform api (top, left, width, height)
