@@ -40,6 +40,9 @@ public:
   int GetWidth();
   int GetHeight();
 
+  void SetTitle(const char* title);
+  const char* GetTitle();
+
   void OpenDevTools();
   void CloseDevTools();
   void RunInBrowser(char* script);

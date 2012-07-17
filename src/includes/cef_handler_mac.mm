@@ -22,15 +22,6 @@ CefWindowHandle ClientHandler::GetMainHwnd(){
   return m_MainHwnd;
 }
 
-
-NativeWindow* ClientHandler::GetWindow(CefRefPtr<CefBrowser> browser){
-  NSView* view = (NSView*)browser->GetWindowHandle();
-  NSWindow* win = [view window];
-  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win, "nativewindow");
-  NativeWindow* window = [wrap handle];
-  return window;
-}
-
 NativeWindow* ClientHandler::GetWindow(CefWindowHandle handle){
   NSWindow* win = (NSWindow*)handle;
   Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win, "nativewindow");
@@ -38,19 +29,11 @@ NativeWindow* ClientHandler::GetWindow(CefWindowHandle handle){
   return window;
 }
 
-
-void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
-                                  const CefString& title)
-{
-  REQUIRE_UI_THREAD();
-
-  // Set the frame window title bar
+CefWindowHandle ClientHandler::GetContainer(CefRefPtr<CefBrowser> browser){
   NSView* view = (NSView*)browser->GetWindowHandle();
-  NSWindow* window = [view window];
-  std::string titleStr(title);
-  NSString* str = [NSString stringWithUTF8String:titleStr.c_str()];
-  [window setTitle:str];
+  return [view window];
 }
+
 
 bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, KeyEventType type, int code,
                                int modifiers, bool isSystemKey, bool isAfterJavaScript) {
@@ -85,5 +68,12 @@ void ClientHandler::CloseMainWindow() {
   REQUIRE_UI_THREAD();
   appjs::Cef::Shutdown();
 }
+
+
+void ClientHandler::SetWindowTitle(CefWindowHandle handle, const char* title) {
+  NSWindow* win = (NSWindow*)handle;
+  [[browser_->GetWindowHandle() win] setTitle: [NSString stringWithUTF8String:title]];
+}
+
 
 CefRefPtr<ClientHandler> g_handler;

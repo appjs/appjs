@@ -19,8 +19,8 @@ void destroy_handler(GtkWidget* widget, NativeWindow* window) {
 }
 
 void NativeWindow::Init(char* url, Settings* settings) {
-
-  GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  handle_ = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  GtkWindow* window = (GtkWindow*)handle_;
 
   // Set default icon list
   if( !g_handler->GetBrowserHwnd() ) {
@@ -50,23 +50,23 @@ void NativeWindow::Init(char* url, Settings* settings) {
 //    delete biggerIconPath;
   }
 
-  gtk_window_set_default_size(GTK_WINDOW(window), width_, height_);
-  gtk_window_set_opacity(GTK_WINDOW(window), opacity);
-  gtk_window_set_decorated(GTK_WINDOW(window), show_chrome);
+  gtk_window_set_default_size(window, width_, height_);
+  gtk_window_set_opacity(window, opacity);
+  gtk_window_set_decorated(window, show_chrome);
 
   #if defined(__UBUNTU__) && !GTK_CHECK_VERSION(2, 24, 10)
     if(gtk_check_version(2, 24, 10))
-      gtk_window_set_has_resize_grip(GTK_WINDOW(window), show_resize_grip);
+      gtk_window_set_has_resize_grip(window, show_resize_grip);
   #endif
 
   if( fullscreen ) {
-    gtk_window_fullscreen(GTK_WINDOW(window));
+    gtk_window_fullscreen(window);
   } else {
-    gtk_window_set_resizable(GTK_WINDOW(window), resizable);
+    gtk_window_set_resizable(window, resizable);
   }
 
   if( !resizable ) {
-    gtk_widget_set_size_request(window,width_,height_);
+    gtk_widget_set_size_request(handle_,width_,height_);
   }
 
   if( left_ == -1 ) {
@@ -77,15 +77,15 @@ void NativeWindow::Init(char* url, Settings* settings) {
     top_ = (NativeWindow::ScreenHeight() - height_) / 2;
   }
 
-  gtk_window_move(GTK_WINDOW(window),left_,top_);
+  gtk_window_move(window,left_,top_);
 
   GtkWidget* box = gtk_vbox_new(FALSE, 0);
-  gtk_container_add(GTK_CONTAINER(window), box);
+  gtk_container_add(GTK_CONTAINER(handle_), box);
 
-  g_signal_connect(G_OBJECT(window), "destroy",
+  g_signal_connect(G_OBJECT(handle_), "destroy",
                    G_CALLBACK(destroy_handler), this);
 
-  g_object_set_data(G_OBJECT(window),"nativewindow",this);
+  g_object_set_data(G_OBJECT(handle_),"nativewindow",this);
 
   Cef::AddWebView(box,url,settings);
 }
@@ -101,45 +101,27 @@ int NativeWindow::ScreenHeight() {
 }
 
 void NativeWindow::Minimize() {
-  GtkWindow* window = (GtkWindow*) gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
-                               GTK_TYPE_WINDOW);
-  gtk_window_iconify(window); 
+  gtk_window_iconify((GtkWindow*)handle_); 
 }
 
 void NativeWindow::Maximize() {
-  GtkWindow* window = (GtkWindow*) gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
-                               GTK_TYPE_WINDOW);
-  gtk_window_maximize(window);
+  gtk_window_maximize((GtkWindow*)handle_);
 }
 
 void NativeWindow::Restore() {
-  GtkWindow* window = (GtkWindow*) gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
-                               GTK_TYPE_WINDOW);
-  gtk_window_deiconify(window);
+  gtk_window_deiconify((GtkWindow*)handle_);
 }
 
 void NativeWindow::Show() {
-  if (browser_) {
-    GtkWidget* window = gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
-                               GTK_TYPE_WINDOW);
-    gtk_widget_show_all(window);
-  }
+  gtk_widget_show_all((GtkWindow*)handle_);
 }
 
 void NativeWindow::Hide() {
-  if (browser_) {
-    GtkWidget* window = gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
-                               GTK_TYPE_WINDOW);
-    gtk_widget_hide(window);
-  }
+  gtk_widget_hide((GtkWindow*)handle_);
 }
 
 void NativeWindow::Destroy() {
-  if (browser_) {
-    GtkWidget* window = gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
-                               GTK_TYPE_WINDOW);
-    gtk_widget_destroy(window);
-  }
+  gtk_widget_destroy((GtkWindow*)handle_);
 }
 
 // Start dragging and continue until mouse releases. API may need to change/be more complicated.
@@ -147,32 +129,25 @@ void NativeWindow::Drag() {
 }
 
 void NativeWindow::SetPosition(int top, int left, int width, int height) {
-  if (handle_) {
-    GtkWindow* window = (GtkWindow*) gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
-                               GTK_TYPE_WINDOW);
-    gtk_window_move(window,top,left);
-    gtk_window_resize(window,width,height);
-  }
+  GtkWindow* window = (GtkWindow*)handle_;
+  gtk_window_move(window,top,left);
+  gtk_window_resize(window,width,height);
 }
 
 void NativeWindow::SetPosition(int top, int left) {
-  if (handle_) {
-    top_ = top;
-    left_ = left;
-    GtkWindow* window = (GtkWindow*) gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
-                               GTK_TYPE_WINDOW);
-    gtk_window_move(window,top,left);
-  }
+  top_ = top;
+  left_ = left;
+  gtk_window_move((GtkWindow*)handle_,top,left);
 }
 
 void NativeWindow::SetSize(int width, int height) {
-  if (handle_) {
-    width_ = width;
-    height_ = height;
-    GtkWindow* window = (GtkWindow*) gtk_widget_get_ancestor(GTK_WIDGET(browser_->GetWindowHandle()),
-                               GTK_TYPE_WINDOW);
-    gtk_window_resize(window,width,height);
-  }
+  width_ = width;
+  height_ = height;
+  gtk_window_resize((GtkWindow*)handle_,width,height);
+}
+
+const char* NativeWindow::GetTitle() {
+  return gtk_window_get_title((GtkWindow*)handle_);
 }
 
 

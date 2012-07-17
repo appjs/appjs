@@ -28,6 +28,10 @@ Settings* browserSettings;
 char* url_;
 
 
+// #################################
+// ### Windows Utility Functions ###
+// #################################
+
 void UpdateStyle(HWND hwnd, int index, LONG value){
   SetWindowLongPtr(hwnd, index, value);
   SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
@@ -58,6 +62,24 @@ void SetFullscreen(HWND hwnd){
   HDC hDC = GetWindowDC(NULL);
   SetWindowPos(hwnd, NULL, 0, 0, GetDeviceCaps(hDC, HORZRES), GetDeviceCaps(hDC, VERTRES), SWP_FRAMECHANGED);
 }
+
+
+
+// #####################################
+// ### Static NativeWindow Functions ###
+// #####################################
+
+int NativeWindow::ScreenWidth() {
+  return GetSystemMetrics(SM_CXSCREEN);
+}
+
+int NativeWindow::ScreenHeight() {
+  return GetSystemMetrics(SM_CYSCREEN);
+}
+
+// ############################
+// ### NativeWindow methods ###
+// ############################
 
 void NativeWindow::Init(char* url, Settings* settings) {
   url_ = url;
@@ -138,14 +160,6 @@ void NativeWindow::Init(char* url, Settings* settings) {
 };
 
 
-int NativeWindow::ScreenWidth() {
-  return GetSystemMetrics(SM_CXSCREEN);
-}
-
-int NativeWindow::ScreenHeight() {
-  return GetSystemMetrics(SM_CYSCREEN);
-}
-
 void NativeWindow::Minimize() {
   ShowWindow(handle_, SW_MINIMIZE);
 }
@@ -159,9 +173,8 @@ void NativeWindow::Restore() {
 }
 
 void NativeWindow::Show() {
-  ShowWindow(handle_, SW_SHOW);
-  ShowWindow(handle_, SW_MINIMIZE);
   ShowWindow(handle_, SW_RESTORE);
+  ShowWindow(handle_, SW_SHOW);
 }
 
 void NativeWindow::Hide() {
@@ -176,6 +189,13 @@ void NativeWindow::Drag() {
   ReleaseCapture();
   SendMessage(handle_, WM_NCLBUTTONDOWN, HTCAPTION, 0);
 }
+
+const char* NativeWindow::GetTitle() {
+  TCHAR title[80];
+  GetWindowText(handle_, title, 80);
+  return title;
+}
+
 
 void NativeWindow::SetPosition(int top, int left, int width, int height) {
   UpdatePosition(top, left, width, height);
@@ -202,8 +222,6 @@ void NativeWindow::UpdatePosition(){
   left_ = rect.left;
   top_ = rect.top;
 }
-
-
 
 
 long NativeWindow::GetStyle(bool extended) {

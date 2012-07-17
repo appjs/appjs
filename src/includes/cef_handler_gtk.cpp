@@ -13,23 +13,8 @@ NativeWindow* ClientHandler::GetWindow(CefWindowHandle handle){
   return (NativeWindow*)g_object_get_data(G_OBJECT(handle), "nativewindow");
 }
 
-NativeWindow* ClientHandler::GetWindow(CefRefPtr<CefBrowser> browser){
-  GtkWidget* window = gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()), GTK_TYPE_WINDOW);
-  return ClientHandler::GetWindow(window);
-}
-
-
-
-void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
-                                  const CefString& title)
-{
-  REQUIRE_UI_THREAD();
-
-  GtkWidget* window =
-      gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()),
-                              GTK_TYPE_WINDOW);
-  std::string titleStr(title);
-  gtk_window_set_title(GTK_WINDOW(window), titleStr.c_str());
+CefWindowHandle ClientHandler::GetContainer(CefRefPtr<CefBrowser> browser){
+  return gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()), GTK_TYPE_WINDOW);
 }
 
 bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, KeyEventType type, int code,
@@ -57,10 +42,16 @@ void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
     gtk_window_resize(GTK_WINDOW(window),width,height);
   }
 }
-void ClientHandler::CloseMainWindow() {
 
+void ClientHandler::CloseMainWindow() {
   REQUIRE_UI_THREAD();
   appjs::Cef::Shutdown();
 }
+
+
+void ClientHandler::SetWindowTitle(CefWindowHandle handle, const char* title) {
+  gtk_window_set_title((GtkWindow*)handle, title);
+}
+
 
 CefRefPtr<ClientHandler> g_handler;

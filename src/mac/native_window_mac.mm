@@ -268,6 +268,10 @@ void NativeWindow::Destroy() {
                       waitUntilDone:NO];
 };
 
+const char* NativeWindow::GetTitle() {
+  return [[browser_->GetWindowHandle() window] title] cStringUsingEncoding:ASCIIEncoding];
+}
+
 
 void NativeWindow::Minimize() {
 }

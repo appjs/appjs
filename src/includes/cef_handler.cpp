@@ -20,13 +20,17 @@ ClientHandler::~ClientHandler() {
 
 
 Handle<Object> ClientHandler::GetV8WindowHandle(CefRefPtr<CefBrowser> browser) {
-  return ClientHandler::GetWindow(browser)->GetV8Handle();
+  return GetWindow(browser)->GetV8Handle();
 }
 
 Handle<Object> ClientHandler::CreatedBrowser(CefRefPtr<CefBrowser> browser) {
-  NativeWindow* window = ClientHandler::GetWindow(browser);
+  NativeWindow* window = GetWindow(browser);
   window->SetBrowser(browser);
   return window->GetV8Handle();
+}
+
+NativeWindow* ClientHandler::GetWindow(CefRefPtr<CefBrowser> browser){
+  return GetWindow(GetContainer(browser));
 }
 
 
@@ -127,4 +131,9 @@ void ClientHandler::SetMainHwnd(CefWindowHandle& hwnd) {
   AutoLock lock_scope(this);
 
   m_MainHwnd = hwnd;
+}
+
+void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) {
+  REQUIRE_UI_THREAD();
+  SetWindowTitle(GetContainer(browser), (char*)title.c_str());
 }

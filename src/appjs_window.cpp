@@ -35,6 +35,7 @@ void Window::Init () {
   CREATE_CPP_ACCESSOR("top", Top);
   CREATE_CPP_ACCESSOR("height", Height);
   CREATE_CPP_ACCESSOR("width", Width);
+  CREATE_CPP_ACCESSOR("title", Title);
 
 #if defined(__WIN__)
   DEFINE_PROTOTYPE_METHOD("style", Style);
@@ -250,6 +251,12 @@ Handle<Value> Window::GetHeight(Local<String> property, const AccessorInfo &info
   return scope.Close(Integer::New(window->GetHeight()));
 }
 
+Handle<Value> Window::GetTitle(Local<String> property, const AccessorInfo &info) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  return scope.Close(String::New(window->GetTitle()));
+}
+
 
 void Window::SetLeft(Local<String> property, Local<Value> value, const AccessorInfo& info) {
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
@@ -260,13 +267,20 @@ void Window::SetTop(Local<String> property, Local<Value> value, const AccessorIn
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
   window->SetTop(value->Int32Value());
 }
+
 void Window::SetWidth(Local<String> property, Local<Value> value, const AccessorInfo& info) {
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
   window->SetWidth(value->Int32Value());
 }
+
 void Window::SetHeight(Local<String> property, Local<Value> value, const AccessorInfo& info) {
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
   window->SetHeight(value->Int32Value());
+}
+
+void Window::SetTitle(Local<String> property, Local<Value> value, const AccessorInfo& info) {
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  window->SetTitle(V8StringToChar(value->ToString()));
 }
 
 

@@ -29,6 +29,7 @@ class Window : public node::ObjectWrap {
   DEFINE_CPP_ACCESSOR(Top);
   DEFINE_CPP_ACCESSOR(Height);
   DEFINE_CPP_ACCESSOR(Width);
+  DEFINE_CPP_ACCESSOR(Title);
 
 #if defined(__WIN__)
   DEFINE_CPP_METHOD(Style);
