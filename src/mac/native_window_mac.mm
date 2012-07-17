@@ -53,13 +53,17 @@ static NSAutoreleasePool* g_autopool = nil;
   }
 }
 
+- (void)windowWillEnterFullScreen:(NSNotification*)notification {
+  NSWindow* mainWnd = (NSWindow*)notification.object;
+  [mainWnd setFrame:[mainWnd frameRectForContentRect:[[NSScreen mainScreen] frame]] display:YES];
+}
 // Called when the window is about to close. Perform the self-destruction
 // sequence by getting rid of the window. By returning YES, we allow the window
 // to be removed from the screen.
 - (BOOL)windowShouldClose:(id)window {
   
   appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
-  g_handler->OnBeforeClose(nativewindow->GetBrowser());
+  nativewindow->GetBrowser()->ParentWindowWillClose();
 
   // Clean ourselves up after clearing the stack of anything that might have the
   // window on it.
@@ -218,6 +222,7 @@ void NativeWindow::Init (char* url, Settings* settings) {
 
   // Add browser view to newly created window.
   NSView* contentView = [mainWnd contentView];
+  handle_ = contentView;
   appjs::Cef::AddWebView(contentView,url,settings);
 
   // Size the window.
@@ -232,14 +237,14 @@ void NativeWindow::Show() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
-  [[browser_->GetWindowHandle() window] makeKeyAndOrderFront: nil];
+  [[handle_ window] makeKeyAndOrderFront: nil];
 };
 
 void NativeWindow::Hide() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
-  [[browser_->GetWindowHandle() window] orderOut: nil];
+  [[handle_ window] orderOut: nil];
 };
 
 int NativeWindow::ScreenWidth() {
@@ -256,39 +261,72 @@ void NativeWindow::Destroy() {
   if (!g_handler.get() || !g_handler->GetBrowserHwnd())
     NODE_ERROR("Browser window not available or not ready.");
 
-  [[browser_->GetWindowHandle() window] performSelectorOnMainThread:@selector(performClose:)
+  [[handle_ window] performSelectorOnMainThread:@selector(performClose:)
                          withObject:nil
                       waitUntilDone:NO];
 };
 
 const char* NativeWindow::GetTitle() {
-  return [[[browser_->GetWindowHandle() window] title] cStringUsingEncoding:NSASCIIStringEncoding];
+  return [[[handle_ window] title] cStringUsingEncoding:NSASCIIStringEncoding];
 }
 
 
 void NativeWindow::Minimize() {
+  [[handle_ window] performSelectorOnMainThread:@selector(performMiniaturize:)
+                         withObject:nil
+                      waitUntilDone:NO];
 }
 
 void NativeWindow::Maximize() {
+  [[handle_ window] performSelectorOnMainThread:@selector(performZoom:)
+                         withObject:nil
+                      waitUntilDone:NO];
 }
 
 void NativeWindow::Restore() {
+  NSWindow* win = [handle_ window];
+  if( [win isZoomed] ){
+    [win performSelectorOnMainThread:@selector(zoom:)
+                         withObject:nil
+                      waitUntilDone:NO];
+  }
+  if( [win isMiniaturized]) {
+    [win performSelectorOnMainThread:@selector(deminiaturize:)
+                         withObject:nil
+                      waitUntilDone:NO];
+  }
 }
 
 void NativeWindow::Drag() {
+
 }
 
 void NativeWindow::Move(int top, int left, int width, int height) {
+  NSRect windowRect = { { left  , top } , { width , height} };
+  [[handle_ window] setFrame:[[handle_ window] frameRectForContentRect: windowRect] display:YES];
 }
 
 void NativeWindow::Move(int top, int left) {
+  NSRect windowRect = [[handle_ window] frame];
+  windowRect.origin.y = top;
+  windowRect.origin.y = left;
+  [[handle_ window] setFrame:[[handle_ window] frameRectForContentRect: windowRect] display:YES];
 }
 
 void NativeWindow::Resize(int width, int height) {
+  NSRect windowRect = [[handle_ window] frame];
+  windowRect.size.width = width;
+  windowRect.size.height = height;
+  [[handle_ window] setFrame:[[handle_ window] frameRectForContentRect: windowRect] display:YES];
 }
 // update all dimension properties for window via platform api (top, left, width, height)
 // doesn't change actual dimensions, just refreshes data
 void NativeWindow::UpdatePosition(){
+  NSRect rect = [[handle_ window] frame];
+  width_  = rect.size.width;
+  height_ = rect.size.height;
+  top_    = rect.origin.y;
+  left_   = rect.origin.x; 
 }
 
 } /* appjs */
