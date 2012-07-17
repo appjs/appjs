@@ -124,8 +124,10 @@ void NativeWindow::Destroy() {
   gtk_widget_destroy((GtkWindow*)handle_);
 }
 
-// Start dragging and continue until mouse releases. API may need to change/be more complicated.
 void NativeWindow::Drag() {
+}
+
+void NativeWindow::Drop() {
 }
 
 void NativeWindow::SetPosition(int top, int left, int width, int height) {

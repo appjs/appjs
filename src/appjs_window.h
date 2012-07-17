@@ -18,6 +18,7 @@ class Window : public node::ObjectWrap {
   DEFINE_CPP_METHOD(Maximize);
   DEFINE_CPP_METHOD(Restore);
   DEFINE_CPP_METHOD(Drag);
+  DEFINE_CPP_METHOD(Drop);
   DEFINE_CPP_METHOD(Show);
   DEFINE_CPP_METHOD(Hide);
   DEFINE_CPP_METHOD(Destroy);

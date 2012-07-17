@@ -18,6 +18,7 @@ public:
   static int ScreenHeight();
 
   void Drag();
+  void Drop();
   void Minimize();
   void Maximize();
   void Restore();

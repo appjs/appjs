@@ -24,6 +24,7 @@ void Window::Init () {
   DEFINE_PROTOTYPE_METHOD("maximize", Maximize);
   DEFINE_PROTOTYPE_METHOD("restore", Restore);
   DEFINE_PROTOTYPE_METHOD("drag", Drag);
+  DEFINE_PROTOTYPE_METHOD("drop", Drop);
   DEFINE_PROTOTYPE_METHOD("show", Show);
   DEFINE_PROTOTYPE_METHOD("hide", Hide);
   DEFINE_PROTOTYPE_METHOD("destroy", Destroy);
@@ -123,6 +124,13 @@ Handle<Value> Window::Drag(const Arguments& args) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
   window->Drag();
+  return scope.Close(args.This());
+}
+
+Handle<Value> Window::Drop(const Arguments& args) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+  window->Drop();
   return scope.Close(args.This());
 }
 
