@@ -18,6 +18,11 @@ void destroy_handler(GtkWidget* widget, NativeWindow* window) {
   node::MakeCallback(handle,"emit",1,argv);
 }
 
+void drag_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {
+  gtk_window_begin_move_drag(GTK_WINDOW(widget), event->type, event->button.x_root,event->button.y_root,event->button.time);
+  g_signal_handler_disconnect(G_OBJECT(widget), window->GetDragHandlerId());
+}
+
 void NativeWindow::Init(char* url, Settings* settings) {
   handle_ = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   GtkWindow* window = (GtkWindow*)handle_;
@@ -87,7 +92,14 @@ void NativeWindow::Init(char* url, Settings* settings) {
 
   g_object_set_data(G_OBJECT(handle_),"nativewindow",this);
 
+  gtk_widget_add_events(handle_,  GDK_POINTER_MOTION_MASK |
+                                  GDK_BUTTON_PRESS_MASK |
+                                  GDK_BUTTON_RELEASE_MASK);
   Cef::AddWebView(box,url,settings);
+}
+
+long NativeWindow::GetDragHandlerId() {
+  return drag_handler_id;
 }
 
 int NativeWindow::ScreenWidth() {
@@ -113,19 +125,32 @@ void NativeWindow::Restore() {
 }
 
 void NativeWindow::Show() {
-  gtk_widget_show_all((GtkWindow*)handle_);
+  gtk_widget_show_all(handle_);
 }
 
 void NativeWindow::Hide() {
-  gtk_widget_hide((GtkWindow*)handle_);
+  gtk_widget_hide(handle_);
 }
 
 void NativeWindow::Destroy() {
-  gtk_widget_destroy((GtkWindow*)handle_);
+  gtk_widget_destroy(handle_);
 }
 
-// Start dragging and continue until mouse releases. API may need to change/be more complicated.
 void NativeWindow::Drag() {
+  // TODO we need to emit mouse button press manually
+  // after connecting the signal below. the problem is
+  // about emitting that event.
+  //drag_handler_id = g_signal_connect(G_OBJECT(handle_),"button-press-event",G_CALLBACK(drag_handler), this);
+  /*GdkEvent* event = gdk_event_new (GDK_BUTTON_PRESS);
+  event->button.window = handle_->window;
+  event->button.send_event = TRUE;
+  event->button.x_root = 10;
+  event->button.y_root = 10;
+  event->button.x = 10;
+  event->button.y = 10;
+  event->button.time = GDK_CURRENT_TIME;
+  event->button.button = 1;*/
+
 }
 
 void NativeWindow::SetPosition(int top, int left, int width, int height) {

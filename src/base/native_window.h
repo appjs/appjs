@@ -59,6 +59,10 @@ public:
   long GetStyle(bool extended);
 #endif
 
+#if defined(__LINUX__)
+  long GetDragHandlerId();
+#endif
+
 private:
   v8::Handle<v8::Object> v8handle_;
   CefRefPtr<CefBrowser> browser_;
@@ -74,6 +78,11 @@ private:
   Settings* icons;
   bool alpha;
   double opacity;
+
+#if defined(__LINUX__)
+  long drag_handler_id;
+#endif
+
 };
 
 } /* appjs */
