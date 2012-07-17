@@ -41,7 +41,7 @@ __AppJS 0.0.15 Distributables:__
 There is a complete example in the `examples` folder.
 
 ```javascript
-var app = require('appjs');
+var app = require('appjs').init();
 
 // Creates a new window. Its invisible until window.show() get called.
 // http://appjs/ is a special url. It is home for your application!
