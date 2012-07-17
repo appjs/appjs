@@ -61,10 +61,8 @@ _extend(App.prototype, {
     });
 
     window.on('close', function(){
+      window.untransition();
       wrapped.emit('close');
-      process.nextTick(function(){
-        self.windows[id] = null;
-      });
     });
 
     return wrapped;
