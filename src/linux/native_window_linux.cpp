@@ -55,7 +55,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
 //    delete biggerIconPath;
   }
 
-  gtk_window_set_default_size(window, width_, height_);
+  gtk_window_set_default_size(window, rect_.width, rect_.height);
   gtk_window_set_opacity(window, opacity);
   gtk_window_set_decorated(window, show_chrome);
 
@@ -64,25 +64,25 @@ void NativeWindow::Init(char* url, Settings* settings) {
       gtk_window_set_has_resize_grip(window, show_resize_grip);
   #endif
 
-  if( fullscreen ) {
-    gtk_window_fullscreen(window);
+  if( fullscreen_ ) {
+    Fullscreen();
   } else {
     gtk_window_set_resizable(window, resizable);
   }
 
   if( !resizable ) {
-    gtk_widget_set_size_request(handle_,width_,height_);
+    gtk_widget_set_size_request(handle_,rect_.width,rect_.height);
   }
 
-  if( left_ == -1 ) {
-    left_ = (ScreenWidth() - width_) / 2;
+  if( rect_.left == -1 ) {
+    rect_.left = (ScreenWidth() - rect_.width) / 2;
   }
 
-  if ( top_ == -1 ) {
-    top_ = (ScreenHeight() - height_) / 2;
+  if ( rect_.top == -1 ) {
+    rect_.top = (ScreenHeight() - rect_.height) / 2;
   }
 
-  gtk_window_move(window,left_,top_);
+  gtk_window_move(window,rect_.left,rect_.top);
 
   GtkWidget* box = gtk_vbox_new(FALSE, 0);
   gtk_container_add(GTK_CONTAINER(handle_), box);
@@ -160,14 +160,14 @@ void NativeWindow::Move(int top, int left, int width, int height) {
 }
 
 void NativeWindow::Move(int top, int left) {
-  top_ = top;
-  left_ = left;
+  rect_.top = top;
+  rect_.left = left;
   gtk_window_move((GtkWindow*)handle_,top,left);
 }
 
 void NativeWindow::Resize(int width, int height) {
-  width_ = width;
-  height_ = height;
+  rect_.width = width;
+  rect_.height = height;
   gtk_window_resize((GtkWindow*)handle_,width,height);
 }
 
@@ -175,5 +175,11 @@ const char* NativeWindow::GetTitle() {
   return gtk_window_get_title((GtkWindow*)handle_);
 }
 
+void NativeWindow::Fullscreen(){
+  gtk_window_fullscreen((GtkWindow*)handle_);
+}
+
+NW_STATE NativeWindow::GetState(){
+}
 
 } /* appjs */

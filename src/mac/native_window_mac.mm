@@ -61,7 +61,7 @@ static NSAutoreleasePool* g_autopool = nil;
 // sequence by getting rid of the window. By returning YES, we allow the window
 // to be removed from the screen.
 - (BOOL)windowShouldClose:(id)window {
-  
+
   appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
   nativewindow->GetBrowser()->ParentWindowWillClose();
 
@@ -167,9 +167,9 @@ void NativeWindow::Init (char* url, Settings* settings) {
   AppjsWindowDelegate* windowDelegate = [[AppjsWindowDelegate alloc] init];
 
   // Center the window if user didn't specified x or y
-  if( top_ < 0 || left_ < 0 ) {
-    left_ = (appjs::NativeWindow::ScreenWidth() - width_ ) / 2;
-    top_ = (appjs::NativeWindow::ScreenHeight() - height_ ) / 2;
+  if( rect_.top < 0 || rect_.left < 0 ) {
+    rect_.left = (appjs::NativeWindow::ScreenWidth() - rect_.width ) / 2;
+    rect_.top = (appjs::NativeWindow::ScreenHeight() - rect_.height ) / 2;
   }
 
   NSUInteger styles;
@@ -187,7 +187,7 @@ void NativeWindow::Init (char* url, Settings* settings) {
   }
 
   // Create the main application window.
-  NSRect window_rect = { {left_, top_} , {width_, height_} };
+  NSRect window_rect = { {rect_.left, rect_.top} , {rect_.width, rect_.height} };
 
   // Create the window
   NSWindow* mainWnd = [[NSWindow alloc]
@@ -205,7 +205,7 @@ void NativeWindow::Init (char* url, Settings* settings) {
   Wrapper* wrap = [[Wrapper alloc] initWithV8Object:this];
   objc_setAssociatedObject(mainWnd,"nativewindow",wrap,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
-  if(fullscreen) {
+  if(fullscreen_) {
 
     if( floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6 ){
       [mainWnd setCollectionBehavior:
@@ -323,11 +323,19 @@ void NativeWindow::Resize(int width, int height) {
 // doesn't change actual dimensions, just refreshes data
 void NativeWindow::UpdatePosition(){
   NSRect rect = [[handle_ window] frame];
-  width_  = rect.size.width;
-  height_ = rect.size.height;
-  top_    = rect.origin.y;
-  left_   = rect.origin.x; 
+  rect_.width  = rect.size.width;
+  rect_.height = rect.size.height;
+  rect_.top    = rect.origin.y;
+  rect_.left   = rect.origin.x;
 }
+
+
+void NativeWindow::Fullscreen(){
+}
+
+NW_STATE NativeWindow::GetState(){
+}
+
 
 } /* appjs */
 
