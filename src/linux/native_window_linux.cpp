@@ -70,11 +70,11 @@ void NativeWindow::Init(char* url, Settings* settings) {
   }
 
   if( left_ == -1 ) {
-    left_ = (NativeWindow::ScreenWidth() - width_) / 2;
+    left_ = (ScreenWidth() - width_) / 2;
   }
 
   if ( top_ == -1 ) {
-    top_ = (NativeWindow::ScreenHeight() - height_) / 2;
+    top_ = (ScreenHeight() - height_) / 2;
   }
 
   gtk_window_move(window,left_,top_);
@@ -101,7 +101,7 @@ int NativeWindow::ScreenHeight() {
 }
 
 void NativeWindow::Minimize() {
-  gtk_window_iconify((GtkWindow*)handle_); 
+  gtk_window_iconify((GtkWindow*)handle_);
 }
 
 void NativeWindow::Maximize() {
