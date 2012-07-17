@@ -20,8 +20,12 @@ var window = app.createWindow("http://appjs/", {
 });
 
 
-window.on("ready",function(){
+window.on("create",function(){
   console.log("Window Created");
+});
+
+window.on("ready",function(){
+  console.log("Window Ready");
   this.show();
 });
 
