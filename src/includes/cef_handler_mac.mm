@@ -23,15 +23,14 @@ CefWindowHandle ClientHandler::GetMainHwnd(){
 }
 
 NativeWindow* ClientHandler::GetWindow(CefWindowHandle handle){
-  NSWindow* win = (NSWindow*)handle;
+  NSWindow* win = [handle window];
   Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win, "nativewindow");
   NativeWindow* window = [wrap handle];
   return window;
 }
 
 CefWindowHandle ClientHandler::GetContainer(CefRefPtr<CefBrowser> browser){
-  NSView* view = (NSView*)browser->GetWindowHandle();
-  return [view window];
+  return browser->GetWindowHandle();
 }
 
 
@@ -71,8 +70,8 @@ void ClientHandler::CloseMainWindow() {
 
 
 void ClientHandler::SetWindowTitle(CefWindowHandle handle, const char* title) {
-  NSWindow* win = (NSWindow*)handle;
-  [[browser_->GetWindowHandle() win] setTitle: [NSString stringWithUTF8String:title]];
+  NSWindow* win = [handle window];
+  [win setTitle: [NSString stringWithUTF8String:title]];
 }
 
 

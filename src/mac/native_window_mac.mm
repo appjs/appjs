@@ -57,13 +57,9 @@ static NSAutoreleasePool* g_autopool = nil;
 // sequence by getting rid of the window. By returning YES, we allow the window
 // to be removed from the screen.
 - (BOOL)windowShouldClose:(id)window {
-
-  // If this is the main window, shutdown cef.
-  NSView* mainWnd = g_handler->GetBrowserHwnd();
-
-  if( window == [mainWnd window]){
-    appjs::Cef::Shutdown();
-  };
+  
+  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  g_handler->OnBeforeClose(nativewindow->GetBrowser());
 
   // Clean ourselves up after clearing the stack of anything that might have the
   // window on it.
@@ -76,7 +72,6 @@ static NSAutoreleasePool* g_autopool = nil;
 
 // Deletes itself.
 - (void)cleanup:(id)window {
-
   [self release];
 }
 
@@ -92,8 +87,6 @@ static NSAutoreleasePool* g_autopool = nil;
 // Sent by the default notification center immediately before the application
 // terminates.
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-  // Shut down CEF.
-  appjs::Cef::Shutdown();
 
   [self release];
 
@@ -269,7 +262,7 @@ void NativeWindow::Destroy() {
 };
 
 const char* NativeWindow::GetTitle() {
-  return [[browser_->GetWindowHandle() window] title] cStringUsingEncoding:ASCIIEncoding];
+  return [[[browser_->GetWindowHandle() window] title] cStringUsingEncoding:NSASCIIStringEncoding];
 }
 
 
