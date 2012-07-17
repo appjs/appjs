@@ -1,6 +1,8 @@
 var app = module.exports = require('appjs');
+var path = require('path');
 
-app.serveFilesFrom('./content');  // serves files to browser requests to "http://appjs/*"
+// serves files to browser requests to "http://appjs/*"
+app.serveFilesFrom(path.resolve(__dirname, 'content'));
 
 var window = app.createWindow('http://appjs/', {
   width           : 640,
