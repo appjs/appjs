@@ -55,15 +55,6 @@ void SetNCWidth(HWND hwnd, int size){
   DwmExtendFrameIntoClientArea(hwnd, &margins);
 }
 
-void SetFullscreen(HWND hwnd){
-  DWORD style = GetWindowLong(hwnd, GWL_STYLE);
-  SetWindowLongPtr(hwnd, GWL_STYLE, style & ~WS_OVERLAPPEDWINDOW);
-  SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
-  HDC hDC = GetWindowDC(NULL);
-  SetWindowPos(hwnd, NULL, 0, 0, GetDeviceCaps(hDC, HORZRES), GetDeviceCaps(hDC, VERTRES), SWP_FRAMECHANGED);
-}
-
-
 
 // #####################################
 // ### Static NativeWindow Functions ###
@@ -129,12 +120,12 @@ void NativeWindow::Init(char* url, Settings* settings) {
     style &= ~WS_SIZEBOX;
   }
 
-  if (left_ < 0 || top_ < 0) {
-    left_ = (GetSystemMetrics(SM_CXSCREEN) - width_) / 2;
-    top_ = (GetSystemMetrics(SM_CYSCREEN) - height_) / 2;
+  if (rect_.left < 0 || rect_.top < 0) {
+    rect_.left = (GetSystemMetrics(SM_CXSCREEN) - rect_.width) / 2;
+    rect_.top = (GetSystemMetrics(SM_CYSCREEN) - rect_.height) / 2;
   }
   browser_ = NULL;
-  handle_ = CreateWindowEx(NULL, szWindowClass,"", style, top_, left_, width_, height_, NULL, NULL, hInstance, NULL);
+  handle_ = CreateWindowEx(NULL, szWindowClass,"", style, rect_.top, rect_.left, rect_.width, rect_.height, NULL, NULL, hInstance, NULL);
 
   if (!handle_) {
     fprintf(stderr,"Error occurred: ");
@@ -148,8 +139,8 @@ void NativeWindow::Init(char* url, Settings* settings) {
     SetNCWidth(handle_, -1);
   }
 
-  if (fullscreen) {
-    SetFullscreen(handle_);
+  if (fullscreen_) {
+    Fullscreen();
   } else if (!show_chrome) {
     UpdateStyle(handle_, GWL_STYLE, GetWindowLongPtr(handle_, GWL_STYLE) & ~WS_CAPTION);
   }
@@ -169,7 +160,13 @@ void NativeWindow::Maximize() {
 }
 
 void NativeWindow::Restore() {
-  ShowWindow(handle_, SW_RESTORE);
+  if (fullscreen_) {
+    fullscreen_ = false;
+    Move(restoreRect_);
+    SetWindowLongPtr(handle_, GWL_STYLE, restoreStyle);
+  } else {
+    ShowWindow(handle_, SW_RESTORE);
+  }
 }
 
 void NativeWindow::Show() {
@@ -190,6 +187,26 @@ void NativeWindow::Drag() {
   SendMessage(handle_, WM_NCLBUTTONDOWN, HTCAPTION, 0);
 }
 
+
+void NativeWindow::Fullscreen(){
+  if (!fullscreen_) {
+    fullscreen_ = true;
+    UpdatePosition();
+    restoreRect_.left = rect_.left;
+    restoreRect_.top = rect_.top;
+    restoreRect_.width = rect_.width;
+    restoreRect_.height = rect_.height;
+    restoreStyle = GetWindowLong(handle_, GWL_STYLE);
+    SetWindowLongPtr(handle_, GWL_STYLE, restoreStyle & ~WS_OVERLAPPEDWINDOW);
+    SetWindowPos(handle_, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+    HDC hDC = GetWindowDC(NULL);
+    SetWindowPos(handle_, NULL, 0, 0, GetDeviceCaps(hDC, HORZRES), GetDeviceCaps(hDC, VERTRES), SWP_FRAMECHANGED);
+    UpdatePosition();
+  }
+}
+
+
+
 const char* NativeWindow::GetTitle() {
   TCHAR title[80];
   GetWindowText(handle_, title, 80);
@@ -203,24 +220,40 @@ void NativeWindow::Move(int top, int left, int width, int height) {
 }
 
 void NativeWindow::Move(int top, int left) {
-  top_ = top;
-  left_ = left;
+  rect_.top = top;
+  rect_.left = left;
   SetWindowPos(handle_, NULL, left, top, NULL, NULL, SWP_NOSIZE);
 }
 
 void NativeWindow::Resize(int width, int height) {
-  width_ = width;
-  height_ = height;
+  rect_.width = width;
+  rect_.height = height;
   SetWindowPos(handle_, NULL, NULL, NULL, width, height, SWP_NOMOVE);
 }
 
 void NativeWindow::UpdatePosition(){
   RECT rect;
   GetWindowRect(handle_, &rect);
-  width_ = rect.right - rect.left;
-  height_ = rect.bottom - rect.top;
-  left_ = rect.left;
-  top_ = rect.top;
+  rect_.width = rect.right - rect.left;
+  rect_.height = rect.bottom - rect.top;
+  rect_.left = rect.left;
+  rect_.top = rect.top;
+}
+
+
+
+
+NW_STATE NativeWindow::GetState(){
+  long style = GetWindowLongPtr(handle_, GWL_STYLE);
+  if (fullscreen_) {
+    return NW_STATE_FULLSCREEN;
+  } else if (style & WS_MAXIMIZE) {
+    return NW_STATE_MAXIMIZED;
+  } else if (style & WS_MINIMIZE) {
+    return NW_STATE_MINIMIZED;
+  } else {
+    return NW_STATE_NORMAL;
+  }
 }
 
 

@@ -14,6 +14,7 @@ class Window : public node::ObjectWrap {
 
   DEFINE_CPP_METHOD(OpenDevTools);
   DEFINE_CPP_METHOD(CloseDevTools);
+  DEFINE_CPP_METHOD(Fullscreen);
   DEFINE_CPP_METHOD(Minimize);
   DEFINE_CPP_METHOD(Maximize);
   DEFINE_CPP_METHOD(Restore);
@@ -26,6 +27,7 @@ class Window : public node::ObjectWrap {
   DEFINE_CPP_METHOD(SendSync);
   DEFINE_CPP_METHOD(Move);
   DEFINE_CPP_METHOD(Resize);
+  DEFINE_CPP_ACCESSOR(State);
   DEFINE_CPP_ACCESSOR(Left);
   DEFINE_CPP_ACCESSOR(Top);
   DEFINE_CPP_ACCESSOR(Height);

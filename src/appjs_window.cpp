@@ -20,9 +20,10 @@ void Window::Init () {
 
   DEFINE_PROTOTYPE_METHOD("openDevTools", OpenDevTools);
   DEFINE_PROTOTYPE_METHOD("closeDevTools", CloseDevTools);
+  DEFINE_PROTOTYPE_METHOD("restore", Restore);
   DEFINE_PROTOTYPE_METHOD("minimize", Minimize);
   DEFINE_PROTOTYPE_METHOD("maximize", Maximize);
-  DEFINE_PROTOTYPE_METHOD("restore", Restore);
+  DEFINE_PROTOTYPE_METHOD("fullscreen", Fullscreen);
   DEFINE_PROTOTYPE_METHOD("drag", Drag);
   DEFINE_PROTOTYPE_METHOD("show", Show);
   DEFINE_PROTOTYPE_METHOD("hide", Hide);
@@ -36,6 +37,7 @@ void Window::Init () {
   CREATE_CPP_ACCESSOR("height", Height);
   CREATE_CPP_ACCESSOR("width", Width);
   CREATE_CPP_ACCESSOR("title", Title);
+  CREATE_CPP_ACCESSOR("state", State);
 
 #if defined(__WIN__)
   DEFINE_PROTOTYPE_METHOD("style", Style);
@@ -126,6 +128,13 @@ Handle<Value> Window::Drag(const Arguments& args) {
   return scope.Close(args.This());
 }
 
+Handle<Value> Window::Restore(const Arguments& args) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+  window->Restore();
+  return scope.Close(args.This());
+}
+
 Handle<Value> Window::Minimize(const Arguments& args) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
@@ -140,10 +149,10 @@ Handle<Value> Window::Maximize(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-Handle<Value> Window::Restore(const Arguments& args) {
+Handle<Value> Window::Fullscreen(const Arguments& args) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
-  window->Restore();
+  window->Fullscreen();
   return scope.Close(args.This());
 }
 
@@ -257,6 +266,21 @@ Handle<Value> Window::GetTitle(Local<String> property, const AccessorInfo &info)
   return scope.Close(String::New(window->GetTitle()));
 }
 
+Handle<Value> Window::GetState(Local<String> property, const AccessorInfo &info) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  switch (window->GetState()) {
+    case NW_STATE_NORMAL:
+      return scope.Close(String::New("normal"));
+    case NW_STATE_MINIMIZED:
+      return scope.Close(String::New("minimized"));
+    case NW_STATE_MAXIMIZED:
+      return scope.Close(String::New("maximized"));
+    case NW_STATE_FULLSCREEN:
+      return scope.Close(String::New("fullscreen"));
+  }
+}
+
 
 void Window::SetLeft(Local<String> property, Local<Value> value, const AccessorInfo& info) {
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
@@ -283,6 +307,19 @@ void Window::SetTitle(Local<String> property, Local<Value> value, const Accessor
   window->SetTitle(V8StringToChar(value->ToString()));
 }
 
+void Window::SetState(Local<String> property, Local<Value> value, const AccessorInfo& info) {
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  Local<String> val = value->ToString();
+  if (val->Equals(String::New("normal"))) {
+    window->SetState(NW_STATE_NORMAL);
+  } else if (val->Equals(String::New("minimized"))) {
+    window->SetState(NW_STATE_MINIMIZED);
+  } else if (val->Equals(String::New("maximized"))) {
+    window->SetState(NW_STATE_MAXIMIZED);
+  } else if (val->Equals(String::New("fullscreen"))) {
+    window->SetState(NW_STATE_FULLSCREEN);
+  }
+}
 
 
 

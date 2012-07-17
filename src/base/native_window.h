@@ -7,6 +7,20 @@
 
 namespace appjs {
 
+typedef struct _appjs_rect {
+  int left;
+  int top;
+  int width;
+  int height;
+} appjs_rect;
+
+enum NW_STATE {
+  NW_STATE_NORMAL,
+  NW_STATE_MINIMIZED,
+  NW_STATE_MAXIMIZED,
+  NW_STATE_FULLSCREEN
+};
+
 class NativeWindow {
 
 public:
@@ -19,18 +33,25 @@ public:
 
   void Drag();
   void Drop();
+  void Restore();
   void Minimize();
   void Maximize();
-  void Restore();
+  void Fullscreen();
   void Show();
   void Hide();
   void Destroy();
 
   void Move(int top, int left, int width, int height);
   void Move(int top, int left);
+  void Move(appjs_rect rect);
   void Resize(int width, int height);
   void UpdatePosition(int top, int left, int width, int height);
+  void UpdatePosition(appjs_rect rect);
   void UpdatePosition();
+
+
+  void SetState(NW_STATE state);
+  NW_STATE GetState();
 
   void SetLeft(int left);
   void SetTop(int top);
@@ -68,17 +89,17 @@ private:
   v8::Handle<v8::Object> v8handle_;
   CefRefPtr<CefBrowser> browser_;
 
-  int width_;
-  int height_;
-  int left_;
-  int top_;
   bool show_chrome;
   bool resizable;
   bool show_resize_grip;
-  bool fullscreen;
+  bool fullscreen_;
   Settings* icons;
   bool alpha;
   double opacity;
+
+  appjs_rect rect_;
+  appjs_rect restoreRect_;
+  long restoreStyle;
 
 #if defined(__LINUX__)
   long drag_handler_id;

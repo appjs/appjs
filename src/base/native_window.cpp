@@ -9,17 +9,17 @@ namespace appjs {
 using namespace v8;
 
 NativeWindow::NativeWindow(char* url, Settings* settings){
-  width_ = settings->getNumber("width",800);
-  height_ = settings->getNumber("height",600);
-  left_ = settings->getNumber("left",-1);
-  top_ = settings->getNumber("top",-1);
+  rect_.width = settings->getNumber("width",800);
+  rect_.height = settings->getNumber("height",600);
+  rect_.left = settings->getNumber("left",-1);
+  rect_.top = settings->getNumber("top",-1);
   opacity = settings->getNumber("opacity",1);
   alpha = settings->getBoolean("alpha",false);
   show_chrome = settings->getBoolean("showChrome",true);
   resizable = settings->getBoolean("resizable",true);
   show_resize_grip = settings->getBoolean("showResizeGrip",false);
   auto_resize = settings->getBoolean("autoResize",false);
-  fullscreen = settings->getBoolean("fullscreen",false);
+  fullscreen_ = settings->getBoolean("fullscreen",false);
   icons = new Settings(settings->getObject("icons", Object::New()));
   g_handler->SetAutoResize(auto_resize);
   this->Init(url, settings);
@@ -66,48 +66,76 @@ Handle<Object> NativeWindow::GetV8Handle() {
 }
 
 void NativeWindow::UpdatePosition(int top, int left, int width, int height){
-  width_ = width;
-  height_ = height;
-  left_ = left;
-  top_ = top;
+  rect_.width = width;
+  rect_.height = height;
+  rect_.left = left;
+  rect_.top = top;
+}
+
+void NativeWindow::UpdatePosition(appjs_rect rect){
+  rect_.width = rect.width;
+  rect_.height = rect.height;
+  rect_.left = rect.left;
+  rect_.top = rect.top;
+}
+
+void NativeWindow::SetState(NW_STATE state){
+  switch (state) {
+    case NW_STATE_NORMAL:
+      Restore();
+      break;
+    case NW_STATE_MINIMIZED:
+      Minimize();
+      break;
+    case NW_STATE_MAXIMIZED:
+      Maximize();
+      break;
+    case NW_STATE_FULLSCREEN:
+      Fullscreen();
+      break;
+  }
+}
+
+void NativeWindow::Move(appjs_rect rect){
+  Move(rect.top, rect.left, rect.width, rect.height);
 }
 
 void NativeWindow::SetWidth(int width){
-  if (width_ != width) {
-    width_ = width;
-    Resize(width_, height_);
+  if (rect_.width != width) {
+    rect_.width = width;
+    Resize(rect_.width, rect_.height);
   }
 }
 void NativeWindow::SetHeight(int height){
-  if (height_ != height) {
-    height_ = height;
-    Resize(width_, height_);
+  if (rect_.height != height) {
+    rect_.height = height;
+    Resize(rect_.width, rect_.height);
   }
 }
 void NativeWindow::SetLeft(int left){
-  if (left_ != left) {
-    left_ = left;
-    Move(top_, left_);
+  if (rect_.left != left) {
+    rect_.left = left;
+    Move(rect_.top, rect_.left);
   }
 }
 void NativeWindow::SetTop(int top){
-  if (top_ != top) {
-    top_ = top;
-    Move(top_, left_);
+  if (rect_.top != top) {
+    rect_.top = top;
+    Move(rect_.top, rect_.left);
   }
 }
 
 int NativeWindow::GetWidth(){
-  return width_;
+  return rect_.width;
 }
 int NativeWindow::GetHeight(){
-  return height_;
+  return rect_.height;
 }
 int NativeWindow::GetLeft(){
-  return left_;
+  return rect_.left;
 }
 int NativeWindow::GetTop(){
-  return top_;
+  return rect_.top;
 }
 
 void NativeWindow::SetTitle(const char* title) {
