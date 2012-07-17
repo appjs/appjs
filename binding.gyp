@@ -81,7 +81,7 @@
             {
               'destination': '<(module_root_dir)/app/data/bin/Contents/',
               'files': [
-                '<(module_root_dir)/data/mac/pak/Resources/'
+                '<(module_root_dir)/deps/cef/Release/Resources/'
               ]
             },
             {
