@@ -28,13 +28,6 @@ __AppJS 0.0.15 Distributables:__
 
 * [Windows](http://dists.appjs.org/0.0.15/appjs-0.0.15-win32-ia32.zip) -> app.exe
 
-## Shared Contexts
-
-![Browser/Node Cross Context](https://github.com/appjs/appjs/raw/master/examples/node-in-browser.png "Browser/Node Cross Context")
-
-![DOM Event Listener in Node](https://github.com/appjs/appjs/raw/master/examples/shared-context.jpg "DOM Event Listener in Node")
-
-![Hello World](https://github.com/appjs/appjs/raw/master/examples/output.jpg "Hello World")
 
 ## One Minute Usage Overview
 ```javascript
@@ -69,6 +62,15 @@ window.on('close', function(){
 });
 ```
 
+## Shared Contexts
+
+![Browser/Node Cross Context](https://github.com/appjs/appjs/raw/master/examples/node-in-browser.png "Browser/Node Cross Context")
+
+![DOM Event Listener in Node](https://github.com/appjs/appjs/raw/master/examples/shared-context.jpg "DOM Event Listener in Node")
+
+![Hello World](https://github.com/appjs/appjs/raw/master/examples/output.jpg "Hello World")
+
+
 ## Node Install
 __Due to the complex dependencies of AppJS, installation via npm is difficult and error prone.__
 
@@ -87,12 +89,6 @@ Currently the binaries require Node for the following architectures:
 * __Mac OS X__: Currently 32bit node only, `$ node -e "console.log(process.arch)"` -> __ia32__
 * __Linux__: `sudo apt-get install libgtk2.0-dev`
 * __Windows__: Windows SDK, DirectX SDK, and Visual C++ 2010
-
-## Coming Soon
-The follow are things we're currently working on solutions for and are high on the priority list to fix/address.
-
-* distribution tools to help package up your apps for deployment
-* expanded platform APIs to cover the standard use-cases for desktop apps
 
 
 ## License
