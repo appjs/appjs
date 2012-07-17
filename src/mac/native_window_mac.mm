@@ -285,16 +285,13 @@ void NativeWindow::Restore() {
 void NativeWindow::Drag() {
 }
 
-void NativeWindow::Drop() {
+void NativeWindow::Move(int top, int left, int width, int height) {
 }
 
-void NativeWindow::SetPosition(int top, int left, int width, int height) {
+void NativeWindow::Move(int top, int left) {
 }
 
-void NativeWindow::SetPosition(int top, int left) {
-}
-
-void NativeWindow::SetSize(int width, int height) {
+void NativeWindow::Resize(int width, int height) {
 }
 // update all dimension properties for window via platform api (top, left, width, height)
 // doesn't change actual dimensions, just refreshes data

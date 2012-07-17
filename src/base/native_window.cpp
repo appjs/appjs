@@ -75,25 +75,25 @@ void NativeWindow::UpdatePosition(int top, int left, int width, int height){
 void NativeWindow::SetWidth(int width){
   if (width_ != width) {
     width_ = width;
-    SetSize(width_, height_);
+    Resize(width_, height_);
   }
 }
 void NativeWindow::SetHeight(int height){
   if (height_ != height) {
     height_ = height;
-    SetSize(width_, height_);
+    Resize(width_, height_);
   }
 }
 void NativeWindow::SetLeft(int left){
   if (left_ != left) {
     left_ = left;
-    SetPosition(top_, left_);
+    Move(top_, left_);
   }
 }
 void NativeWindow::SetTop(int top){
   if (top_ != top) {
     top_ = top;
-    SetPosition(top_, left_);
+    Move(top_, left_);
   }
 }
 

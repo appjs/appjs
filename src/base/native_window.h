@@ -26,9 +26,9 @@ public:
   void Hide();
   void Destroy();
 
-  void SetPosition(int top, int left, int width, int height);
-  void SetPosition(int top, int left);
-  void SetSize(int width, int height);
+  void Move(int top, int left, int width, int height);
+  void Move(int top, int left);
+  void Resize(int width, int height);
   void UpdatePosition(int top, int left, int width, int height);
   void UpdatePosition();
 

@@ -24,14 +24,13 @@ void Window::Init () {
   DEFINE_PROTOTYPE_METHOD("maximize", Maximize);
   DEFINE_PROTOTYPE_METHOD("restore", Restore);
   DEFINE_PROTOTYPE_METHOD("drag", Drag);
-  DEFINE_PROTOTYPE_METHOD("drop", Drop);
   DEFINE_PROTOTYPE_METHOD("show", Show);
   DEFINE_PROTOTYPE_METHOD("hide", Hide);
   DEFINE_PROTOTYPE_METHOD("destroy", Destroy);
   DEFINE_PROTOTYPE_METHOD("runInBrowser", RunInBrowser);
   DEFINE_PROTOTYPE_METHOD("send", SendSync);
-  DEFINE_PROTOTYPE_METHOD("setPosition", SetPosition);
-  DEFINE_PROTOTYPE_METHOD("setSize", SetSize);
+  DEFINE_PROTOTYPE_METHOD("move", Move);
+  DEFINE_PROTOTYPE_METHOD("resize", Resize);
   CREATE_CPP_ACCESSOR("left", Left);
   CREATE_CPP_ACCESSOR("top", Top);
   CREATE_CPP_ACCESSOR("height", Height);
@@ -74,7 +73,7 @@ Handle<Value> Window::NewInstance(const Arguments& args) {
 
 
 
-Handle<Value> Window::SetPosition(const Arguments& args) {
+Handle<Value> Window::Move(const Arguments& args) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
 
@@ -83,21 +82,21 @@ Handle<Value> Window::SetPosition(const Arguments& args) {
   if (args[2]->IsNumber()) {
     int width = args[2]->Int32Value();
     int height = args[3]->Int32Value();
-    window->SetPosition(top, left, width, height);
+    window->Move(top, left, width, height);
   } else {
-    window->SetPosition(top, left);
+    window->Move(top, left);
   }
 
   return scope.Close(args.This());
 }
 
-Handle<Value> Window::SetSize(const Arguments& args) {
+Handle<Value> Window::Resize(const Arguments& args) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
 
   int width = args[0]->Int32Value();
   int height = args[1]->Int32Value();
-  window->SetSize(width, height);
+  window->Resize(width, height);
 
   return scope.Close(args.This());
 }
@@ -124,13 +123,6 @@ Handle<Value> Window::Drag(const Arguments& args) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
   window->Drag();
-  return scope.Close(args.This());
-}
-
-Handle<Value> Window::Drop(const Arguments& args) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
-  window->Drop();
   return scope.Close(args.This());
 }
 

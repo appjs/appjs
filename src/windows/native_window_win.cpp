@@ -190,10 +190,6 @@ void NativeWindow::Drag() {
   SendMessage(handle_, WM_NCLBUTTONDOWN, HTCAPTION, 0);
 }
 
-void NativeWindow::Drop() {
-  ReleaseCapture();
-}
-
 const char* NativeWindow::GetTitle() {
   TCHAR title[80];
   GetWindowText(handle_, title, 80);
@@ -201,18 +197,18 @@ const char* NativeWindow::GetTitle() {
 }
 
 
-void NativeWindow::SetPosition(int top, int left, int width, int height) {
+void NativeWindow::Move(int top, int left, int width, int height) {
   UpdatePosition(top, left, width, height);
   SetWindowPos(handle_, NULL, left, top, width, height, NULL);
 }
 
-void NativeWindow::SetPosition(int top, int left) {
+void NativeWindow::Move(int top, int left) {
   top_ = top;
   left_ = left;
   SetWindowPos(handle_, NULL, left, top, NULL, NULL, SWP_NOSIZE);
 }
 
-void NativeWindow::SetSize(int width, int height) {
+void NativeWindow::Resize(int width, int height) {
   width_ = width;
   height_ = height;
   SetWindowPos(handle_, NULL, NULL, NULL, width, height, SWP_NOMOVE);
