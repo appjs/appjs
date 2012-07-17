@@ -140,6 +140,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
   }
 
   if (fullscreen_) {
+    fullscreen_ = false;
     Fullscreen();
   } else if (!show_chrome) {
     UpdateStyle(handle_, GWL_STYLE, GetWindowLongPtr(handle_, GWL_STYLE) & ~WS_CAPTION);
@@ -197,7 +198,7 @@ void NativeWindow::Fullscreen(){
     restoreRect_.width = rect_.width;
     restoreRect_.height = rect_.height;
     restoreStyle = GetWindowLong(handle_, GWL_STYLE);
-    SetWindowLongPtr(handle_, GWL_STYLE, restoreStyle & ~WS_OVERLAPPEDWINDOW);
+    SetWindowLongPtr(handle_, GWL_STYLE, restoreStyle & ~(WS_CAPTION | WS_SIZEBOX));
     SetWindowPos(handle_, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     HDC hDC = GetWindowDC(NULL);
     SetWindowPos(handle_, NULL, 0, 0, GetDeviceCaps(hDC, HORZRES), GetDeviceCaps(hDC, VERTRES), SWP_FRAMECHANGED);
