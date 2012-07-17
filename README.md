@@ -41,39 +41,33 @@ __AppJS 0.0.15 Distributables:__
 There is a complete example in the `examples` folder.
 
 ```javascript
-var appjs = require('appjs');
+var app = module.exports = require('appjs');
 
-// Creates a new window. Its invisible until window.show() get called.
-// http://appjs/ is a special url. It is home for your application!
-var window = app.createWindow("http://appjs/",{autoResize:false});
+app.serveFilesFrom('./content');  // serves files to browser requests to "http://appjs/*"
 
-// Called when page load finishes.
-window.on("ready",function(){
-    console.log("Event Ready called");
-
-    // Runs a script in browser context.
-    window.runInBrowser(function(){
-        var body = document.body;
-        body.style.color="#f60";
-    });
-
-  // Show created window ( see below )
-  window.show();
+var window = app.createWindow('http://appjs/', {
+  width      : 640,
+  height     : 460,
+  resizable  : false,
+  alpha      : true  // alpha composited background (Windows & Mac)
 });
 
-// Routing:
+window.on('create', function(){
+  console.log("Window Created");
+});
 
-// you can use a static router:
-// app.use(app.staticRouter('./public'));
+window.on('ready', function(){
+  this.require = require;
+  this.process = process;
+  this.module = module;
+  this.console.open();
+  this.console.log('process', process);
+  this.show();
+  console.log("Window Ready");
+});
 
-// or you can handle requests manually:
-app.get("/",function(req,res,next){
-  res.send("\
-    <html>\
-        <head><title>Hello World</title></head>\
-        <body>Hello World</body>\
-    </html>\
-  ")
+window.on('close', function(){
+  console.log("Window Closed");
 });
 ```
 
