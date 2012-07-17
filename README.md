@@ -7,7 +7,6 @@ AppJS is an SDK to develop desktop applications using Node.js melded with Chromi
 * sandboxed code execution environements virtual machines - Node
 * tools for exposing native C++ bindings to JavaScript--APIs for authoring and the tools for compiling - Node
 
-
 ---
 
 * __Site: [appjs.org](http://appjs.org)__
@@ -38,8 +37,6 @@ __AppJS 0.0.15 Distributables:__
 ![Hello World](https://github.com/appjs/appjs/raw/master/examples/output.jpg "Hello World")
 
 ## One Minute Usage Overview
-There is a complete example in the `examples` folder.
-
 ```javascript
 var app = module.exports = require('appjs');
 
@@ -62,7 +59,8 @@ window.on('ready', function(){
   this.module = module;
   this.console.open();
   this.console.log('process', process);
-  this.show();
+  this.frame.center();
+  this.frame.show();
   console.log("Window Ready");
 });
 

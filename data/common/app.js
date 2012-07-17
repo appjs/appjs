@@ -26,7 +26,8 @@ window.on('ready', function(){
   this.process = process;
   this.module = module;
   this.console.log('process', process);
-  this.show();
+  this.frame.center();
+  this.frame.show();
   console.log("Window Ready");
 });
 
