@@ -1,9 +1,5 @@
 var app = module.exports = require('appjs');
 
-app.get('/',function(req,res,next){
-  res.send("Hello World!");
-});
-
 app.serveFilesFrom('./content');  // serves files to browser requests to "http://appjs/*"
 
 var window = app.createWindow("http://appjs/", {
@@ -15,7 +11,7 @@ var window = app.createWindow("http://appjs/", {
   resizable       : false, // controls whether window is resiable by user
   showChrome      : true,  // show border and title bar
   opacity         : 1,     // opacity from 0 to 1 (Linux)
-  alpha           : false, // alpha compositing based on window content (Windows & Mac)
+  alpha           : true, // alpha compositing based on window content (Windows & Mac)
   fullscreen      : false, // covers whole screen and has no chrome
   disableSecurity : true,  // allow cross origin requests
 });
