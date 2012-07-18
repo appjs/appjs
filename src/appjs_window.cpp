@@ -276,16 +276,23 @@ Handle<Value> Window::GetTopmost(Local<String> property, const AccessorInfo &inf
 Handle<Value> Window::GetState(Local<String> property, const AccessorInfo &info) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
+  Handle<Value> state = String::New("normal");
+
   switch (window->GetState()) {
     case NW_STATE_NORMAL:
-      return scope.Close(String::New("normal"));
+      state = String::New("normal");
+      break;
     case NW_STATE_MINIMIZED:
-      return scope.Close(String::New("minimized"));
+      state = String::New("minimized");
+      break;
     case NW_STATE_MAXIMIZED:
-      return scope.Close(String::New("maximized"));
+      state = String::New("maximized");
+      break;
     case NW_STATE_FULLSCREEN:
-      return scope.Close(String::New("fullscreen"));
+      state = String::New("fullscreen");
   }
+
+  return scope.Close(state);
 }
 
 

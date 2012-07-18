@@ -87,14 +87,15 @@ void NativeWindow::Init(char* url, Settings* settings) {
   GtkWidget* box = gtk_vbox_new(FALSE, 0);
   gtk_container_add(GTK_CONTAINER(handle_), box);
 
+  gtk_widget_add_events(handle_,  GDK_POINTER_MOTION_MASK |
+                                  GDK_BUTTON_PRESS_MASK |
+                                  GDK_BUTTON_RELEASE_MASK);
+
   g_signal_connect(G_OBJECT(handle_), "destroy",
                    G_CALLBACK(destroy_handler), this);
 
   g_object_set_data(G_OBJECT(handle_),"nativewindow",this);
 
-  gtk_widget_add_events(handle_,  GDK_POINTER_MOTION_MASK |
-                                  GDK_BUTTON_PRESS_MASK |
-                                  GDK_BUTTON_RELEASE_MASK);
   Cef::AddWebView(box,url,settings);
 }
 
@@ -121,7 +122,13 @@ void NativeWindow::Maximize() {
 }
 
 void NativeWindow::Restore() {
-  gtk_window_deiconify((GtkWindow*)handle_);
+
+  if( this->GetState() == NW_STATE_MAXIMIZED ) {
+    gtk_window_unmaximize((GtkWindow*)handle_);
+  } else {
+    gtk_window_deiconify((GtkWindow*)handle_);
+  }
+
 }
 
 void NativeWindow::Show() {
@@ -180,8 +187,7 @@ void NativeWindow::Fullscreen(){
 }
 
 NW_STATE NativeWindow::GetState(){
-  gint state = gdk_window_get_state((GtkWindow*)handle_);
-
+  gint state = gdk_window_get_state(handle_->window);
   if (state & GDK_WINDOW_STATE_FULLSCREEN) {
     return NW_STATE_FULLSCREEN;
   } else if (state & GDK_WINDOW_STATE_MAXIMIZED) {
