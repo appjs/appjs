@@ -52,6 +52,8 @@ public:
 
   void SetState(NW_STATE state);
   NW_STATE GetState();
+  void SetTopmost(bool ontop);
+  bool GetTopmost();
 
   void SetLeft(int left);
   void SetTop(int top);
@@ -93,6 +95,7 @@ private:
   bool resizable;
   bool show_resize_grip;
   bool fullscreen_;
+  bool topmost_;
   Settings* icons;
   bool alpha;
   double opacity;

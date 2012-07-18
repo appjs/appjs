@@ -251,6 +251,16 @@ void NativeWindow::UpdatePosition(){
   rect_.top = rect.top;
 }
 
+void NativeWindow::SetTopmost(bool ontop){
+  long current = GetWindowLong(handle_, GWL_EXSTYLE);
+  UpdateStyle(handle_, GWL_EXSTYLE, ontop ? current | WS_EX_TOPMOST : current & ~WS_EX_TOPMOST);
+  SetWindowPos(handle_, ontop ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+  topmost_ = ontop;
+}
+
+bool NativeWindow::GetTopmost(){
+  return topmost_;
+}
 
 
 

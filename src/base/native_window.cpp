@@ -22,7 +22,12 @@ NativeWindow::NativeWindow(char* url, Settings* settings){
   fullscreen_ = settings->getBoolean("fullscreen",false);
   icons = new Settings(settings->getObject("icons", Object::New()));
   g_handler->SetAutoResize(auto_resize);
+
   this->Init(url, settings);
+
+  if (settings->getBoolean("topmost",false)) {
+    SetTopmost(true);
+  }
 
   Cef::Run();
 }

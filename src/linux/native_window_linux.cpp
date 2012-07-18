@@ -182,4 +182,10 @@ void NativeWindow::Fullscreen(){
 NW_STATE NativeWindow::GetState(){
 }
 
+void NativeWindow::SetTopmost(bool ontop){
+}
+
+bool NativeWindow::GetTopmost(){
+}
+
 } /* appjs */
