@@ -180,6 +180,17 @@ void NativeWindow::Fullscreen(){
 }
 
 NW_STATE NativeWindow::GetState(){
+  gint state = gdk_window_get_state((GtkWindow*)handle_);
+
+  if (state & GDK_WINDOW_STATE_FULLSCREEN) {
+    return NW_STATE_FULLSCREEN;
+  } else if (state & GDK_WINDOW_STATE_MAXIMIZED) {
+    return NW_STATE_MAXIMIZED;
+  } else if (state & GDK_WINDOW_STATE_ICONIFIED) {
+    return NW_STATE_MINIMIZED;
+  } else {
+    return NW_STATE_NORMAL;
+  }
 }
 
 void NativeWindow::SetTopmost(bool ontop){
