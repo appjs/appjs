@@ -258,11 +258,6 @@ void NativeWindow::SetTopmost(bool ontop){
   topmost_ = ontop;
 }
 
-bool NativeWindow::GetTopmost(){
-  return topmost_;
-}
-
-
 
 NW_STATE NativeWindow::GetState(){
   long style = GetWindowLongPtr(handle_, GWL_STYLE);

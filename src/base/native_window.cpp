@@ -147,5 +147,9 @@ void NativeWindow::SetTitle(const char* title) {
   ClientHandler::SetWindowTitle(handle_, title);
 }
 
+bool NativeWindow::GetTopmost(){
+  return topmost_;
+}
+
 
 } /* appjs */

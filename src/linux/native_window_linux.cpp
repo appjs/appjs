@@ -187,9 +187,4 @@ void NativeWindow::SetTopmost(bool ontop){
   topmost_ = ontop;
 }
 
-bool NativeWindow::GetTopmost(){
-  return topmost_;
-}
-
-
 } /* appjs */

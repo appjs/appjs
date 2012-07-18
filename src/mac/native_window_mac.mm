@@ -206,18 +206,7 @@ void NativeWindow::Init (char* url, Settings* settings) {
   objc_setAssociatedObject(mainWnd,"nativewindow",wrap,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
   if(fullscreen_) {
-
-    if( floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6 ){
-      [mainWnd setCollectionBehavior:
-                NSWindowCollectionBehaviorFullScreenPrimary];
-      [mainWnd toggleFullScreen: nil];
-    } else {
-      styles = NSBorderlessWindowMask;
-      [mainWnd setStyleMask:(styles)];
-      [[NSApplication sharedApplication] setPresentationOptions: NSApplicationPresentationAutoHideDock | NSApplicationPresentationAutoHideMenuBar];
-    }
-
-    [mainWnd setFrame:[mainWnd frameRectForContentRect:[[NSScreen mainScreen] frame]] display:YES];
+    Fullscreen();
   }
 
   // Add browser view to newly created window.
@@ -295,7 +284,26 @@ void NativeWindow::Restore() {
                          withObject:nil
                       waitUntilDone:NO];
   }
+  fullscreen_ = false;
 }
+
+
+void NativeWindow::Fullscreen(){
+  NSWindow* win = [handle_ window];
+
+  if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6) {
+    [win setCollectionBehavior: NSWindowCollectionBehaviorFullScreenPrimary];
+    [win toggleFullScreen: nil];
+  } else {
+    NSUInteger styles = NSBorderlessWindowMask;
+    [win setStyleMask:(styles)];
+    [[NSApplication sharedApplication] setPresentationOptions: NSApplicationPresentationAutoHideDock | NSApplicationPresentationAutoHideMenuBar];
+  }
+
+  [win setFrame:[win frameRectForContentRect:[[NSScreen mainScreen] frame]] display:YES];
+  fullscreen_ = true;
+}
+
 
 void NativeWindow::Drag() {
 
@@ -319,8 +327,7 @@ void NativeWindow::Resize(int width, int height) {
   windowRect.size.height = height;
   [[handle_ window] setFrame:[[handle_ window] frameRectForContentRect: windowRect] display:YES];
 }
-// update all dimension properties for window via platform api (top, left, width, height)
-// doesn't change actual dimensions, just refreshes data
+
 void NativeWindow::UpdatePosition(){
   NSRect rect = [[handle_ window] frame];
   rect_.width  = rect.size.width;
@@ -329,17 +336,27 @@ void NativeWindow::UpdatePosition(){
   rect_.left   = rect.origin.x;
 }
 
-
-void NativeWindow::Fullscreen(){
-}
-
 NW_STATE NativeWindow::GetState(){
+  NSWindow* win = [handle_ window];
+  if (fullscreen_) {
+    return NW_STATE_FULLSCREEN;
+  } else if ([win isZoomed]) {
+    return NW_STATE_MAXIMIZED;
+  } else if ([win isMiniaturized]) {
+    return NW_STATE_MINIMIZED;
+  } else {
+    return NW_STATE_NORMAL;
+  }
 }
 
 void NativeWindow::SetTopmost(bool ontop){
-}
-
-bool NativeWindow::GetTopmost(){
+  NSWindow* win = [handle_ window];
+  if (ontop) {
+    [win setLevel:NSScreenSaverWindowLevel];
+  } else {
+    [win setLevel:NSNormalWindowLevel];
+  }
+  topmost_ = ontop;
 }
 
 } /* appjs */
