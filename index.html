@@ -59,7 +59,7 @@
         <h1>Build Desktop Applications</h1>
         <p>for Linux, Windows and Mac using HTML, CSS and Javascript</p>
         <p>
-          <a href="#download" class="btn btn-warning btn-large">Download AppJS (v0.0.13)</a>
+          <a href="#download" class="btn btn-warning btn-large">Download AppJS (v0.0.16)</a>
           <a class="btn btn-large disabled">Read Documentation</a>
         </p>
         <p style="font-size:20px;"><strong>Mac port only works with 32bit node (i386). We are working on releasing AppJS for x86_64.</strong></p>
@@ -98,7 +98,7 @@
           <h1>Getting Started Guide</h1>
         </div>
         <div class="page-body">
-          <p>Make sure you have <strong>node v0.8.0</strong> installed. See more information <a href="https://github.com/joyent/node/wiki/Installation">here</a>.</p>
+          <p>Make sure you have <strong>node v0.8.x</strong> installed. See more information <a href="https://github.com/joyent/node/wiki/Installation">here</a>.</p>
           <p>Before you continue, install node-gyp using npm (node's package manager).</p>
           <pre>$ sudo npm install node-gyp -g</pre>
           <p>Again use npm to install AppJS or download ready to use packages <a href="http://dists.appjs.org">here</a>.</p>
@@ -107,60 +107,49 @@
           <p>Now you are ready to develop your first desktop application with HTML/CSS/JS! Create a file named app.js. Open it with your favorite editor and start coding:</p>
           <pre>
 /**
- * Begin by requiring appjs. appjs object has only one function that initializes everything you need.
+ * Begin by requiring appjs.
  **/
-var appjs = require('appjs');
+var app = require('appjs');
 
-/**
- * We will use window and app variables later.
- * settings is the object that you will use to set window properties like width or height.
- * There are more options like disabling chrome (frame around the window) or enabling fullscreen
- * mode but we don't need them.
- **/
-var window,app,settings = {
-  width: 800,
-  height: 600,
-  autoResize: false,
-  icons: {
-    smaller: './public/icons/16.png', //16x16
-    small: './public/icons/32.png', // 32x32
-    big: './public/icons/48.png', // 48x48
-    bigger: './public/icons/64.png' // 64x64 or 128x128
-  }
-};
+// serve files to browser requests to "http://appjs/*"
+app.serveFilesFrom(path.resolve(__dirname, 'public'));
 
-// Initialize application. It tells appjs that you are going to start desktop application.
-app = appjs.init();
-
-/**
- * This event is fired when window is ready to show up. Calling window.show() before this event
- * causes exception.
- **/
-app.on("window_ready",function(){
-  console.log("Event WindowReady called");
-
-  window.show();
-
-});
-
-/**
- * use a static router to serve html, css and javascript files that are in public folder.
- * appjs uses your routers when you request a resource with appjs:// custom scheme.
- **/
-app.use(app.staticRouter('./public'));
 
 /**
  * There are other routing functions that you can use like `post`, `get` or `all`.
  **/
 app.post('/',function(req,res,next){
-  res.send(200,'Hey! How are you '+req.post('firstname'));
+  res.send('Hey! How are you '+req.post('firstname'));
 })
 
 /**
- * Create a window and point it to htt://appjs/. This url is a special url. It is not a http
- * request. AppJS manages these requests manually using routers you defined.
+ * Create a window and point it to http://appjs/. This url is a special url. 
+ * It is not a http request. AppJS manages these requests manually using routers you define.
  **/
-window = app.createWindow("http://appjs/",settings);
+var window = app.createWindow('http://appjs/', {
+  width           : 640,
+  height          : 460,
+  left            : -1,    // optional, -1 centers
+  top             : -1,    // optional, -1 centers
+  autoResize      : false, // resizes in response to html content
+  resizable       : true, // controls whether window is resizable by user
+  showChrome      : true,  // show border and title bar
+  opacity         : 1,     // opacity from 0 to 1 (Linux)
+  alpha           : false, // alpha composited background (Windows & Mac)
+  fullscreen      : false, // covers whole screen and has no border
+  disableSecurity : true   // allow cross origin requests
+});
+
+/**
+ * This event is fired when window is ready and loading the first page is finished.
+ **/
+window.on("ready",function(){
+  console.log("Event Ready called");
+
+  this.frame.show();
+
+});
+
           </pre>
           <p>Create a folder named <code>public</code>. You can add icons if you like. Create a html file named <code>index.html</code> inside it. Open <code>index.html</code> in the editor. We want to create a form to submit first name and last name.</p>
           <pre>&lt;!doctype html&gt;
@@ -177,7 +166,7 @@ window = app.createWindow("http://appjs/",settings);
   &lt;/body&gt;
 &lt;/html&gt;</pre>
           <p>Open terminal and navigate to your project directory. If you used npm run application like this:</p>
-          <pre>$ node app.js</pre>
+          <pre>$ node --harmony app.js</pre>
           <p>If you used ready to use packages, there is launcher for you, simply run:</p>
           <pre>$ ./launch.sh # launch.bat if you are on Windows</pre>
           <p>You will see a window that asks you for firstname and lastname! Fill the form and click submit. AppJS routes the request to post router at line 46 of <code>app.js</code>. We process the request and send response.</p>
@@ -225,9 +214,9 @@ Describe what changed in this commit here.</pre>
           <pre>$ npm install appjs</pre>
           <p>Or you can download tarball archives based on your platform.</p>
           <ul>
-            <li><a href="http://dists.appjs.org/0.0.13/appjs-0.0.13-win32-ia32.zip">Windows</a></li>
-            <li><a href="http://dists.appjs.org/0.0.13/appjs-0.0.13-linux-x64.tar.gz">Linux</a></li>
-            <li><a href="http://dists.appjs.org/0.0.13/appjs-0.0.13-darwin-ia32.zip">Mac OS X</a></li>
+            <li><a href="http://dists.appjs.org/0.0.16/appjs-0.0.16-win32-ia32.zip">Windows</a></li>
+            <li><a href="http://dists.appjs.org/0.0.16/appjs-0.0.16-linux-x64.tar.gz">Linux</a></li>
+            <li><a href="http://dists.appjs.org/0.0.16/appjs-0.0.16-darwin-ia32.zip">Mac OS X</a></li>
           </ul>
         </div>
       </section>
