@@ -183,9 +183,13 @@ NW_STATE NativeWindow::GetState(){
 }
 
 void NativeWindow::SetTopmost(bool ontop){
+  gtk_window_set_keep_above((GtkWindow*)handle_, ontop);
+  topmost_ = ontop;
 }
 
 bool NativeWindow::GetTopmost(){
+  return topmost_;
 }
+
 
 } /* appjs */
