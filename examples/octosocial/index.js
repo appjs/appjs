@@ -2,6 +2,8 @@ var  app = require('../../index.js')
   , Github = require('github');
 
 var github = new Github({version: '3.0.0',debug:true})
+  // Initialize appjs before anything else
+  , app = appjs.init()
   // get screen dimension
   , screenWidth = app.screenWidth()
   , screenHeight = app.screenHeight()
