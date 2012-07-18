@@ -125,6 +125,8 @@ void NativeWindow::Restore() {
 
   if( this->GetState() == NW_STATE_MAXIMIZED ) {
     gtk_window_unmaximize((GtkWindow*)handle_);
+  } else if( this->GetState() == NW_STATE_FULLSCREEN ) {
+    gtk_window_unfullscreen((GtkWindow*)handle_);
   } else {
     gtk_window_deiconify((GtkWindow*)handle_);
   }
