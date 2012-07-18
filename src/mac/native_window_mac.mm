@@ -279,17 +279,34 @@ void NativeWindow::Restore() {
                          withObject:nil
                       waitUntilDone:NO];
   }
+  if ( fullscreen_ ) {
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6) {
+      [win toggleFullScreen: nil];
+    } else {
+      NSUInteger styles = NSTitledWindowMask |
+                          NSClosableWindowMask |
+                          NSMiniaturizableWindowMask;
+      [win setStyleMask:(styles)];
+      [[NSApplication sharedApplication] setPresentationOptions: NSApplicationPresentationDefault];
+      NSRect window_rect = { {rect_.left, rect_.top} , {rect_.width, rect_.height} };
+      [win setFrame:[win frameRectForContentRect: window_rect] display:YES];
+    }
+    fullscreen_ = false;
+
+  }
   if( [win isMiniaturized]) {
     [win performSelectorOnMainThread:@selector(deminiaturize:)
                          withObject:nil
                       waitUntilDone:NO];
   }
-  fullscreen_ = false;
+
 }
 
 
 void NativeWindow::Fullscreen(){
   NSWindow* win = [handle_ window];
+  
+  if(fullscreen_) return;
 
   if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6) {
     [win setCollectionBehavior: NSWindowCollectionBehaviorFullScreenPrimary];
