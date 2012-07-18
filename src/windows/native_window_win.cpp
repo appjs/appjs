@@ -170,9 +170,19 @@ void NativeWindow::Restore() {
   }
 }
 
+void SendKeyEvent(WORD key, DWORD flag){
+  INPUT input = { INPUT_KEYBOARD };
+  input.ki.wVk = key;
+  input.ki.wScan = MapVirtualKey(key, 0);
+  input.ki.dwFlags = flag;
+  SendInput(1, &input, sizeof(input));
+}
+
 void NativeWindow::Show() {
-  ShowWindow(handle_, SW_RESTORE);
-  ShowWindow(handle_, SW_SHOW);
+  ShowWindow(handle_, SW_NORMAL);
+  SendKeyEvent(VK_MENU, 0);
+  SetForegroundWindow(handle_);
+  SendKeyEvent(VK_MENU, KEYEVENTF_KEYUP);
 }
 
 void NativeWindow::Hide() {
