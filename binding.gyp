@@ -10,7 +10,7 @@
         {
           'destination': '<(module_root_dir)/app/data/node_modules/',
           'files': [
-            '<(module_root_dir)/data/common/appjs/',
+            
           ]
         }
       ]
@@ -23,17 +23,20 @@
       ],
       'copies':[
         {
-          'destination': '<(module_root_dir)/app/data/node_modules/appjs/node_modules/',
-          'files': [
-            '<(module_root_dir)/node_modules/mime/',
-          ]
-        },
-        {
           'destination': '<(module_root_dir)/app/data/node_modules/appjs/',
           'files': [
             '<(module_root_dir)/README.md',
             '<(module_root_dir)/examples/',
             '<(module_root_dir)/lib/',
+            '<(module_root_dir)/data/common/appjs/index.js',
+            '<(module_root_dir)/data/common/appjs/binding.gyp',
+            '<(module_root_dir)/data/common/appjs/package.json',
+          ]
+        },
+        {
+          'destination': '<(module_root_dir)/app/data/node_modules/appjs/node_modules/',
+          'files': [
+            '<(module_root_dir)/node_modules/mime/',
           ]
         },
         {
