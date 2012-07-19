@@ -20,7 +20,7 @@
     "email": "brandon@bbenvie.com"
   }],
   "directories": {
-    "lib": "./lib",
+    "lib": "./lib"
   },
   "engines": {
     "node": ">=0.8"
