@@ -1,4 +1,5 @@
-var  app = require('../../index.js')
+var app = require('../../index.js')
+  , path = require('path')
   , Github = require('github');
 
 var github = new Github({version: '3.0.0',debug:true})
@@ -35,7 +36,7 @@ var window = app.createWindow("http://appjs/",windowSettings);
 
 window.on("create",function(){
   console.log("Window created");
-  window.show();
+  window.frame.show();
 });
 
 window.on("ready",function(){
@@ -50,7 +51,7 @@ app.on("exit",function(){
   console.log("Event Exit called");
 });
 
-app.use(app.staticRouter('./assets'));
+app.serveFilesFrom(path.resolve(__dirname, 'assets'));
 
 app.post('/login',function(req,res,next){
   var username = req.post('username')
