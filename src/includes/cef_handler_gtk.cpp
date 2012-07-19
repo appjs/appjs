@@ -6,7 +6,7 @@ using namespace v8;
 using namespace appjs;
 
 CefWindowHandle ClientHandler::GetMainHwnd(){
-  return gtk_widget_get_ancestor(m_MainHwnd,GTK_TYPE_WINDOW);
+  return gtk_widget_get_ancestor(mainHandle,GTK_TYPE_WINDOW);
 }
 
 NativeWindow* ClientHandler::GetWindow(CefWindowHandle handle){

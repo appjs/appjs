@@ -6,7 +6,7 @@ using namespace v8;
 using namespace appjs;
 
 CefWindowHandle ClientHandler::GetMainHwnd(){
-  return m_MainHwnd;
+  return mainHandle;
 }
 
 NativeWindow* ClientHandler::GetWindow(CefWindowHandle handle){
@@ -44,7 +44,7 @@ void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser, CefRefPt
 
 void ClientHandler::CloseMainWindow() {
   REQUIRE_UI_THREAD();
-  PostMessage(m_MainHwnd, WM_CLOSE, 0, 0);
+  PostMessage(mainHandle, WM_CLOSE, 0, 0);
   appjs::Cef::Shutdown();
 }
 

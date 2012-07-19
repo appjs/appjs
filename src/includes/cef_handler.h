@@ -27,8 +27,7 @@ class ClientHandler : public CefClient,
                       public CefDisplayHandler,
                       public CefFocusHandler,
                       public CefKeyboardHandler,
-                      public CefV8ContextHandler
-{
+                      public CefV8ContextHandler {
 
 public:
   ClientHandler();
@@ -51,14 +50,14 @@ public:
   }
 
   static v8::Handle<v8::Object> CreatedBrowser(CefRefPtr<CefBrowser> browser);
-  static v8::Handle<v8::Object> GetV8WindowHandle(CefRefPtr<CefBrowser> browser);
+  static v8::Handle<v8::Object> GetNodeWindow(CefRefPtr<CefBrowser> browser);
   static appjs::NativeWindow* GetWindow(CefWindowHandle handle);
   static appjs::NativeWindow* GetWindow(CefRefPtr<CefBrowser> browser);
   static CefWindowHandle GetContainer(CefRefPtr<CefBrowser> browser);
   static void SetWindowTitle(CefWindowHandle handle, const char* title);
 
-  CefRefPtr<CefBrowser> GetBrowser() { return m_Browser; }
-  CefWindowHandle GetBrowserHwnd() { return m_BrowserHwnd; }
+  CefRefPtr<CefBrowser> GetBrowser() { return mainBrowser; }
+  CefWindowHandle GetBrowserHwnd() { return mainBrowserHwnd; }
   CefWindowHandle GetMainHwnd();
   void SetMainHwnd(CefWindowHandle&);
   void CloseMainWindow();
@@ -76,7 +75,7 @@ public:
 
   virtual void OnContextReleased(CefRefPtr<CefBrowser> browser,
                                  CefRefPtr<CefFrame> frame,
-                                 CefRefPtr<CefV8Context> context) {}
+                                 CefRefPtr<CefV8Context> context) OVERRIDE;
 
   virtual void OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
                                     CefRefPtr<CefFrame> frame,
@@ -96,13 +95,13 @@ public:
                           bool isAfterJavaScript) OVERRIDE;
 
   // The child browser window
-  CefRefPtr<CefBrowser> m_Browser;
+  CefRefPtr<CefBrowser> mainBrowser;
 
   // The main frame window handle
-  CefWindowHandle m_MainHwnd;
+  CefWindowHandle mainHandle;
 
   // The child browser window handle
-  CefWindowHandle m_BrowserHwnd;
+  CefWindowHandle mainBrowserHwnd;
 
   // Should we handle content resize?
   bool m_AutoResize;

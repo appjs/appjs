@@ -19,7 +19,7 @@ Wrap* object_;
 
 
 CefWindowHandle ClientHandler::GetMainHwnd(){
-  return m_MainHwnd;
+  return mainHandle;
 }
 
 NativeWindow* ClientHandler::GetWindow(CefWindowHandle handle){

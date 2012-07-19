@@ -1,16 +1,15 @@
 var path = require('path'),
     router = require('./lib/router'),
     bindings = require('./lib/bindings'),
-    browserInit = require('./lib/browser-init'),
-    bridge = require('./lib/bridge'),
     Window = require('./lib/window');
 
 var App = bindings.App,
     NativeWindow = bindings.Window,
     _createWindow = App.prototype.createWindow,
-    _send = NativeWindow.prototype.send,
     _extend = require('./lib/utils').extend;
 
+
+NativeWindow.prototype.__proto__ = process.EventEmitter.prototype;
 
 // TODO: windows specific component is temporary
 if (process.platform === 'win32') {
@@ -41,87 +40,32 @@ _extend(App.prototype, {
 
     var self = this;
     var id = this.windows.length;
-    var window = _createWindow.call(this, url, settings);
-    window.id = id;
+    var nativeWindow = _createWindow.call(this, url, settings);
+    nativeWindow.id = id;
+    nativeWindow._events = {};
+    var window = new Window(nativeWindow);
     window._events = {};
-    var wrapped = new Window(window);
-    wrapped._events = {};
-    Object.defineProperty(wrapped, '_events', { enumerable: false });
-    this.windows.push(wrapped);
+    Object.defineProperty(window, '_events', { enumerable: false });
+    this.windows.push(window);
 
-    window.on('create', function(){
-      stylesForWindow(window);
-      window.runInBrowser(browserInit);
-      wrapped.emit('create');
+    nativeWindow.on('create', function(){
+      window.emit('create');
     });
 
-    window.on('ready', function(){
-      window.runInBrowser(bridge);
-      bridge(window);
+    nativeWindow.on('close', function(){
+      window.emit('close');
     });
 
-    window.on('close', function(){
-      window.untransition();
-      wrapped.emit('close');
-    });
-
-    return wrapped;
-  }
-});
-
-var IPC = {
-  encode: function encode(msg){
-    if (msg == null)
-      return '{}';
-    else if (typeof msg === 'object')
-      return JSON.stringify(msg);
-    else if (typeof msg === 'string')
-      return msg;
-    else
-      throw new TypeError("Tried to encode invalid type");
-  },
-  decode: function decode(msg){
-    try {
-      return JSON.parse(msg);
-    } catch (e) {
-      return { error: e };
-    }
-  }
-};
-
-
-NativeWindow.prototype.__proto__ = process.EventEmitter.prototype;
-
-_extend(NativeWindow.prototype, {
-  onmessage: function onmessage(msg){
-    var res = {};
-    msg = IPC.decode(msg);
-
-    if (msg && msg.type && this._events[msg.type]) {
-      this.emit(msg.type, msg.msg, res);
-    }
-
-    return IPC.encode(res.result === undefined ? {} : res.result);
-  },
-  send: function send(type, msg){
-    msg = { type: type, msg: msg };
-    return IPC.decode(_send.call(this, IPC.encode(msg)));
+    return window;
   }
 });
 
 
-var locales_dir = path.resolve(__dirname,'data','pak');
-
-var app = bindings.init.call(null,locales_dir);
-
+var app = bindings.init.call(null, path.resolve(__dirname,'data','pak'));
 app.windows = [];
-
 app.extend(router);
-
 app.on("exit",function(){
-  process.nextTick(function(){
-    process.exit();
-  });
+  process.nextTick(function(){ process.exit() });
 });
 
 module.exports = app;
