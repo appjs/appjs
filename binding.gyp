@@ -41,15 +41,10 @@
         {
           'destination': '<(module_root_dir)/app/data/node_modules/appjs/',
           'files': [
+            '<(module_root_dir)/data/common/index.js',
             '<(module_root_dir)/README.md',
-            '<(module_root_dir)/examples/'
-          ]
-        },
-        {
-          'destination': '<(module_root_dir)/app/data/node_modules/appjs-<(OS)',
-          'files': [
+            '<(module_root_dir)/examples/',
             '<(module_root_dir)/lib/',
-            '<(module_root_dir)/index.js'
           ]
         },
         {
@@ -81,6 +76,7 @@
               'destination': '<(module_root_dir)/app/data/node_modules/appjs-mac',
               'files': [
                 '<(module_root_dir)/data/mac/package.json',
+                '<(module_root_dir)/data/mac/index.js',
                 '<(module_root_dir)/data/mac/README.md'
               ],
             },
@@ -152,7 +148,8 @@
               'destination': '<(module_root_dir)/app/data/node_modules/appjs-linux/',
               'files': [
                 '<(module_root_dir)/data/linux/package.json',
-                '<(module_root_dir)/data/linux/README.md'
+                '<(module_root_dir)/data/linux/index.js',
+                '<(module_root_dir)/data/linux/README.md',
               ],
             },
             {
@@ -204,6 +201,7 @@
               'destination': '<(module_root_dir)/app/data/node_modules/appjs-win/',
               'files': [
                 '<(module_root_dir)/data/win/package.json',
+                '<(module_root_dir)/data/win/index.js',
                 '<(module_root_dir)/data/win/README.md'
               ],
             },
