@@ -41,7 +41,6 @@
         {
           'destination': '<(module_root_dir)/app/data/node_modules/appjs/',
           'files': [
-            '<(module_root_dir)/data/common/index.js',
             '<(module_root_dir)/README.md',
             '<(module_root_dir)/examples/',
             '<(module_root_dir)/lib/',
