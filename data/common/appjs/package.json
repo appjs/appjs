@@ -38,7 +38,7 @@
   "optionalDependencies": {
     "appjs-win": "0.1.0",
     "appjs-mac": "0.1.0",
-    "appjs-linux": "0.1.0",
+    "appjs-linux": "0.1.0"
   },
   "licenses": [{
     "type": "MIT",
