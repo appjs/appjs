@@ -6,27 +6,11 @@
       'dependencies': [
         'publish'
       ],
-      'actions':[
-        {
-          'action_name':'npm',
-          'inputs':[''],
-          'outputs':[''],
-          'conditions':[
-            ['OS!="win"', {
-              'action':['<(module_root_dir)/data/add-dependencies.sh','<(module_root_dir)/app/data/node_modules/appjs-<(OS)']
-            }],
-            ['OS=="win"', {
-              'action':['"<(module_root_dir)/data/add-dependencies.bat"','<(module_root_dir)/app/data/node_modules/appjs-<(OS)']
-            }]
-          ]
-        },
-      ],
       'copies':[
         {
           'destination': '<(module_root_dir)/app/data/node_modules/',
           'files': [
             '<(module_root_dir)/data/common/appjs/',
-            '<(module_root_dir)/node_modules/npm/'
           ]
         }
       ]
@@ -38,6 +22,12 @@
         'appjs'
       ],
       'copies':[
+        {
+          'destination': '<(module_root_dir)/app/data/node_modules/appjs/node_modules/',
+          'files': [
+            '<(module_root_dir)/node_modules/mime/',
+          ]
+        },
         {
           'destination': '<(module_root_dir)/app/data/node_modules/appjs/',
           'files': [
