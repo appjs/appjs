@@ -25,6 +25,7 @@ __AppJS 0.0.16 Distributables:__
 * [Mac](http://dists.appjs.org/0.0.16/appjs-0.0.16-darwin-ia32.zip) -> app.sh
 * [Windows](http://dists.appjs.org/0.0.16/appjs-0.0.16-win32-ia32.zip) -> app.exe
 
+(Windows requires [MSVC++ 2010 runtimes](http://www.microsoft.com/en-us/download/details.aspx?id=5555))
 
 ## One Minute Usage Overview
 ```javascript
