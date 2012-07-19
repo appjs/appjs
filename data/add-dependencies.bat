@@ -1,2 +1,2 @@
 cd "%1"
-..\npm\bin\npm-cli.js install
+::..\npm\bin\npm-cli.js install
