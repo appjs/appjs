@@ -29,7 +29,6 @@
             '<(module_root_dir)/examples/',
             '<(module_root_dir)/lib/',
             '<(module_root_dir)/data/common/appjs/index.js',
-            '<(module_root_dir)/data/common/appjs/binding.gyp',
             '<(module_root_dir)/data/common/appjs/package.json',
           ]
         },
