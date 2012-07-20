@@ -6,9 +6,6 @@
 #include "includes/util.h"
 #include <node.h>
 
-#define ARRAY_SIZE(a)                               \
-  ((sizeof(a) / sizeof(*(a))) /                     \
-  static_cast<size_t>(!(sizeof(a) % sizeof(*(a)))))
 
 namespace appjs {
 
