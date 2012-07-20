@@ -111,7 +111,9 @@ void NativeWindow::Init(char* url, Settings* settings) {
     rect_.top = (GetSystemMetrics(SM_CYSCREEN) - rect_.height) / 2;
   }
   browser_ = NULL;
-  handle_ = CreateWindowEx(NULL, szWindowClass,"", WS_OVERLAPPEDWINDOW, rect_.top, rect_.left, rect_.width, rect_.height, NULL, NULL, hInstance, NULL);
+  handle_ = CreateWindowEx(WS_EX_LAYERED, szWindowClass,"", WS_OVERLAPPEDWINDOW,
+                           rect_.top, rect_.left, rect_.width, rect_.height,
+                           NULL, NULL, hInstance, NULL);
 
   SetWindowLongPtr(handle_, GWLP_USERDATA, (LONG)this);
 
@@ -146,7 +148,8 @@ void NativeWindow::Restore() {
   if (fullscreen_) {
     fullscreen_ = false;
     Move(restoreRect_);
-    SetWindowLongPtr(handle_, GWL_STYLE, restoreStyle);
+    SetWindowLongPtr(handle_, GWL_STYLE, restoreStyle_);
+    SetWindowLongPtr(handle_, GWL_EXSTYLE, restoreExStyle_);
   } else {
     ShowWindow(handle_, SW_RESTORE);
   }
@@ -180,7 +183,6 @@ void NativeWindow::Drag() {
   SendMessage(handle_, WM_NCLBUTTONDOWN, HTCAPTION, 0);
 }
 
-
 void NativeWindow::Fullscreen(){
   if (!fullscreen_) {
     fullscreen_ = true;
@@ -189,16 +191,16 @@ void NativeWindow::Fullscreen(){
     restoreRect_.top = rect_.top;
     restoreRect_.width = rect_.width;
     restoreRect_.height = rect_.height;
-    restoreStyle = GetWindowLong(handle_, GWL_STYLE);
-    SetWindowLongPtr(handle_, GWL_STYLE, restoreStyle & ~(WS_CAPTION | WS_SIZEBOX));
+    restoreStyle_ = GetWindowLong(handle_, GWL_STYLE);
+    restoreExStyle_ = GetWindowLong(handle_, GWL_EXSTYLE);
+    SetWindowLongPtr(handle_, GWL_STYLE, restoreStyle_ & ~(WS_CAPTION | WS_SIZEBOX));
+    SetWindowLongPtr(handle_, GWL_EXSTYLE, restoreExStyle_ & ~(WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE));
     SetWindowPos(handle_, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     HDC hDC = GetWindowDC(NULL);
     SetWindowPos(handle_, NULL, 0, 0, GetDeviceCaps(hDC, HORZRES), GetDeviceCaps(hDC, VERTRES), SWP_FRAMECHANGED);
     UpdatePosition();
   }
 }
-
-
 
 const char* NativeWindow::GetTitle() {
   TCHAR title[80];

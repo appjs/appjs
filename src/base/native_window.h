@@ -117,7 +117,8 @@ private:
 
   appjs_rect rect_;
   appjs_rect restoreRect_;
-  long restoreStyle;
+  long restoreStyle_;
+  long restoreExStyle_;
 
 #if defined(__LINUX__)
   long drag_handler_id;
