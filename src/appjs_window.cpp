@@ -39,8 +39,15 @@ void Window::Init () {
   CREATE_CPP_ACCESSOR("title", Title);
   CREATE_CPP_ACCESSOR("state", State);
   CREATE_CPP_ACCESSOR("topmost", Topmost);
-
-#if defined(__WIN__)
+  CREATE_CPP_ACCESSOR("resizable", Resizable);
+  CREATE_CPP_ACCESSOR("showChrome", ShowChrome);
+#ifndef __LINUX__
+  CREATE_CPP_ACCESSOR("alpha", Alpha);
+#endif
+#ifndef __WIN__
+  CREATE_CPP_ACCESSOR("opacity", Opacity);
+#endif
+#ifdef __WIN__
   DEFINE_PROTOTYPE_METHOD("style", Style);
 #endif
 
@@ -232,46 +239,25 @@ Handle<Value> Window::SendSync(const Arguments& args) {
 }
 
 
+#define WINDOW_ACCESSOR(propName, getType, setType) DECLARE_CPP_ACCESSOR(Window, propName, getType, setType)
+
+WINDOW_ACCESSOR(Left, Integer, MAKE_INT32)
+WINDOW_ACCESSOR(Top, Integer, MAKE_INT32)
+WINDOW_ACCESSOR(Width, Integer, MAKE_INT32)
+WINDOW_ACCESSOR(Height, Integer, MAKE_INT32)
+WINDOW_ACCESSOR(Title, String, V8StringToChar)
+WINDOW_ACCESSOR(Topmost, Boolean, MAKE_BOOLEAN)
+WINDOW_ACCESSOR(Resizable, Boolean, MAKE_BOOLEAN)
+WINDOW_ACCESSOR(ShowChrome, Boolean, MAKE_BOOLEAN)
+#ifndef __LINUX__
+WINDOW_ACCESSOR(Alpha, Boolean, MAKE_BOOLEAN)
+#endif
+#ifndef __WIN__
+WINDOW_ACCESSOR(Opacity, Number, MAKE_FLOAT)
+#endif
 
 
 
-
-
-Handle<Value> Window::GetLeft(Local<String> property, const AccessorInfo &info) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  return scope.Close(Integer::New(window->GetLeft()));
-}
-
-Handle<Value> Window::GetTop(Local<String> property, const AccessorInfo &info) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  return scope.Close(Integer::New(window->GetTop()));
-}
-
-Handle<Value> Window::GetWidth(Local<String> property, const AccessorInfo &info) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  return scope.Close(Integer::New(window->GetWidth()));
-}
-
-Handle<Value> Window::GetHeight(Local<String> property, const AccessorInfo &info) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  return scope.Close(Integer::New(window->GetHeight()));
-}
-
-Handle<Value> Window::GetTitle(Local<String> property, const AccessorInfo &info) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  return scope.Close(String::New(window->GetTitle()));
-}
-
-Handle<Value> Window::GetTopmost(Local<String> property, const AccessorInfo &info) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  return scope.Close(Boolean::New(window->GetTopmost()));
-}
 
 Handle<Value> Window::GetState(Local<String> property, const AccessorInfo &info) {
   HandleScope scope;
@@ -298,50 +284,19 @@ Handle<Value> Window::GetState(Local<String> property, const AccessorInfo &info)
 
 
 
-void Window::SetLeft(Local<String> property, Local<Value> value, const AccessorInfo& info) {
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  window->SetLeft(value->Int32Value());
-}
-
-void Window::SetTop(Local<String> property, Local<Value> value, const AccessorInfo& info) {
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  window->SetTop(value->Int32Value());
-}
-
-void Window::SetWidth(Local<String> property, Local<Value> value, const AccessorInfo& info) {
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  window->SetWidth(value->Int32Value());
-}
-
-void Window::SetHeight(Local<String> property, Local<Value> value, const AccessorInfo& info) {
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  window->SetHeight(value->Int32Value());
-}
-
-void Window::SetTitle(Local<String> property, Local<Value> value, const AccessorInfo& info) {
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  window->SetTitle(V8StringToChar(value->ToString()));
-}
-
-void Window::SetTopmost(Local<String> property, Local<Value> value, const AccessorInfo& info) {
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  window->SetTopmost(value->BooleanValue());
-}
-
 void Window::SetState(Local<String> property, Local<Value> value, const AccessorInfo& info) {
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
   Local<String> val = value->ToString();
-  if (val->Equals(String::New("normal"))) {
+  if (STRING_EQ(val, "normal")) {
     window->SetState(NW_STATE_NORMAL);
-  } else if (val->Equals(String::New("minimized"))) {
+  } else if (STRING_EQ(val, "minimized")) {
     window->SetState(NW_STATE_MINIMIZED);
-  } else if (val->Equals(String::New("maximized"))) {
+  } else if (STRING_EQ(val, "maximized")) {
     window->SetState(NW_STATE_MAXIMIZED);
-  } else if (val->Equals(String::New("fullscreen"))) {
+  } else if (STRING_EQ(val, "fullscreen")) {
     window->SetState(NW_STATE_FULLSCREEN);
   }
 }
-
 
 
 #if defined(__WIN__)

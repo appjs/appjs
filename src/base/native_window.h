@@ -54,6 +54,18 @@ public:
   NW_STATE GetState();
   void SetTopmost(bool ontop);
   bool GetTopmost();
+  void SetShowChrome(bool showChrome);
+  bool GetShowChrome();
+  void SetResizable(bool resizable);
+  bool GetResizable();
+#ifndef __LINUX__
+  void SetAlpha(bool alpha);
+  bool GetAlpha();
+#endif
+#ifndef __WIN__
+  void SetOpacity(double opacity);
+  double GetOpacity();
+#endif
 
   void SetLeft(int left);
   void SetTop(int top);
@@ -91,14 +103,14 @@ private:
   v8::Handle<v8::Object> v8handle_;
   CefRefPtr<CefBrowser> browser_;
 
-  bool show_chrome;
-  bool resizable;
+  bool show_chrome_;
+  bool resizable_;
   bool show_resize_grip;
   bool fullscreen_;
   bool topmost_;
   Settings* icons;
-  bool alpha;
-  double opacity;
+  bool alpha_;
+  double opacity_;
 
   appjs_rect rect_;
   appjs_rect restoreRect_;

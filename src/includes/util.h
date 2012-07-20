@@ -12,6 +12,7 @@ WCHAR* V8StringToWCHAR(v8::Handle<v8::String> str);
 #endif
 
 char* V8StringToChar(v8::Handle<v8::String> str);
+char* V8StringToChar(v8::Local<v8::Value> val);
 char* V8StringToFunctionChar(v8::Handle<v8::String> str);
 v8::Local<v8::String> CefStringToV8(const CefString& str);
 CefRefPtr<CefV8Value> V8StringToCef(v8::Handle<v8::Value> str);

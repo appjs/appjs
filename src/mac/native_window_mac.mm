@@ -174,7 +174,7 @@ void NativeWindow::Init (char* url, Settings* settings) {
 
   NSUInteger styles;
 
-  if( ! show_chrome ) {
+  if( ! show_chrome_ ) {
     styles = NSBorderlessWindowMask;
   } else {
     styles = NSTitledWindowMask |
@@ -182,7 +182,7 @@ void NativeWindow::Init (char* url, Settings* settings) {
              NSMiniaturizableWindowMask;
   }
 
-  if( resizable ) {
+  if( resizable_ ) {
     styles |= NSResizableWindowMask;
   }
 
@@ -195,7 +195,7 @@ void NativeWindow::Init (char* url, Settings* settings) {
                        styleMask:(styles)
                        backing:NSBackingStoreBuffered
                        defer:NO];
-  [mainWnd setAlphaValue:opacity];
+  [mainWnd setAlphaValue:opacity_];
   [mainWnd setTitle:@"cefclient"];
   [mainWnd setDelegate:windowDelegate];
   [mainWnd setReleasedWhenClosed:YES];
@@ -305,7 +305,7 @@ void NativeWindow::Restore() {
 
 void NativeWindow::Fullscreen(){
   NSWindow* win = [handle_ window];
-  
+
   if(fullscreen_) return;
 
   if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6) {
@@ -374,6 +374,41 @@ void NativeWindow::SetTopmost(bool ontop){
     [win setLevel:NSNormalWindowLevel];
   }
   topmost_ = ontop;
+}
+
+void NativeWindow::SetResizable(bool resizable) {
+  NSWindow* win = [handle_ window];
+  [win setStyleMask:(resizable ? [win getStyleMask] | NSResizableWindowMask
+                               : [win getStyleMask] & ~NSResizableWindowMask)];
+}
+
+bool NativeWindow::GetResizable() {
+  return [[handle_ window] getStyleMask] & NSResizableWindowMask;
+}
+
+void NativeWindow::SetShowChrome(bool showChrome) {
+  NSWindow* win = [handle_ window];
+  [win setStyleMask:(resizable ? [win getStyleMask] | NSBorderlessWindowMask
+                               : [win getStyleMask] & ~NSBorderlessWindowMask)];
+
+}
+
+bool NativeWindow::GetShowChrome() {
+  return [[handle_ window] getStyleMask] & NSBorderlessWindowMask;
+}
+
+void NativeWindow::SetAlpha(bool alpha) {
+}
+
+bool NativeWindow::GetAlpha() {
+}
+
+void NativeWindow::SetOpacity(double opacity) {
+  [[handle_ window] setAlphaValue:opacity];
+}
+
+bool NativeWindow::GetOpacity() {
+  return [[handle_ window] getAlphaValue];
 }
 
 } /* appjs */

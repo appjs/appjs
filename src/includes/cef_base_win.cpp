@@ -19,9 +19,7 @@ void CefBase::AddWebView(CefWindowHandle hWndParent,RECT windowRect,char* url,Se
   browserSettings.web_security_disabled = settings->getBoolean("disableSecurity", false);
 
   window_info.SetAsChild(hWndParent, windowRect);
-  if (settings->getBoolean("alpha", false)) {
-    window_info.SetTransparentPainting(true);
-  }
+  window_info.SetTransparentPainting(true);
 
 
   CefBrowser::CreateBrowser(window_info,

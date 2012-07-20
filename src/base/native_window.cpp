@@ -13,10 +13,10 @@ NativeWindow::NativeWindow(char* url, Settings* settings){
   rect_.height = settings->getNumber("height",600);
   rect_.left = settings->getNumber("left",-1);
   rect_.top = settings->getNumber("top",-1);
-  opacity = settings->getNumber("opacity",1);
-  alpha = settings->getBoolean("alpha",false);
-  show_chrome = settings->getBoolean("showChrome",true);
-  resizable = settings->getBoolean("resizable",true);
+  opacity_ = settings->getNumber("opacity",1);
+  alpha_ = settings->getBoolean("alpha",false);
+  show_chrome_ = settings->getBoolean("showChrome",true);
+  resizable_ = settings->getBoolean("resizable",true);
   show_resize_grip = settings->getBoolean("showResizeGrip",false);
   auto_resize = settings->getBoolean("autoResize",false);
   fullscreen_ = settings->getBoolean("fullscreen",false);

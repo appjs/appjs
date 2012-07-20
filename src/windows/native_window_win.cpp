@@ -104,46 +104,29 @@ void NativeWindow::Init(char* url, Settings* settings) {
   strcpy(szWindowClass,"AppjsWindow");
   browserSettings = settings;
 
-
-  if(!MyRegisterClass(hInstance)){
-    //TODO send error to node
-    if( GetLastError() != 1410 ) { //1410: Class Already Registered
-      fprintf(stderr,"Error occurred: ");
-      fprintf(stderr,"%d\n",GetLastError());
-      return;
-    }
-  };
-
-  DWORD style = show_chrome ? WS_OVERLAPPEDWINDOW : WS_SIZEBOX | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU;
-
-  if (!resizable) {
-    style &= ~WS_SIZEBOX;
-  }
+  MyRegisterClass(hInstance);
 
   if (rect_.left < 0 || rect_.top < 0) {
     rect_.left = (GetSystemMetrics(SM_CXSCREEN) - rect_.width) / 2;
     rect_.top = (GetSystemMetrics(SM_CYSCREEN) - rect_.height) / 2;
   }
   browser_ = NULL;
-  handle_ = CreateWindowEx(NULL, szWindowClass,"", style, rect_.top, rect_.left, rect_.width, rect_.height, NULL, NULL, hInstance, NULL);
-
-  if (!handle_) {
-    fprintf(stderr,"Error occurred: ");
-    fprintf(stderr,"%d\n",GetLastError());
-    return;
-  }
+  handle_ = CreateWindowEx(NULL, szWindowClass,"", WS_OVERLAPPEDWINDOW, rect_.top, rect_.left, rect_.width, rect_.height, NULL, NULL, hInstance, NULL);
 
   SetWindowLongPtr(handle_, GWLP_USERDATA, (LONG)this);
 
-  if (alpha) {
-    SetNCWidth(handle_, -1);
+  if (alpha_) {
+    SetAlpha(true);
+  }
+  if (!resizable_) {
+    SetResizable(false);
   }
 
   if (fullscreen_) {
     fullscreen_ = false;
     Fullscreen();
-  } else if (!show_chrome) {
-    UpdateStyle(handle_, GWL_STYLE, GetWindowLongPtr(handle_, GWL_STYLE) & ~WS_CAPTION);
+  } else if (!show_chrome_) {
+    SetShowChrome(false);
   }
 
   UpdateWindow(handle_);
@@ -272,6 +255,39 @@ NW_STATE NativeWindow::GetState(){
   }
 }
 
+
+void NativeWindow::SetResizable(bool resizable) {
+  resizable_ = resizable;
+  long current = GetWindowLongPtr(handle_, GWL_STYLE);
+  UpdateStyle(handle_, GWL_STYLE, resizable
+    ? current | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX
+    : current & ~(WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX)
+  );
+}
+
+bool NativeWindow::GetResizable() {
+  return GetWindowLongPtr(handle_, GWL_STYLE) & WS_SIZEBOX;
+}
+
+void NativeWindow::SetShowChrome(bool showChrome) {
+  show_chrome_ = showChrome;
+  long current = GetWindowLongPtr(handle_, GWL_STYLE);
+  UpdateStyle(handle_, GWL_STYLE, showChrome ? current | WS_CAPTION | WS_SIZEBOX : current & ~(WS_CAPTION | WS_SIZEBOX));
+}
+
+bool NativeWindow::GetShowChrome() {
+  long current = GetWindowLongPtr(handle_, GWL_STYLE);
+  return (current & WS_CAPTION) || (current & WS_SIZEBOX);
+}
+
+void NativeWindow::SetAlpha(bool alpha) {
+  alpha_ = alpha;
+  SetNCWidth(handle_, alpha ? -1 : 0);
+}
+
+bool NativeWindow::GetAlpha() {
+  return alpha_;
+}
 
 long NativeWindow::GetStyle(bool extended) {
   return GetWindowLong(handle_, extended ? GWL_EXSTYLE : GWL_STYLE);

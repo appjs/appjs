@@ -56,8 +56,8 @@ void NativeWindow::Init(char* url, Settings* settings) {
   }
 
   gtk_window_set_default_size(window, rect_.width, rect_.height);
-  gtk_window_set_opacity(window, opacity);
-  gtk_window_set_decorated(window, show_chrome);
+  gtk_window_set_opacity(window, opacity_);
+  gtk_window_set_decorated(window, show_chrome_);
 
   #if defined(__UBUNTU__) && !GTK_CHECK_VERSION(2, 24, 10)
     if(gtk_check_version(2, 24, 10))
@@ -67,7 +67,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
   if( fullscreen_ ) {
     Fullscreen();
   } else {
-    gtk_window_set_resizable(window, resizable);
+    gtk_window_set_resizable(window, resizable_);
   }
 
   if( !resizable ) {
@@ -205,5 +205,34 @@ void NativeWindow::SetTopmost(bool ontop){
   gtk_window_set_keep_above((GtkWindow*)handle_, ontop);
   topmost_ = ontop;
 }
+
+
+void NativeWindow::SetResizable(bool resizable) {
+  resizable_ = resizable;
+  gtk_window_set_resizable((GtkWindow*)handle_, resizable);
+}
+
+bool NativeWindow::GetResizable() {
+  return gtk_window_get_resizable((GtkWindow*)handle_);
+}
+
+void NativeWindow::SetShowChrome(bool showChrome) {
+  show_chrome_ = showChrome;
+  gtk_window_set_decorated((GtkWindow*)handle_, showChrome);
+}
+
+bool NativeWindow::GetShowChrome() {
+  return gtk_window_get_decorated((GtkWindow*)handle_);
+}
+
+void NativeWindow::SetOpacity(double opacity) {
+  opacity_ = opacity;
+  gtk_window_set_opacity((GtkWindow*)handle_, opacity);
+}
+
+bool NativeWindow::GetOpacity() {
+  return gtk_window_get_opacity((GtkWindow*)handle_);
+}
+
 
 } /* appjs */
