@@ -238,9 +238,6 @@ Handle<Value> Window::SendSync(const Arguments& args) {
   return scope.Close(Undefined());
 }
 
-
-#define WINDOW_ACCESSOR(propName, getType, setType) DECLARE_CPP_ACCESSOR(Window, propName, getType, setType)
-
 WINDOW_ACCESSOR(Left, Integer, MAKE_INT32)
 WINDOW_ACCESSOR(Top, Integer, MAKE_INT32)
 WINDOW_ACCESSOR(Width, Integer, MAKE_INT32)
@@ -253,7 +250,7 @@ WINDOW_ACCESSOR(ShowChrome, Boolean, MAKE_BOOLEAN)
 WINDOW_ACCESSOR(Alpha, Boolean, MAKE_BOOLEAN)
 #endif
 #ifndef __WIN__
-WINDOW_ACCESSOR(Opacity, Number, MAKE_FLOAT)
+WINDOW_ACCESSOR(Opacity, Number, MAKE_DOUBLE)
 #endif
 
 

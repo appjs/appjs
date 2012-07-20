@@ -9,6 +9,9 @@ namespace appjs {
 
 using namespace v8;
 
+#define WINDOW_ACCESSOR(propName, getType, setType) \
+  DECLARE_CPP_ACCESSOR(Window, propName, getType, setType)
+
 class Window : public node::ObjectWrap {
   DECLARE_NODE_OBJECT_FACTORY(Window);
   DEFINE_CPP_METHOD(OpenDevTools);

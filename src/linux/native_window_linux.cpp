@@ -68,7 +68,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
     gtk_window_set_resizable(window, resizable_);
   }
 
-  if( !resizable ) {
+  if( !resizable_ ) {
     gtk_widget_set_size_request(handle_,rect_.width,rect_.height);
   }
 
@@ -228,7 +228,7 @@ void NativeWindow::SetOpacity(double opacity) {
   gtk_window_set_opacity((GtkWindow*)handle_, opacity);
 }
 
-bool NativeWindow::GetOpacity() {
+double NativeWindow::GetOpacity() {
   return gtk_window_get_opacity((GtkWindow*)handle_);
 }
 

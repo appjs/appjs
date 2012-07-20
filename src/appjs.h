@@ -8,7 +8,7 @@
 #define APPJS_PSYMBOL(s) v8::Persistent<v8::String>::New(v8::String::NewSymbol(s))
 #define MAKE_BOOLEAN(v) (v)->BooleanValue()
 #define MAKE_INT32(v) (v)->Int32Value()
-#define MAKE_FLOAT(v) (v)->FloatValue()
+#define MAKE_DOUBLE(v) (v)->NumberValue()
 #define STRING_EQ(v, str) (v)->Equals(String::New(str))
 // Easy throw exceptions
 #define NODE_ERROR(str) \
@@ -30,14 +30,14 @@
 
 
 #define DECLARE_CPP_ACCESSOR(classname, propName, getType, setType) \
-void classname##::Set##propName##(Local<String> property, Local<Value> value, const AccessorInfo& info) { \
+void classname::Set##propName(Local<String> property, Local<Value> value, const AccessorInfo& info) { \
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder()); \
-  window->Set##propName##(##setType##(value)); \
+  window->Set##propName(setType(value)); \
 } \
-Handle<Value> classname##::Get##propName##(Local<String> property, const AccessorInfo &info) { \
+Handle<Value> classname::Get##propName(Local<String> property, const AccessorInfo &info) { \
   HandleScope scope; \
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder()); \
-  return scope.Close(##getType##::New(window->Get##propName##())); \
+  return scope.Close(getType::New(window->Get##propName())); \
 }
 
 // Better node prototype method
