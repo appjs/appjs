@@ -4,7 +4,6 @@
 #define min(left,right) std::min(left,right)
 #define max(left,right) std::max(left,right)
 #include <gdiplus.h>
-#include <dwmapi.h>
 #include "appjs.h"
 #include "includes/cef.h"
 #include "includes/util.h"
@@ -26,33 +25,73 @@ HICON smallIcon;
 HICON bigIcon;
 Settings* browserSettings;
 char* url_;
+bool initialized = false;
+
+
+// ###################################################
+// ### DWM functions that don't exist in WindowsXP ###
+// ###################################################
+
+typedef struct _pBLURBEHIND {
+  DWORD dwFlags;
+  BOOL  fEnable;
+  HRGN  hRgnBlur;
+  BOOL  fTransitionOnMaximized;
+} pBLURBEHIND, *pPBLURBEHIND;
+
+typedef struct _pMARGINS {
+  int cxLeftWidth;
+  int cxRightWidth;
+  int cyTopHeight;
+  int cyBottomHeight;
+} pMARGINS, *pPMARGINS;
+
+typedef HRESULT (WINAPI *DWMEFICA)(HWND, pMARGINS*);
+typedef HRESULT (WINAPI *DWMEBBW)(HWND, pBLURBEHIND*);
+
+static DWMEFICA pDwmExtendFrameIntoClientArea = NULL;
+static DWMEBBW pDwmEnableBlurBehindWindow = NULL;
+static HMODULE dwmapiDLL = NULL;
+
 
 
 // #################################
 // ### Windows Utility Functions ###
 // #################################
 
+
 void UpdateStyle(HWND hwnd, int index, LONG value){
+  SetWindowLongPtr(hwnd, index, value < 0 ? GetWindowLongPtr(hwnd, index) & value : GetWindowLongPtr(hwnd, index) | value);
+  SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
+}
+
+void NewStyle(HWND hwnd, int index, LONG value){
   SetWindowLongPtr(hwnd, index, value);
   SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
 }
 
 void BlurBehind(HWND hwnd, bool enable){
-  DWM_BLURBEHIND bb = {0};
-  bb.fEnable = enable;
-  bb.hRgnBlur = NULL;
-  bb.dwFlags = DWM_BB_ENABLE;
-  DwmEnableBlurBehindWindow(hwnd, &bb);
+  if (pDwmEnableBlurBehindWindow != NULL) {
+    pBLURBEHIND bb = {0};
+    bb.fEnable = enable;
+    bb.hRgnBlur = NULL;
+    bb.dwFlags = 1;
+    pDwmEnableBlurBehindWindow(hwnd, &bb);
+  }
 }
 
 void SetNCWidth(HWND hwnd, int left, int right, int top, int bottom){
-  MARGINS margins = {left, right, top, bottom};
-  DwmExtendFrameIntoClientArea(hwnd, &margins);
+  if (pDwmExtendFrameIntoClientArea != NULL) {
+    pMARGINS margins = {left, right, top, bottom};
+    pDwmExtendFrameIntoClientArea(hwnd, &margins);
+  }
 }
 
 void SetNCWidth(HWND hwnd, int size){
-  MARGINS margins = {size, size, size, size};
-  DwmExtendFrameIntoClientArea(hwnd, &margins);
+  if (pDwmExtendFrameIntoClientArea != NULL) {
+    pMARGINS margins = {size, size, size, size};
+    pDwmExtendFrameIntoClientArea(hwnd, &margins);
+  }
 }
 
 
@@ -75,7 +114,13 @@ int NativeWindow::ScreenHeight() {
 void NativeWindow::Init(char* url, Settings* settings) {
   url_ = url;
 
-  if( !g_handler->GetBrowserHwnd() ) {
+  if (!initialized) {
+    initialized = true;
+    dwmapiDLL = LoadLibrary(TEXT("dwmapi.dll"));
+    if (dwmapiDLL != NULL) {
+      pDwmExtendFrameIntoClientArea = (DWMEFICA)GetProcAddress(dwmapiDLL, "DwmExtendFrameIntoClientArea");
+      pDwmEnableBlurBehindWindow = (DWMEBBW)GetProcAddress(dwmapiDLL, "DwmEnableBlurBehindWindow");
+    }
 
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;
@@ -87,13 +132,13 @@ void NativeWindow::Init(char* url, Settings* settings) {
     Gdiplus::Bitmap* smallIconBitmap = Gdiplus::Bitmap::FromFile(wSmallIconPath);
     Gdiplus::Bitmap* bigIconBitmap = Gdiplus::Bitmap::FromFile(wBigIconPath);
 
-    if( smallIconBitmap->GetWidth() ) {
+    if (smallIconBitmap->GetWidth()) {
       smallIconBitmap->GetHICON(&smallIcon);
       delete[] wSmallIconPath;
       delete smallIconBitmap;
     }
 
-    if( bigIconBitmap->GetWidth() ) {
+    if (bigIconBitmap->GetWidth()) {
       bigIconBitmap->GetHICON(&bigIcon);
       delete[] wBigIconPath;
       delete bigIconBitmap;
@@ -111,7 +156,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
     rect_.top = (GetSystemMetrics(SM_CYSCREEN) - rect_.height) / 2;
   }
   browser_ = NULL;
-  handle_ = CreateWindowEx(WS_EX_LAYERED, szWindowClass,"", WS_OVERLAPPEDWINDOW,
+  handle_ = CreateWindowEx(NULL, szWindowClass,"", WS_OVERLAPPEDWINDOW,
                            rect_.top, rect_.left, rect_.width, rect_.height,
                            NULL, NULL, hInstance, NULL);
 
@@ -237,7 +282,7 @@ void NativeWindow::UpdatePosition(){
 
 void NativeWindow::SetTopmost(bool ontop){
   long current = GetWindowLong(handle_, GWL_EXSTYLE);
-  UpdateStyle(handle_, GWL_EXSTYLE, ontop ? current | WS_EX_TOPMOST : current & ~WS_EX_TOPMOST);
+  NewStyle(handle_, GWL_EXSTYLE, ontop ? current | WS_EX_TOPMOST : current & ~WS_EX_TOPMOST);
   SetWindowPos(handle_, ontop ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
   topmost_ = ontop;
 }
@@ -260,7 +305,7 @@ NW_STATE NativeWindow::GetState(){
 void NativeWindow::SetResizable(bool resizable) {
   resizable_ = resizable;
   long current = GetWindowLongPtr(handle_, GWL_STYLE);
-  UpdateStyle(handle_, GWL_STYLE, resizable
+  NewStyle(handle_, GWL_STYLE, resizable
     ? current | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX
     : current & ~(WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX)
   );
@@ -273,7 +318,7 @@ bool NativeWindow::GetResizable() {
 void NativeWindow::SetShowChrome(bool showChrome) {
   show_chrome_ = showChrome;
   long current = GetWindowLongPtr(handle_, GWL_STYLE);
-  UpdateStyle(handle_, GWL_STYLE, showChrome ? current | WS_CAPTION | WS_SIZEBOX : current & ~(WS_CAPTION | WS_SIZEBOX));
+  NewStyle(handle_, GWL_STYLE, showChrome ? current | WS_CAPTION | WS_SIZEBOX : current & ~(WS_CAPTION | WS_SIZEBOX));
 }
 
 bool NativeWindow::GetShowChrome() {
@@ -295,10 +340,22 @@ long NativeWindow::GetStyle(bool extended) {
 }
 
 void NativeWindow::SetStyle(long style, bool extended) {
-  UpdateStyle(handle_, extended ? GWL_EXSTYLE : GWL_STYLE, style);
+  NewStyle(handle_, extended ? GWL_EXSTYLE : GWL_STYLE, style);
 }
 
+void NativeWindow::SetOpacity(double opacity) {
+  opacity_ = opacity;
+  if (opacity < 1) {
+    UpdateStyle(handle_, GWL_EXSTYLE, WS_EX_LAYERED);
+  } else {
+    UpdateStyle(handle_, GWL_EXSTYLE, ~WS_EX_LAYERED);
+  }
+  SetLayeredWindowAttributes(handle_, NULL, (char)(opacity * 255), LWA_ALPHA);
+}
 
+double NativeWindow::GetOpacity() {
+  return opacity_;
+}
 
 ATOM MyRegisterClass(HINSTANCE hInst) {
   WNDCLASSEX wcex = {0};
