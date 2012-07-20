@@ -6,9 +6,6 @@
 #include "includes/cef_sync_handler.h"
 #include "appjs_window.h"
 
-#define WINDOW_EMIT(event) \
-  Handle<Value> argv[1] = { String::New(event) }; \
-  node::MakeCallback(GetNodeWindow(browser), "emit", 1, argv)
 
 using namespace v8;
 using namespace appjs;
@@ -51,7 +48,7 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     }
 
     CreatedBrowser(browser);
-    WINDOW_EMIT("create");
+    GetWindow(browser)->Emit("create");
   }
 }
 
@@ -64,14 +61,14 @@ void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
     context->GetGlobal()->SetValue("appjs", appjsObj, V8_PROPERTY_ATTRIBUTE_NONE);
     appjsObj->SetValue("send", func, V8_PROPERTY_ATTRIBUTE_NONE);
     context->Exit();
-    WINDOW_EMIT("context-created");
+    GetWindow(browser)->Emit("context-created");
   }
 }
 
 void ClientHandler::OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
   REQUIRE_UI_THREAD();
   if (!browser->IsPopup()) {
-    WINDOW_EMIT("context-released");
+    GetWindow(browser)->Emit("context-released");
   }
 }
 
@@ -99,7 +96,7 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 
   if(!browser->IsPopup()) {
 #ifndef __LINUX__
-    WINDOW_EMIT("close");
+    GetWindow(browser)->Emit("close");
 #endif
 
     DoClose(browser);
@@ -113,7 +110,7 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode) {
   REQUIRE_UI_THREAD();
   if (!browser->IsPopup()) {
-    WINDOW_EMIT("ready");
+    GetWindow(browser)->Emit("ready");
   }
 }
 
@@ -127,6 +124,6 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString
   std::string titleStr(title);
   SetWindowTitle(GetContainer(browser),titleStr.c_str());
   if (!browser->IsPopup()) {
-    WINDOW_EMIT("title-changed");
+    GetWindow(browser)->Emit("title-changed");
   }
 }

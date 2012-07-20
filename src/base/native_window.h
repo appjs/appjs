@@ -4,6 +4,11 @@
 
 #include "include/cef_browser.h"
 #include "includes/util.h"
+#include <node.h>
+
+#define ARRAY_SIZE(a)                               \
+  ((sizeof(a) / sizeof(*(a))) /                     \
+  static_cast<size_t>(!(sizeof(a) % sizeof(*(a)))))
 
 namespace appjs {
 
@@ -31,6 +36,12 @@ public:
   static int ScreenWidth();
   static int ScreenHeight();
 
+  void Emit(v8::Local<v8::Value>* args);
+  void Emit(const char* event);
+  void Emit(const char* event, v8::Local<v8::Value> arg);
+  void Emit(const char* event, v8::Local<v8::Value> arg1, v8::Local<v8::Value> arg2);
+  void Emit(const char* event, int arg1, int arg2);
+
   void Drag();
   void Drop();
   void Restore();
@@ -48,7 +59,6 @@ public:
   void UpdatePosition(int top, int left, int width, int height);
   void UpdatePosition(appjs_rect rect);
   void UpdatePosition();
-
 
   void SetState(NW_STATE state);
   NW_STATE GetState();

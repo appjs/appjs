@@ -5,6 +5,7 @@
 #include <node.h>
 #include <node_version.h>
 
+#define APPJS_PSYMBOL(s) v8::Persistent<v8::String>::New(v8::String::NewSymbol(s))
 #define MAKE_BOOLEAN(v) (v)->BooleanValue()
 #define MAKE_INT32(v) (v)->Int32Value()
 #define MAKE_FLOAT(v) (v)->FloatValue()

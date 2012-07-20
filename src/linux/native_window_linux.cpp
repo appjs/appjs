@@ -13,9 +13,7 @@ namespace appjs {
 using namespace v8;
 
 void destroy_handler(GtkWidget* widget, NativeWindow* window) {
-  Handle<Object> handle = window->GetV8Handle();
-  Handle<Value> argv[1] = {String::New("close")};
-  node::MakeCallback(handle,"emit",1,argv);
+  window->Emit("close");
 }
 
 void drag_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {

@@ -118,9 +118,8 @@ void NativeWindow::Init(char* url, Settings* settings) {
   if (alpha_) {
     SetAlpha(true);
   }
-  if (!resizable_) {
-    SetResizable(false);
-  }
+
+  SetResizable(resizable_);
 
   if (fullscreen_) {
     fullscreen_ = false;
@@ -344,6 +343,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         return 0;
       }
     case WM_SIZE: {
+      window->UpdatePosition();
       if (browser.get()) {
         RECT rect;
         GetClientRect(hwnd, &rect);
@@ -352,12 +352,23 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
                               rect.left, rect.top, rect.right - rect.left,
                               rect.bottom - rect.top, SWP_NOZORDER);
         EndDeferWindowPos(hdwp);
+        if (wParam & SIZE_MAXIMIZED) {
+          window->Emit("maximize");
+        } else if (wParam & SIZE_MINIMIZED) {
+          window->Emit("minimize");
+        } else if (wParam & SIZE_RESTORED) {
+          window->Emit("restore");
+        } else if (!(wParam & SIZE_MAXHIDE || wParam & SIZE_MAXSHOW)) {
+          window->Emit("resize", (int)LOWORD(lParam), (int)HIWORD(lParam));
+        }
       }
-      window->UpdatePosition();
       break;
     }
     case WM_MOVE:
       window->UpdatePosition();
+      if (browser.get()) {
+        window->Emit("move", (int)LOWORD(lParam), (int)HIWORD(lParam));
+      }
       break;
     // case WM_ERASEBKGND:
     //   return 1;
