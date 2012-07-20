@@ -378,37 +378,39 @@ void NativeWindow::SetTopmost(bool ontop){
 
 void NativeWindow::SetResizable(bool resizable) {
   NSWindow* win = [handle_ window];
-  [win setStyleMask:(resizable ? [win getStyleMask] | NSResizableWindowMask
-                               : [win getStyleMask] & ~NSResizableWindowMask)];
+  [win setStyleMask:(resizable ? [win styleMask] | NSResizableWindowMask
+                               : [win styleMask] & ~NSResizableWindowMask)];
 }
 
 bool NativeWindow::GetResizable() {
-  return [[handle_ window] getStyleMask] & NSResizableWindowMask;
+  return [[handle_ window] styleMask] & NSResizableWindowMask;
 }
 
 void NativeWindow::SetShowChrome(bool showChrome) {
   NSWindow* win = [handle_ window];
-  [win setStyleMask:(resizable ? [win getStyleMask] | NSBorderlessWindowMask
-                               : [win getStyleMask] & ~NSBorderlessWindowMask)];
+  [win setStyleMask:(showChrome ? [win styleMask] | NSBorderlessWindowMask
+                               : [win styleMask] & ~NSBorderlessWindowMask)];
 
 }
 
 bool NativeWindow::GetShowChrome() {
-  return [[handle_ window] getStyleMask] & NSBorderlessWindowMask;
+  return [[handle_ window] styleMask] & NSBorderlessWindowMask;
 }
 
 void NativeWindow::SetAlpha(bool alpha) {
+  [[handle_ window] setOpaque:alpha];
 }
-
+  
 bool NativeWindow::GetAlpha() {
+  return [[handle_ window] isOpaque];
 }
 
 void NativeWindow::SetOpacity(double opacity) {
   [[handle_ window] setAlphaValue:opacity];
 }
 
-bool NativeWindow::GetOpacity() {
-  return [[handle_ window] getAlphaValue];
+double NativeWindow::GetOpacity() {
+  return [[handle_ window] alphaValue];
 }
 
 } /* appjs */
