@@ -124,6 +124,6 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString
   std::string titleStr(title);
   SetWindowTitle(GetContainer(browser),titleStr.c_str());
   if (!browser->IsPopup()) {
-    GetWindow(browser)->Emit("title-changed");
+    GetWindow(browser)->Emit("title-change");
   }
 }
