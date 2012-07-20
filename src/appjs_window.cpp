@@ -41,12 +41,8 @@ void Window::Init () {
   CREATE_CPP_ACCESSOR("topmost", Topmost);
   CREATE_CPP_ACCESSOR("resizable", Resizable);
   CREATE_CPP_ACCESSOR("showChrome", ShowChrome);
-#ifndef __LINUX__
   CREATE_CPP_ACCESSOR("alpha", Alpha);
-#endif
-#ifndef __WIN__
   CREATE_CPP_ACCESSOR("opacity", Opacity);
-#endif
 #ifdef __WIN__
   DEFINE_PROTOTYPE_METHOD("style", Style);
 #endif
@@ -246,12 +242,8 @@ WINDOW_ACCESSOR(Title, String, V8StringToChar)
 WINDOW_ACCESSOR(Topmost, Boolean, MAKE_BOOLEAN)
 WINDOW_ACCESSOR(Resizable, Boolean, MAKE_BOOLEAN)
 WINDOW_ACCESSOR(ShowChrome, Boolean, MAKE_BOOLEAN)
-#ifndef __LINUX__
 WINDOW_ACCESSOR(Alpha, Boolean, MAKE_BOOLEAN)
-#endif
-#ifndef __WIN__
 WINDOW_ACCESSOR(Opacity, Number, MAKE_DOUBLE)
-#endif
 
 
 

@@ -38,13 +38,8 @@ class Window : public node::ObjectWrap {
   DEFINE_CPP_ACCESSOR(State);
   DEFINE_CPP_ACCESSOR(Resizable);
   DEFINE_CPP_ACCESSOR(ShowChrome);
-#ifndef __LINUX__
   DEFINE_CPP_ACCESSOR(Alpha);
-#endif
-#ifndef __WIN__
   DEFINE_CPP_ACCESSOR(Opacity);
-#endif
-
 
 #if defined(__WIN__)
   DEFINE_CPP_METHOD(Style);
