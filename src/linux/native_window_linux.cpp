@@ -223,6 +223,14 @@ bool NativeWindow::GetShowChrome() {
   return gtk_window_get_decorated((GtkWindow*)handle_);
 }
 
+void NativeWindow::SetAlpha(bool alpha) {
+  fprintf(stderr, "%s\n", "appjs-warning: alpha compositing is not available in linux");
+}
+  
+bool NativeWindow::GetAlpha() {
+  return false;
+}
+
 void NativeWindow::SetOpacity(double opacity) {
   opacity_ = opacity;
   gtk_window_set_opacity((GtkWindow*)handle_, opacity);
@@ -231,6 +239,5 @@ void NativeWindow::SetOpacity(double opacity) {
 double NativeWindow::GetOpacity() {
   return gtk_window_get_opacity((GtkWindow*)handle_);
 }
-
 
 } /* appjs */

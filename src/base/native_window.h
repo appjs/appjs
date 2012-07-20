@@ -65,14 +65,10 @@ public:
   bool GetShowChrome();
   void SetResizable(bool resizable);
   bool GetResizable();
-#ifndef __LINUX__
   void SetAlpha(bool alpha);
   bool GetAlpha();
-#endif
-#ifndef __WIN__
   void SetOpacity(double opacity);
   double GetOpacity();
-#endif
 
   void SetLeft(int left);
   void SetTop(int top);
