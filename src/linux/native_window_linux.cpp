@@ -28,29 +28,41 @@ void NativeWindow::Init(char* url, Settings* settings) {
   // Set default icon list
   if( !g_handler->GetBrowserHwnd() ) {
 
+    GList* iconList;
+    bool setIconFlag = false;
+
     char* smallerIconPath = icons->getString("smaller","");
     char* smallIconPath = icons->getString("small","");
     char* bigIconPath = icons->getString("big","");
     char* biggerIconPath = icons->getString("bigger","");
 
-    GdkPixbuf* smallerIconBuf = gdk_pixbuf_new_from_file(smallerIconPath,NULL);
-    GdkPixbuf* smallIconBuf = gdk_pixbuf_new_from_file(smallIconPath,NULL);
-    GdkPixbuf* bigIconBuf = gdk_pixbuf_new_from_file(bigIconPath,NULL);
-    GdkPixbuf* biggerIconBuf = gdk_pixbuf_new_from_file(biggerIconPath,NULL);
+    if(smallerIconPath != (char*)"") {
+      GdkPixbuf* smallerIconBuf = gdk_pixbuf_new_from_file(smallerIconPath,NULL);
+      iconList = g_list_insert(iconList,smallerIconBuf,0);
+      setIconFlag = true;
+    }
 
-    GList* iconList;
+    if(smallIconPath != (char*)"") {
+      GdkPixbuf* smallIconBuf = gdk_pixbuf_new_from_file(smallIconPath,NULL);
+      iconList = g_list_insert(iconList,smallIconBuf,1);
+      setIconFlag = true;
+    }
 
-    iconList = g_list_insert(iconList,smallerIconBuf,1);
-    iconList = g_list_insert(iconList,smallIconBuf,0);
-    iconList = g_list_insert(iconList,bigIconBuf,2);
-    iconList = g_list_insert(iconList,biggerIconBuf,3);
+    if(bigIconPath != (char*)"") {
+      GdkPixbuf* bigIconBuf = gdk_pixbuf_new_from_file(bigIconPath,NULL);
+      iconList = g_list_insert(iconList,bigIconBuf,2);
+      setIconFlag = true;
+    }
 
-    gtk_window_set_default_icon_list(iconList);
+    if(biggerIconPath != (char*)"") {
+      GdkPixbuf* biggerIconBuf = gdk_pixbuf_new_from_file(biggerIconPath,NULL);
+      iconList = g_list_insert(iconList,biggerIconBuf,3);
+      setIconFlag = true;
+    }
 
-//    delete smallerIconPath;
-//    delete smallIconPath;
-//    delete bigIconPath;
-//    delete biggerIconPath;
+    if( setIconFlag )
+      gtk_window_set_default_icon_list(iconList);
+
   }
 
   gtk_window_set_default_size(window, rect_.width, rect_.height);
