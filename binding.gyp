@@ -73,19 +73,19 @@
             {
               'destination': '<(module_root_dir)/app/data/bin/Contents/',
               'files': [
-                '<(module_root_dir)/deps/cef/Release/Resources/'
+                '<(module_root_dir)/deps/cef/Resources/'
               ]
             },
             {
               'destination': '<(module_root_dir)/app/data/node_modules/appjs-mac/data/pak',
               'files': [
-                '<(module_root_dir)/deps/cef/Release/Resources/chrome.pak',
+                '<(module_root_dir)/deps/cef/Resources/chrome.pak',
               ]
             },
             {
               'destination': '<(module_root_dir)/data/pak',
               'files': [
-                '<(module_root_dir)/deps/cef/Release/Resources/chrome.pak',
+                '<(module_root_dir)/deps/cef/Resources/chrome.pak',
               ]
             },
             {
