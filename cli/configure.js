@@ -14,6 +14,7 @@ var util     = require('../cli/util')
   , platform = require('os').platform()
   , arch     = require('os').arch()
   , depsDir  = path.join(__dirname,'../deps')
+  , dataDir  = path.join(__dirname,'../data')
   , env      = process.env.NODE_ENV || 'Debug';
 
 // TODO: remove me after CEF supports building under OSX as 64bit
@@ -34,9 +35,28 @@ function install(cef_version) {
       throw err;
     }
 
-    util.log('Done!');
-  });
+    copyDllWrapper(function(err) {
+      if (err) {
+        util.log('Failed to copy dll_wrapper.gyp');
+        throw err;
+      }
 
+      util.log('Done!');
+    });
+  });
+}
+
+function copyDllWrapper(fn) {
+  var target = path.join(depsDir, 'cef', 'dll_wrapper.gyp');
+  fs.exists(target, function(exists) {
+    if (exists) {
+      fs.unlinkSync(target);
+    }
+
+    fs.createReadStream(path.join(dataDir, 'common', 'dll_wrapper.gyp')).pipe(
+      fs.createWriteStream(target)
+    );
+  });
 }
 
 /**
