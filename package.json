@@ -25,6 +25,10 @@
   "engines": {
     "node": ">=0.8"
   },
+  "scripts" : {
+    "preinstall" : "node cli/configure.js",
+    "install" : "node-gyp rebuild"
+  },
   "dependencies": {
     "mime": "1.2.5",
     "request": "2.9.x",
