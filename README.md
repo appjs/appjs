@@ -66,7 +66,7 @@ window.on('close', function(){
 
 ![DOM Event Listener in Node](https://github.com/appjs/appjs/raw/master/examples/shared-context.jpg "DOM Event Listener in Node")
 
-![Hello World](https://github.com/appjs/appjs/raw/master/examples/output.jpg "Hello World")
+![chrome-in-node-repl](https://github.com/appjs/appjs/raw/master/examples/chrome-in-node-repl.jpg "Chrome in Node REPL")
 
 
 ## Node Install
