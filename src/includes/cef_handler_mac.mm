@@ -24,7 +24,7 @@ CefWindowHandle ClientHandler::GetMainHwnd(){
 
 NativeWindow* ClientHandler::GetWindow(CefWindowHandle handle){
   NSWindow* win = [handle window];
-  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win, "nativewindow");
+  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win, (char *)"nativewindow");
   NativeWindow* window = [wrap handle];
   return window;
 }
