@@ -203,7 +203,7 @@ void NativeWindow::Init (char* url, Settings* settings) {
   [mainWnd setBackgroundColor:[NSColor clearColor]];
 
   Wrapper* wrap = [[Wrapper alloc] initWithV8Object:this];
-  objc_setAssociatedObject(mainWnd,"nativewindow",wrap,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  objc_setAssociatedObject(mainWnd,(char *)("nativewindow"),wrap,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
   if(fullscreen_) {
     Fullscreen();
@@ -280,9 +280,12 @@ void NativeWindow::Restore() {
                       waitUntilDone:NO];
   }
   if ( fullscreen_ ) {
+
+#ifdef NSAppKitVersionNumber10_6
     if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6) {
       [win toggleFullScreen: nil];
     } else {
+#endif
       NSUInteger styles = NSTitledWindowMask |
                           NSClosableWindowMask |
                           NSMiniaturizableWindowMask;
@@ -290,7 +293,9 @@ void NativeWindow::Restore() {
       [[NSApplication sharedApplication] setPresentationOptions: NSApplicationPresentationDefault];
       NSRect window_rect = { {rect_.left, rect_.top} , {rect_.width, rect_.height} };
       [win setFrame:[win frameRectForContentRect: window_rect] display:YES];
+#ifdef NSAppKitVersionNumber10_6
     }
+#endif
     fullscreen_ = false;
 
   }
@@ -308,15 +313,18 @@ void NativeWindow::Fullscreen(){
 
   if(fullscreen_) return;
 
+#ifdef NSAppKitVersionNumber10_6
   if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6) {
     [win setCollectionBehavior: NSWindowCollectionBehaviorFullScreenPrimary];
     [win toggleFullScreen: nil];
   } else {
+#endif
     NSUInteger styles = NSBorderlessWindowMask;
     [win setStyleMask:(styles)];
     [[NSApplication sharedApplication] setPresentationOptions: NSApplicationPresentationAutoHideDock | NSApplicationPresentationAutoHideMenuBar];
+#ifdef NSAppKitVersionNumber10_6
   }
-
+#endif
   [win setFrame:[win frameRectForContentRect:[[NSScreen mainScreen] frame]] display:YES];
   fullscreen_ = true;
 }
@@ -400,7 +408,7 @@ bool NativeWindow::GetShowChrome() {
 void NativeWindow::SetAlpha(bool alpha) {
   [[handle_ window] setOpaque:alpha];
 }
-  
+
 bool NativeWindow::GetAlpha() {
   return [[handle_ window] isOpaque];
 }
