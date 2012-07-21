@@ -26,8 +26,8 @@
     "node": ">=0.8"
   },
   "scripts" : {
-    "preinstall" : "node cli/configure.js",
-    "install" : "node-gyp rebuild"
+    "install" : "node cli/configure.js",
+    "postinstall" : "node-gyp rebuild"
   },
   "dependencies": {
     "mime": "1.2.5",
