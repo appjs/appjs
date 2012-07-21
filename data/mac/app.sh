@@ -1,3 +1,4 @@
 #!/bin/sh
 
-./data/bin/node --harmony ./data/app.js & wait
+basedir=`dirname "$0"`
+$basedir/data/bin/node --harmony $basedir/data/app.js & wait
