@@ -69,6 +69,12 @@ double Settings::getNumber(const char* property, double defaultValue = 0) {
   return (tmp->IsNumber())? tmp->NumberValue() : defaultValue;
 }
 
+
+int Settings::getInteger(const char* property, int defaultValue = 0) {
+  Local<Value> tmp = get(property);
+  return (tmp->IsNumber())? tmp->Int32Value() : defaultValue;
+}
+
 char* Settings::getString(const char* property, char* defaultValue = "") {
   Local<Value> tmp = get(property);
   return (tmp->IsString())? V8StringToChar(get(property)->ToString()) : defaultValue;

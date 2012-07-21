@@ -29,14 +29,15 @@ public:
 
   bool isNull(const char*);
   bool has(const char*);
-  double getNumber(const char*,double);
-  char* getString(const char*,char*);
+  double getNumber(const char*, double);
+  int getInteger(const char*, int);
+  bool getBoolean(const char*,bool);
+  char* getString(const char*, char*);
 
   #if defined(__WIN__)
   WCHAR* getString(const char*,WCHAR*);
   #endif
 
-  bool getBoolean(const char*,bool);
   v8::Local<v8::Object> getObject(const char*,v8::Local<v8::Object>);
 
 private:

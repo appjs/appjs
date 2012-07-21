@@ -14,14 +14,14 @@
 
 namespace appjs {
 
-class Cef 
+class Cef
   : public CefBase,
     public CefLoop
 {
-  
+
 public:
-  static void Init(char*);
-  
+  static void Init(Settings* initSettings);
+
 protected:
   Cef (const Cef&);
   Cef& operator= (const Cef&);

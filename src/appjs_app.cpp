@@ -39,8 +39,8 @@ Handle<Value> App::New(const Arguments& args) {
 Handle<Value> App::NewInstance(const Arguments& args) {
   HandleScope scope;
 
-  char* locales_dir = V8StringToChar(Handle<String>::Cast(args[0]));
-  Cef::Init(locales_dir);
+  Persistent<Object> initSettings = Persistent<Object>::New((args[0]->IsObject()) ? args[0]->ToObject() : Object::New());
+  Cef::Init(new Settings(initSettings));
 
   const unsigned argc = 1;
   Handle<Value> argv[argc] = {args[0]};
