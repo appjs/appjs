@@ -249,8 +249,11 @@
           'defines': [
             '__MAC__',
           ],
+          'cflags': [ '-m32' ],
+          'ldflags': [ '-m32' ],
           'xcode_settings': {
-            'OTHER_LDFLAGS':['-Xlinker -rpath -Xlinker @loader_path/']
+            'OTHER_LDFLAGS':['-Xlinker -rpath -Xlinker @loader_path/'],
+            'ARCHS': [ 'i386' ]
           },
           'link_settings': {
             'libraries': [
