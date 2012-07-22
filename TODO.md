@@ -4,6 +4,7 @@
 * npm publish appjs-win
 * npm publish appjs-mac
 * npm publish appjs-linux
+* npm publish appjs
 * drag for OSX if possible
 * appjs/bin/* for appjs cli
 * `$ appjs package [someapp]`
