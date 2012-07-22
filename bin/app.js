@@ -11,4 +11,4 @@ Module._load = function(module) {
   }
 }
 
-require(path.resolve(__dirname + '/' + process.argv[2]));
+require(path.resolve(process.env.PWD, process.argv[2]));
