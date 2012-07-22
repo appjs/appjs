@@ -93,12 +93,6 @@
               'files': [
                 '<(module_root_dir)/data/mac/app.sh',
               ]
-            },
-            {
-              'destination': '<(module_root_dir)/app/data/bin/',
-              'files': [
-                '<(module_root_dir)/data/mac/node-bin/node/',
-              ]
             }
           ]
         },{ # !mac
