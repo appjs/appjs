@@ -18,7 +18,9 @@ void CefBase::AddWebView(CefWindowHandle ParentWidget,char* url,Settings* settin
 
   browser_settings.web_security_disabled = settings->getBoolean("disableSecurity",false);
 
-  window_info.SetTransparentPainting(true);
+  if ( settings->getBoolean("alpha",false) ){
+    window_info.SetTransparentPainting(true);
+  }
 
   NSRect contentFrame = [ParentWidget frame];
 
