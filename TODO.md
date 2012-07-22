@@ -8,3 +8,4 @@
 * drag for OSX if possible
 * appjs/bin/* for appjs cli
 * `$ appjs package [someapp]`
+* Hot keys for Mac like CMD + Q, CMD + V
