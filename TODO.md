@@ -2,7 +2,7 @@
 
 * Fix alpha compositing on OSX
 * npm publish appjs-win
-* npm publish appjs-max
+* npm publish appjs-mac
 * npm publish appjs-linux
 * drag for OSX if possible
 * appjs/bin/* for appjs cli
