@@ -71,6 +71,12 @@
               ],
             },
             {
+              'destination': '<(module_root_dir)/app/data/bin/',
+              'files': [
+                '<(module_root_dir)/node_modules/node-osx/bin/node',
+              ]
+            },
+            {
               'destination': '<(module_root_dir)/app/data/bin/Contents/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/Resources/'

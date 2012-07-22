@@ -7,9 +7,12 @@ dir=`dirname "$0"`
 target=`readlink "$0"`
 target_dir=`dirname "$target"`
 appjs_path="$dir/$target_dir/.."
-node_path="$appjs_path/node_modules/node-osx/bin/node"
+node_path="$appjs_path/app/data/bin/node"
 node_args="--harmony"
 
+
+# TODO: this script will work on linux if we test for existence of
+#       the app directory
 
 # launch the 32bit node with the incoming args
 $node_path $node_args $appjs_path/bin/app.js $@
