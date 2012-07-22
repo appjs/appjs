@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# hop out of the symlink and prepare to
+# launch the bundled version of node
+
+dir=`dirname "$0"`
+target=`readlink "$0"`
+target_dir=`dirname $target`
+realpath="$dir/$target_dir/.."
+
+
+# launch the 32bit node with the incoming args
+# TODO: launch appjs here, with the args
+
+$realpath/node_modules/node-osx/bin/node $@
