@@ -10,5 +10,6 @@ appjs_path="$dir/$target_dir/.."
 node_path="$appjs_path/node_modules/node-osx/bin/node"
 node_args="--harmony"
 
+
 # launch the 32bit node with the incoming args
 $node_path $node_args $appjs_path/bin/app.js $@
