@@ -152,6 +152,7 @@
               'destination': '<(module_root_dir)/app/data/bin/',
               'files': [
                 '<(module_root_dir)/data/linux/node-bin/<!@(node -e "console.log(require(\'os\').arch())")/node',
+		'<(module_root_dir)/deps/cef/Release/lib.target/libffmpegsumo.so'
               ]
             }
           ]
