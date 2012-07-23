@@ -95,12 +95,8 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   REQUIRE_UI_THREAD();
 
   if(!browser->IsPopup()) {
-#ifndef __LINUX__
     GetWindow(browser)->Emit("close");
-#endif
-
     DoClose(browser);
-
 #ifdef __WIN__
     delete GetWindow(browser);
 #endif

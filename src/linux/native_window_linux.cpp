@@ -12,10 +12,6 @@ namespace appjs {
 
 using namespace v8;
 
-void destroy_handler(GtkWidget* widget, NativeWindow* window) {
-  window->Emit("close");
-}
-
 void drag_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {
   gtk_window_begin_move_drag(GTK_WINDOW(widget), event->type, event->button.x_root,event->button.y_root,event->button.time);
   g_signal_handler_disconnect(G_OBJECT(widget), window->GetDragHandlerId());
@@ -100,9 +96,6 @@ void NativeWindow::Init(char* url, Settings* settings) {
   gtk_widget_add_events(handle_,  GDK_POINTER_MOTION_MASK |
                                   GDK_BUTTON_PRESS_MASK |
                                   GDK_BUTTON_RELEASE_MASK);
-
-  g_signal_connect(G_OBJECT(handle_), "destroy",
-                   G_CALLBACK(destroy_handler), this);
 
   g_object_set_data(G_OBJECT(handle_),"nativewindow",this);
 
