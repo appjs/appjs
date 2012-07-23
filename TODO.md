@@ -9,3 +9,4 @@
 * appjs/bin/* for appjs cli
 * `$ appjs package [someapp]`
 * Hot keys for Mac like CMD + Q, CMD + V
+* Templatize functions like Emit to handle arbitrary args
