@@ -94,7 +94,25 @@ void SetNCWidth(HWND hwnd, int size){
   }
 }
 
+void ForceForegroundWindow(HWND hwnd) {
+  DWORD lockTime = 0;
+  DWORD localTID = GetCurrentThreadId();
+  DWORD activeTID = GetWindowThreadProcessId(GetForegroundWindow(), 0);
 
+  if (localTID != activeTID) {
+    AttachThreadInput(localTID, activeTID, true);
+    SystemParametersInfo(SPI_GETFOREGROUNDLOCKTIMEOUT, 0, &lockTime, 0);
+    SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, 0, SPIF_SENDWININICHANGE | SPIF_UPDATEINIFILE);
+    AllowSetForegroundWindow(ASFW_ANY);
+  }
+
+  SetForegroundWindow(hwnd);
+
+  if (localTID != activeTID) {
+    SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, (PVOID)lockTime, SPIF_SENDWININICHANGE | SPIF_UPDATEINIFILE);
+    AttachThreadInput(localTID, activeTID, false);
+  }
+}
 // #####################################
 // ### Static NativeWindow Functions ###
 // #####################################
@@ -200,19 +218,9 @@ void NativeWindow::Restore() {
   }
 }
 
-void SendKeyEvent(WORD key, DWORD flag){
-  INPUT input = { INPUT_KEYBOARD };
-  input.ki.wVk = key;
-  input.ki.wScan = MapVirtualKey(key, 0);
-  input.ki.dwFlags = flag;
-  SendInput(1, &input, sizeof(input));
-}
-
 void NativeWindow::Show() {
-  ShowWindow(handle_, SW_NORMAL);
-  SendKeyEvent(VK_MENU, 0);
-  SetForegroundWindow(handle_);
-  SendKeyEvent(VK_MENU, KEYEVENTF_KEYUP);
+  ShowWindow(handle_, SW_SHOWNORMAL);
+  ForceForegroundWindow(handle_);
 }
 
 void NativeWindow::Hide() {
