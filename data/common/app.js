@@ -1,36 +1,47 @@
-var app = module.exports = require('appjs');
-var path = require('path');
+var app  = module.exports = require('appjs'),
+    path = require('path');
+
+var content = path.resolve(__dirname, 'content'),
+    icons   = path.join(content, 'icons');
 
 // serves files to browser requests to "http://appjs/*"
-app.serveFilesFrom(path.resolve(__dirname, 'content'));
+app.serveFilesFrom(content);
 
 var window = app.createWindow('http://appjs/', {
-  width           : 640,
-  height          : 460,
-  left            : -1,    // optional, -1 centers
-  top             : -1,    // optional, -1 centers
-  autoResize      : false, // resizes in response to html content
-  resizable       : false, // controls whether window is resizable by user
-  showChrome      : true,  // show border and title bar
-  opacity         : 1,     // opacity from 0 to 1 (Linux)
-  alpha           : true,  // alpha composited background (Windows & Mac)
-  fullscreen      : false, // covers whole screen and has no border
-  disableSecurity : true   // allow cross origin requests
+
+/******** defaults
+* autoResize       : false, // resizes in response to html content
+* showChrome       : true,  // show border and title bar
+* opacity          : 1,     // flat opacity for whole window, percentage expressed by 0 to 1
+* alpha            : false, // per-pixel alpha blended background (Windows & Mac)
+* fullscreen       : false, // client area covers whole screen, no chrome
+* left             : -1,    // centered by default
+* top              : -1,    // centered by default
+*********/
+
+  width            : 640,
+  height           : 460,
+  resizable        : false, // controls whether window is resizable by user
+  disableSecurity  : true,  // allow cross origin requests
+  icons: { smaller : icons + '/16.png',
+           small   : icons + '/32.png',
+           big     : icons + '/64.png',
+           bigger  : icons + '/128.png' }
 });
 
 
 window.on('create', function(){
   console.log("Window Created");
+  this.frame.center();
+  this.frame.show();
 });
 
 window.on('ready', function(){
+  console.log("Window Ready");
   this.require = require;
   this.process = process;
   this.module = module;
   this.console.log('process', process);
-  this.frame.center();
-  this.frame.show();
-  console.log("Window Ready");
 });
 
 window.on('close', function(){
