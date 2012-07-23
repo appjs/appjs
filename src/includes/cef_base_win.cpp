@@ -11,25 +11,20 @@ void CefBase::Init() {
 
 };
 
-void CefBase::AddWebView(CefWindowHandle hWndParent,RECT windowRect,char* url,Settings* settings) {
+void CefBase::AddWebView(CefWindowHandle parent, RECT windowRect, char* url, Settings* settings) {
 
-  CefWindowInfo window_info;
+  CefWindowInfo windowInfo;
   CefBrowserSettings browserSettings;
 
   browserSettings.web_security_disabled = settings->getBoolean("disableSecurity", false);
 
-  window_info.SetAsChild(hWndParent, windowRect);
-  window_info.SetTransparentPainting(true);
-
-
-  CefBrowser::CreateBrowser(window_info,
-                                static_cast<CefRefPtr<CefClient> >(g_handler),
-                                url, browserSettings);
+  windowInfo.SetAsChild(parent, windowRect);
+  windowInfo.SetTransparentPainting(true);
 
   if(!g_handler->GetBrowser().get()){
-    g_handler->SetMainHwnd(hWndParent);
+    g_handler->SetMainHwnd(parent);
   }
-
+  CefBrowser::CreateBrowser(windowInfo, static_cast<CefRefPtr<CefClient>>(g_handler), url, browserSettings);
 }
 
 } /* appjs */
