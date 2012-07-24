@@ -86,13 +86,12 @@ public:
   void CloseDevTools();
   void RunInBrowser(char* script);
 
+  appjs_rect GetRect();
+
   void SetBrowser(CefRefPtr<CefBrowser> browser);
   void SetV8Handle(v8::Handle<v8::Object> v8handle);
   CefRefPtr<CefBrowser> GetBrowser();
   v8::Handle<v8::Object> GetV8Handle();
-  CefWindowHandle handle_;
-  bool auto_resize;
-
 #if defined(__WIN__)
   void SetStyle(long style, bool extended);
   long GetStyle(bool extended);
@@ -101,6 +100,9 @@ public:
 #if defined(__LINUX__)
   long GetDragHandlerId();
 #endif
+
+  CefWindowHandle handle_;
+  bool auto_resize;
 
 private:
   v8::Handle<v8::Object> v8handle_;

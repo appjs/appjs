@@ -17,6 +17,41 @@ void drag_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {
   g_signal_handler_disconnect(G_OBJECT(widget), window->GetDragHandlerId());
 }
 
+void configure_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {
+  int x = event->configure.x;
+  int y = event->configure.y;
+  int width = event->configure.width;
+  int height = event->configure.height;
+  appjs_rect rect = window->GetRect();
+
+  if ( rect.left != x || rect.top != y ) {
+    window->Emit("move", x, y);
+    rect.left = x;
+    rect.top = y;
+  }
+  if( rect.width != width || rect.height != height ) {
+    window->Emit("resize", width, height);
+    rect.width = width;
+    rect.height = height;
+  }
+  window->UpdatePosition(rect);
+}
+
+void state_handler( GtkWidget* widget,GdkEventWindowState* event, NativeWindow* window ) {
+  if( event->new_window_state & GDK_WINDOW_STATE_ICONIFIED ) {
+    window->Emit("minimize");
+  } else if ( event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED ) {
+    window->Emit("maximize");
+  } else if ( event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN ) {
+    window->Emit("fullscreen");
+  } else if ( event->changed_mask == GDK_WINDOW_STATE_FULLSCREEN ||
+              event->changed_mask == GDK_WINDOW_STATE_MAXIMIZED ||
+              event->changed_mask == GDK_WINDOW_STATE_ICONIFIED )
+  {
+    window->Emit("restore");
+  }
+}
+
 void NativeWindow::Init(char* url, Settings* settings) {
   handle_ = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   GtkWindow* window = (GtkWindow*)handle_;
@@ -95,7 +130,11 @@ void NativeWindow::Init(char* url, Settings* settings) {
 
   gtk_widget_add_events(handle_,  GDK_POINTER_MOTION_MASK |
                                   GDK_BUTTON_PRESS_MASK |
-                                  GDK_BUTTON_RELEASE_MASK);
+                                  GDK_BUTTON_RELEASE_MASK |
+                                  GDK_CONFIGURE);
+
+  g_signal_connect_after(G_OBJECT(handle_), "configure-event",G_CALLBACK(configure_handler), this );
+  g_signal_connect_after(G_OBJECT(handle_), "window-state-event",G_CALLBACK(state_handler), this );
 
   g_object_set_data(G_OBJECT(handle_),"nativewindow",this);
 
@@ -184,7 +223,9 @@ void NativeWindow::Resize(int width, int height) {
 }
 
 const char* NativeWindow::GetTitle() {
-  return gtk_window_get_title((GtkWindow*)handle_);
+  char* title = (char*) gtk_window_get_title((GtkWindow*)handle_);
+  if( title == NULL ) return "";
+  return title;
 }
 
 void NativeWindow::Fullscreen(){

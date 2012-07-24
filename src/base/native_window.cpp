@@ -151,6 +151,10 @@ bool NativeWindow::GetTopmost(){
   return topmost_;
 }
 
+appjs_rect NativeWindow::GetRect() {
+  return rect_;
+}
+
 void NativeWindow::Emit(Local<Value>* args){
   HandleScope scope;
   node::MakeCallback(v8handle_, "emit", ARRAY_SIZE(args), args);
