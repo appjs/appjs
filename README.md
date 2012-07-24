@@ -26,7 +26,7 @@ __AppJS 0.0.16 Distributables:__
 
 __AppJS 0.0.17 Distributables:__
 
-* [Windows](http://dists.appjs.org/0.0.16/appjs-0.0.17-win32-ia32.zip) -> app.exe
+* [Windows](http://dists.appjs.org/0.0.17/appjs-0.0.17-win32-ia32.zip) -> app.exe
 
 (Windows requires [MSVC++ 2010 runtimes](http://www.microsoft.com/en-us/download/details.aspx?id=5555))
 
@@ -63,11 +63,11 @@ window.on('close', function(){
 
 ## Shared Contexts
 
+![chrome-in-node-repl](https://github.com/appjs/appjs/raw/master/examples/chrome-in-node-repl.jpg "Chrome in Node REPL")
 ![Browser/Node Cross Context](https://github.com/appjs/appjs/raw/master/examples/node-in-browser.png "Browser/Node Cross Context")
 
 ![DOM Event Listener in Node](https://github.com/appjs/appjs/raw/master/examples/shared-context.jpg "DOM Event Listener in Node")
 
-![chrome-in-node-repl](https://github.com/appjs/appjs/raw/master/examples/chrome-in-node-repl.jpg "Chrome in Node REPL")
 
 
 ## Node Install
