@@ -11,6 +11,7 @@
 #include "base/native_window.h"
 
 #define MAX_LOADSTRING 100
+#define SWP_STATECHANGED 0x8000
 
 extern CefRefPtr<ClientHandler> g_handler;
 
@@ -419,19 +420,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
                               rect.left, rect.top, rect.right - rect.left,
                               rect.bottom - rect.top, SWP_NOZORDER);
         EndDeferWindowPos(hdwp);
-        if (wParam & SIZE_MAXIMIZED) {
-          window->Emit("maximize");
-        } else if (wParam & SIZE_MINIMIZED) {
+        if (emitFullscreen) {
+          emitFullscreen = false;
+          window->Emit("fullscreen");
+        } else {
+          window->Emit("resize", (int)LOWORD(lParam), (int)HIWORD(lParam));
+        }
+      }
+      break;
+    }
+    case WM_WINDOWPOSCHANGING: {
+      WINDOWPOS *position;
+      position = (WINDOWPOS*)lParam;
+      if (position->flags & SWP_STATECHANGED) {
+        if (IsIconic(window->handle_)) {
           window->Emit("minimize");
-        } else if (wParam & SIZE_RESTORED) {
+        } else if (IsZoomed(window->handle_)) {
+          window->Emit("maximize");
+        } else {
           window->Emit("restore");
-        } else if (!(wParam & SIZE_MAXHIDE || wParam & SIZE_MAXSHOW)) {
-          if (emitFullscreen) {
-            emitFullscreen = false;
-            window->Emit("fullscreen");
-          } else {
-            window->Emit("resize", (int)LOWORD(lParam), (int)HIWORD(lParam));
-          }
         }
       }
       break;
