@@ -32,24 +32,14 @@ __AppJS 0.0.17 Distributables:__
 
 ## One Minute Usage Overview
 ```javascript
-var app  = module.exports = require('appjs'),
-    path = require('path');
+var app = module.exports = require('appjs');
 
-var content = path.resolve(__dirname, 'content'),
-    icons   = path.join(content, 'icons');
+app.serveFilesFrom(__dirname + '/content');
 
-// serves files to browser requests to "http://appjs/*"
-app.serveFilesFrom(content);
-
-var window = app.createWindow('http://appjs/', {
-  width            : 640,
-  height           : 460,
-  alpha            : false, // per-pixel alpha blended background (Windows & Mac)
-  resizable        : false, // controls whether window is resizable by user
-  icons: { smaller : icons + '/16.png',
-           small   : icons + '/32.png',
-           big     : icons + '/64.png',
-           bigger  : icons + '/128.png' }
+var window = app.createWindow({
+  width  : 640,
+  height : 460,
+  icons  : __dirname + '/content/icons'
 });
 
 window.on('create', function(){

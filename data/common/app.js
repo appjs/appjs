@@ -1,34 +1,24 @@
-var app  = module.exports = require('appjs'),
-    path = require('path');
+var app = module.exports = require('appjs');
 
-var content = path.resolve(__dirname, 'content'),
-    icons   = path.join(content, 'icons');
+app.serveFilesFrom(__dirname + '/content');
 
-// serves files to browser requests to "http://appjs/*"
-app.serveFilesFrom(content);
-
-var window = app.createWindow('http://appjs/', {
-
-/******** defaults
-* autoResize       : false, // resizes in response to html content
-* showChrome       : true,  // show border and title bar
-* opacity          : 1,     // flat opacity for whole window, percentage expressed by 0 to 1
-* alpha            : false, // per-pixel alpha blended background (Windows & Mac)
-* fullscreen       : false, // client area covers whole screen, no chrome
-* left             : -1,    // centered by default
-* top              : -1,    // centered by default
-*********/
-
-  width            : 640,
-  height           : 460,
-  resizable        : false, // controls whether window is resizable by user
-  disableSecurity  : true,  // allow cross origin requests
-  icons: { smaller : icons + '/16.png',
-           small   : icons + '/32.png',
-           big     : icons + '/64.png',
-           bigger  : icons + '/128.png' }
+var window = app.createWindow({
+  width  : 640,
+  height : 460,
+  icons  : __dirname + '/content/icons',
+/***************************** defaults ********************************
+* url            : 'http://appjs', // serve static file root and routers
+* autoResize     : false,          // resizes in response to html content
+* showChrome     : true,           // show border and title bar
+* resizable      : false,          // control if users can resize window
+* disableSecurity: true,           // allow cross origin requests
+* opacity        : 1,              // flat percent opacity for window
+* alpha          : false,          // per-pixel alpha blended (Win & Mac)
+* fullscreen     : false,          // client area covers whole screen
+* left           : -1,             // centered by default
+* top            : -1,             // centered by default
+*************************************************************************/
 });
-
 
 window.on('create', function(){
   console.log("Window Created");
