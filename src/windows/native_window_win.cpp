@@ -32,28 +32,28 @@ bool initialized = false;
 // ### DWM functions that don't exist in WindowsXP ###
 // ###################################################
 
-typedef struct _pBLURBEHIND {
+typedef struct _BLURBEHIND {
   DWORD dwFlags;
   BOOL  fEnable;
   HRGN  hRgnBlur;
   BOOL  fTransitionOnMaximized;
-} pBLURBEHIND, *pPBLURBEHIND;
+} BLURBEHIND, *PBLURBEHIND;
 
-typedef struct _pMARGINS {
+typedef struct _MARGINS {
   int cxLeftWidth;
   int cxRightWidth;
   int cyTopHeight;
   int cyBottomHeight;
-} pMARGINS, *pPMARGINS;
+} MARGINS, *PMARGINS;
 
-typedef HRESULT (WINAPI *DWMEFICA)(HWND, pMARGINS*);
-typedef HRESULT (WINAPI *DWMEBBW)(HWND, pBLURBEHIND*);
+typedef HRESULT (WINAPI *DWMEFICA)(HWND, MARGINS*);
+typedef HRESULT (WINAPI *DWMEBBW)(HWND, BLURBEHIND*);
+typedef BOOL (WINAPI *DWMWP)(HWND, UINT, WPARAM, LPARAM, LRESULT*);
 
-static DWMEFICA pDwmExtendFrameIntoClientArea = NULL;
-static DWMEBBW pDwmEnableBlurBehindWindow = NULL;
+static DWMEFICA DwmExtendFrameIntoClientArea = NULL;
+static DWMEBBW DwmEnableBlurBehindWindow = NULL;
+static DWMWP DwmDefWindowProc = NULL;
 static HMODULE dwmapiDLL = NULL;
-
-
 
 // #################################
 // ### Windows Utility Functions ###
@@ -71,26 +71,26 @@ void NewStyle(HWND hwnd, int index, LONG value){
 }
 
 void BlurBehind(HWND hwnd, bool enable){
-  if (pDwmEnableBlurBehindWindow != NULL) {
-    pBLURBEHIND bb = {0};
+  if (DwmEnableBlurBehindWindow != NULL) {
+    BLURBEHIND bb = {0};
     bb.fEnable = enable;
     bb.hRgnBlur = NULL;
     bb.dwFlags = 1;
-    pDwmEnableBlurBehindWindow(hwnd, &bb);
+    DwmEnableBlurBehindWindow(hwnd, &bb);
   }
 }
 
 void SetNCWidth(HWND hwnd, int left, int right, int top, int bottom){
-  if (pDwmExtendFrameIntoClientArea != NULL) {
-    pMARGINS margins = {left, right, top, bottom};
-    pDwmExtendFrameIntoClientArea(hwnd, &margins);
+  if (DwmExtendFrameIntoClientArea != NULL) {
+    MARGINS margins = {left, right, top, bottom};
+    DwmExtendFrameIntoClientArea(hwnd, &margins);
   }
 }
 
 void SetNCWidth(HWND hwnd, int size){
-  if (pDwmExtendFrameIntoClientArea != NULL) {
-    pMARGINS margins = {size, size, size, size};
-    pDwmExtendFrameIntoClientArea(hwnd, &margins);
+  if (DwmExtendFrameIntoClientArea != NULL) {
+    MARGINS margins = {size, size, size, size};
+    DwmExtendFrameIntoClientArea(hwnd, &margins);
   }
 }
 
@@ -132,12 +132,14 @@ int NativeWindow::ScreenHeight() {
 void NativeWindow::Init(char* url, Settings* settings) {
   url_ = url;
 
+
   if (!initialized) {
     initialized = true;
     dwmapiDLL = LoadLibrary(TEXT("dwmapi.dll"));
     if (dwmapiDLL != NULL) {
-      pDwmExtendFrameIntoClientArea = (DWMEFICA)GetProcAddress(dwmapiDLL, "DwmExtendFrameIntoClientArea");
-      pDwmEnableBlurBehindWindow = (DWMEBBW)GetProcAddress(dwmapiDLL, "DwmEnableBlurBehindWindow");
+      DwmExtendFrameIntoClientArea = (DWMEFICA)GetProcAddress(dwmapiDLL, "DwmExtendFrameIntoClientArea");
+      DwmEnableBlurBehindWindow = (DWMEBBW)GetProcAddress(dwmapiDLL, "DwmEnableBlurBehindWindow");
+      DwmDefWindowProc = (DWMWP)GetProcAddress(dwmapiDLL, "DwmDefWindowProc");
     }
 
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
@@ -353,11 +355,7 @@ void NativeWindow::SetStyle(long style, bool extended) {
 
 void NativeWindow::SetOpacity(double opacity) {
   opacity_ = opacity;
-  if (opacity < 1) {
-    UpdateStyle(handle_, GWL_EXSTYLE, WS_EX_LAYERED);
-  } else {
-    UpdateStyle(handle_, GWL_EXSTYLE, ~WS_EX_LAYERED);
-  }
+  UpdateStyle(handle_, GWL_EXSTYLE, opacity < 1 ? WS_EX_LAYERED : ~WS_EX_LAYERED);
   SetLayeredWindowAttributes(handle_, NULL, (char)(opacity * 255), LWA_ALPHA);
 }
 
@@ -377,7 +375,7 @@ ATOM MyRegisterClass(HINSTANCE hInst) {
   wcex.hIconSm       = smallIcon;
   wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
   wcex.lpszMenuName  = NULL;
-  wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+  wcex.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
   wcex.lpszClassName = szWindowClass;
   return RegisterClassEx(&wcex);
 }
