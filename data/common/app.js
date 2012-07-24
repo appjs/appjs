@@ -32,8 +32,8 @@ var window = app.createWindow('http://appjs/', {
 
 window.on('create', function(){
   console.log("Window Created");
-  this.frame.center();
   this.frame.show();
+  this.frame.center();
 });
 
 window.on('ready', function(){
