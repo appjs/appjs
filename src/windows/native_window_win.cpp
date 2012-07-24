@@ -26,6 +26,7 @@ HICON bigIcon;
 Settings* browserSettings;
 char* url_;
 bool initialized = false;
+bool emitFullscreen = false;
 
 
 // ###################################################
@@ -252,6 +253,7 @@ void NativeWindow::Fullscreen(){
     SetWindowLongPtr(handle_, GWL_EXSTYLE, restoreExStyle_ & ~(WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE));
     SetWindowPos(handle_, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     HDC hDC = GetWindowDC(NULL);
+    emitFullscreen = true;
     SetWindowPos(handle_, NULL, 0, 0, GetDeviceCaps(hDC, HORZRES), GetDeviceCaps(hDC, VERTRES), SWP_FRAMECHANGED);
     UpdatePosition();
   }
@@ -424,7 +426,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         } else if (wParam & SIZE_RESTORED) {
           window->Emit("restore");
         } else if (!(wParam & SIZE_MAXHIDE || wParam & SIZE_MAXSHOW)) {
-          window->Emit("resize", (int)LOWORD(lParam), (int)HIWORD(lParam));
+          if (emitFullscreen) {
+            emitFullscreen = false;
+            window->Emit("fullscreen");
+          } else {
+            window->Emit("resize", (int)LOWORD(lParam), (int)HIWORD(lParam));
+          }
         }
       }
       break;
