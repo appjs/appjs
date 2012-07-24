@@ -23,36 +23,47 @@ __AppJS 0.0.16 Distributables:__
 
 * Linux 32 bit / [64 bit](http://dists.appjs.org/0.0.16/appjs-0.0.16-linux-x64.tar.gz) -> app.sh
 * [Mac](http://dists.appjs.org/0.0.16/appjs-0.0.16-darwin-ia32.zip) -> app.sh
-* [Windows](http://dists.appjs.org/0.0.16/appjs-0.0.16-win32-ia32.zip) -> app.exe
+
+__AppJS 0.0.17 Distributables:__
+
+* [Windows](http://dists.appjs.org/0.0.16/appjs-0.0.17-win32-ia32.zip) -> app.exe
 
 (Windows requires [MSVC++ 2010 runtimes](http://www.microsoft.com/en-us/download/details.aspx?id=5555))
 
 ## One Minute Usage Overview
 ```javascript
-var app = module.exports = require('appjs');
+var app  = module.exports = require('appjs'),
+    path = require('path');
 
-app.serveFilesFrom('./content');  // serves files to browser requests to "http://appjs/*"
+var content = path.resolve(__dirname, 'content'),
+    icons   = path.join(content, 'icons');
+
+// serves files to browser requests to "http://appjs/*"
+app.serveFilesFrom(content);
 
 var window = app.createWindow('http://appjs/', {
-  width      : 640,
-  height     : 460,
-  resizable  : false,
-  alpha      : true  // alpha composited background (Windows & Mac)
+  width            : 640,
+  height           : 460,
+  alpha            : false, // per-pixel alpha blended background (Windows & Mac)
+  resizable        : false, // controls whether window is resizable by user
+  icons: { smaller : icons + '/16.png',
+           small   : icons + '/32.png',
+           big     : icons + '/64.png',
+           bigger  : icons + '/128.png' }
 });
 
 window.on('create', function(){
   console.log("Window Created");
+  this.frame.show();
+  this.frame.center();
 });
 
 window.on('ready', function(){
+  console.log("Window Ready");
   this.require = require;
   this.process = process;
   this.module = module;
-  this.console.open();
   this.console.log('process', process);
-  this.frame.center();
-  this.frame.show();
-  console.log("Window Ready");
 });
 
 window.on('close', function(){
