@@ -45,16 +45,16 @@ Window objects are created and returned by app.createWindow. A window object wil
 
 #### Window Events
 
-* __on('create')__: window has been physically created but no browser context exists yet
-* __on('ready')__: window context is ready to use, including browser global
-* __on('close')__: window has been closed entirely and has ceased to exist
-* __on('minimize')__: window was just minimized
-* __on('maximize')__: window was just maximized
-* __on('fullscreen')__: window was just fullscreened
-* __on('restore')__: window was just restored
-* __on('move')__: window was just moveed
-* __on('resize')__: window was just resized
-* __on('title-change')__: window title just change
+* __window.on('create')__: window has been physically created but no browser context exists yet
+* __window.on('ready')__: window context is ready to use, including browser global
+* __window.on('close')__: window has been closed entirely and has ceased to exist
+* __window.on('minimize')__: window was just minimized
+* __window.on('maximize')__: window was just maximized
+* __window.on('fullscreen')__: window was just fullscreened
+* __window.on('restore')__: window was just restored
+* __window.on('move')__: window was just moveed
+* __window.on('resize')__: window was just resized
+* __window.on('title-change')__: window title just change
 
 
 ## Frame
