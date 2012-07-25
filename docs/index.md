@@ -1,4 +1,3 @@
-
 ### Basic Usage
 
     // get app object using the module system
@@ -90,3 +89,15 @@ Most of the controls to control the browser container are found on `window.frame
 * __window.frame.drag()__:
 * __window.frame.openDevTools()__:
 * __window.frame.closeDevTools()__:
+
+
+
+## Debugging tips
+
+On Windows plateform, you can launch your application in a console:
+
+    bin/node.exe --harmony app.js
+
+Do not forget you can open Chrome Console using a line of javascript :
+
+    window.frame.openDevTools()
