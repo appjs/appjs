@@ -1,0 +1,84 @@
+
+### Basic Usage
+
+    // get app object using the module system
+    var app = require('appjs');
+
+    // server files from the content directory relative to this .js file
+    app.serveFilesFrom(__dirname + '/content');
+
+    // app is the window factory. windows begin loading immediately
+    var window = app.createWindow();
+
+    // when ready is emitted the window has morphed into browser global window
+    window.on('ready', function(){
+      window.show();
+    });
+
+## App
+__App__ is the entry point to AppJS. It is a singleton that is the central access point for appjs generated interfaces, application lifecycle, events, and in-process serving of files and routes to the browser.
+
+* __app.serveFilesFrom(path)__: Set path to serve static files from when the browser requests from __http://appjs/*__
+* __app.createWindow(options)__: Creates a new hidden browser window with the given options and returns it.  This window will begin loading immediately if it has a url to go to.
+
+#### Window Creation Options
+Most of these options are adjustable after window creation. They are all optional with the defaults shown below.
+
+* __width__           640,
+* __height__          460,
+* __left__            -1,             // centered by default
+* __top__             -1,             // centered by default
+* __url__             'http://appjs', // serve static file root and routers
+* __autoResize__      false,          // resizes in response to html content
+* __showChrome__      true,           // show border and title bar
+* __resizable__       false,          // control if users can resize window
+* __disableSecurity__ true,           // allow cross origin requests
+* __opacity__         1,              // flat percent opacity for window
+* __alpha__           false,          // per-pixel alpha blended (Win & Mac)
+* __fullscreen__      false,          // client area covers whole screen
+* __icons__           {},
+
+
+## Window
+
+Window objects are created and returned by app.createWindow.
+
+#### WIndow Events
+
+* __on('create')__: window has been physically created but no browser context exists yet
+* __on('ready')__: window context is ready to use, including browser global
+* __on('close')__: window has been closed entirely and has ceased to exist
+* __on('minimize')__: window was just minimized
+* __on('maximize')__: window was just maximized
+* __on('fullscreen')__: window was just fullscreened
+* __on('restore')__: window was just restored
+* __on('move')__: window was just moveed
+* __on('resize')__: window was just resized
+* __on('title-change')__: window title just change
+
+#### Frame Properties
+
+* left, top, width, height - integer
+* opacity - float
+* title - string
+* state - string
+* resizable - boolean
+* showChrome - boolean
+* alpha - boolean
+* topmost - boolean
+
+#### Frame Methods
+
+* __fullscreen()__:
+* __minimize()__:
+* __maximize()__:
+* __restore()__:
+* __center()__:
+* __resize()__:
+* __show()__:
+* __hide()__:
+* __move()__:
+* __fade()__:
+* __drag()__:
+* __openDevTools()__:
+* __closeDevTools()__:
