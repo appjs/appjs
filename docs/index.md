@@ -63,10 +63,13 @@ Most of the controls to control the browser container are found on `window.frame
 
 #### Frame Properties
 
-* __window.frame.left__, top, width, height - integer
-* __window.frame.opacity__ - value between 0 and 1
+* __window.frame.left__ - integer
+* __window.frame.top__ - integer
+* __window.frame.width__ - integer
+* __window.frame.height__ - integer
+* __window.frame.opacity__ - float between 0 and 1
 * __window.frame.title__ - string
-* __window.frame.state__ - string
+* __window.frame.state__ - one of ['normal', 'maximized', 'minimized', 'fullscreen']
 * __window.frame.resizable__ - boolean
 * __window.frame.showChrome__ - boolean
 * __window.frame.alpha__ - boolean
@@ -83,7 +86,7 @@ Most of the controls to control the browser container are found on `window.frame
 * __window.frame.hide()__:
 * __window.frame.resize(width, height)__:
 * __window.frame.move(top, left, [width, [height]])__:
-* __window.frame.fade()__:
+* __window.frame.fade(toOpacity, milliseconds, callback)__:
 * __window.frame.drag()__:
 * __window.frame.openDevTools()__:
 * __window.frame.closeDevTools()__:
