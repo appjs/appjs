@@ -41,9 +41,9 @@ Most of these options are adjustable after window creation. They are all optiona
 
 ## Window
 
-Window objects are created and returned by app.createWindow.
+Window objects are created and returned by app.createWindow. A window object will itself be the global object of the browser contect once the page has loaded. If the page loads a new url the same window object will morph to the uninitialized state and then become the new browser global when it is ready.
 
-#### WIndow Events
+#### Window Events
 
 * __on('create')__: window has been physically created but no browser context exists yet
 * __on('ready')__: window context is ready to use, including browser global
@@ -56,29 +56,34 @@ Window objects are created and returned by app.createWindow.
 * __on('resize')__: window was just resized
 * __on('title-change')__: window title just change
 
+
+## Frame
+
+Most of the controls to control the browser container are found on `window.frame`. window.frame is always available, whether the browser's global context is current initialized or not.
+
 #### Frame Properties
 
-* left, top, width, height - integer
-* opacity - float
-* title - string
-* state - string
-* resizable - boolean
-* showChrome - boolean
-* alpha - boolean
-* topmost - boolean
+* __window.frame.left__, top, width, height - integer
+* __window.frame.opacity__ - value between 0 and 1
+* __window.frame.title__ - string
+* __window.frame.state__ - string
+* __window.frame.resizable__ - boolean
+* __window.frame.showChrome__ - boolean
+* __window.frame.alpha__ - boolean
+* __window.frame.topmost__ - boolean
 
 #### Frame Methods
 
-* __fullscreen()__:
-* __minimize()__:
-* __maximize()__:
-* __restore()__:
-* __center()__:
-* __resize()__:
-* __show()__:
-* __hide()__:
-* __move()__:
-* __fade()__:
-* __drag()__:
-* __openDevTools()__:
-* __closeDevTools()__:
+* __window.frame.fullscreen()__:
+* __window.frame.minimize()__:
+* __window.frame.maximize()__:
+* __window.frame.restore()__:
+* __window.frame.center()__:
+* __window.frame.show()__:
+* __window.frame.hide()__:
+* __window.frame.resize(width, height)__:
+* __window.frame.move(top, left, [width, [height]])__:
+* __window.frame.fade()__:
+* __window.frame.drag()__:
+* __window.frame.openDevTools()__:
+* __window.frame.closeDevTools()__:
