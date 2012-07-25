@@ -61,7 +61,6 @@ window.on('close', function(){
 ## Shared Contexts
 
 ![chrome-in-node-repl](https://github.com/appjs/appjs/raw/master/examples/chrome-in-node-repl.jpg "Chrome in Node REPL")
-![Browser/Node Cross Context](https://github.com/appjs/appjs/raw/master/examples/node-in-browser.png "Browser/Node Cross Context")
 
 ![DOM Event Listener in Node](https://github.com/appjs/appjs/raw/master/examples/shared-context.jpg "DOM Event Listener in Node")
 
