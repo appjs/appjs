@@ -63,6 +63,8 @@ public:
   bool GetTopmost();
   void SetShowChrome(bool showChrome);
   bool GetShowChrome();
+  void SetAutoResize(bool autoResize);
+  bool GetAutoResize();
   void SetResizable(bool resizable);
   bool GetResizable();
   void SetAlpha(bool alpha);
@@ -102,12 +104,12 @@ public:
 #endif
 
   CefWindowHandle handle_;
-  bool auto_resize;
 
 private:
   v8::Handle<v8::Object> v8handle_;
   CefRefPtr<CefBrowser> browser_;
 
+  bool auto_resize_;
   bool show_chrome_;
   bool resizable_;
   bool show_resize_grip;

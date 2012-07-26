@@ -110,6 +110,17 @@ void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame>
   }
 }
 
+void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int width, int height) {
+  REQUIRE_UI_THREAD();
+  if (!browser->IsPopup()) {
+    NativeWindow* window = GetWindow(browser);
+    if (window->GetAutoResize()) {
+      window->Resize(width, height);
+    }
+  }
+}
+
+
 void ClientHandler::SetMainHwnd(CefWindowHandle& hwnd) {
   AutoLock lock_scope(this);
   mainHandle = hwnd;

@@ -61,7 +61,6 @@ public:
   CefWindowHandle GetMainHwnd();
   void SetMainHwnd(CefWindowHandle&);
   void CloseMainWindow();
-  void SetAutoResize(bool enable){ m_AutoResize = enable; }
 
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
@@ -103,12 +102,8 @@ public:
   // The child browser window handle
   CefWindowHandle mainBrowserHwnd;
 
-  // Should we handle content resize?
-  bool m_AutoResize;
-
   IMPLEMENT_REFCOUNTING(ClientHandler);
   IMPLEMENT_LOCKING(ClientHandler);
-
 };
 
 #endif  /* end APPJS_CEF_CLIENT_HANDLER_H_ */

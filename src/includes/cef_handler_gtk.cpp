@@ -27,22 +27,6 @@ bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, KeyEventType type,
   return false;
 };
 
-void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<CefFrame> frame,
-                                    int width,
-                                    int height)
-{
-  REQUIRE_UI_THREAD();
-
-  if(this->m_AutoResize) {
-    GtkWidget* window =
-        gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()),
-                                GTK_TYPE_WINDOW);
-
-    gtk_window_resize(GTK_WINDOW(window),width,height);
-  }
-}
-
 void ClientHandler::CloseMainWindow() {
   REQUIRE_UI_THREAD();
   appjs::Cef::Shutdown();

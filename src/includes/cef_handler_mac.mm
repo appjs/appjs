@@ -45,25 +45,7 @@ bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, KeyEventType type,
   return false;
 };
 
-void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<CefFrame> frame,
-                                    int width,
-                                    int height)
-{
-  REQUIRE_UI_THREAD();
-
-  if(this->m_AutoResize) {
-    // Size the window.
-    NSView* view = (NSView*)browser->GetWindowHandle();
-    NSWindow* window = [view window];
-    NSRect r = [window contentRectForFrameRect:[window frame]];
-    r.size.width = width;
-    r.size.height = height;
-    [window setFrame:[window frameRectForContentRect:r] display:YES];
-  }
-}
 void ClientHandler::CloseMainWindow() {
-
   REQUIRE_UI_THREAD();
   appjs::Cef::Shutdown();
 }

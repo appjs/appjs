@@ -29,18 +29,6 @@ bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, KeyEventType type,
   return false;
 };
 
-void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int width, int height) {
-  REQUIRE_UI_THREAD();
-  NativeWindow* window = GetWindow(browser);
-  if (window && window->auto_resize) {
-    RECT rect;
-    GetClientRect(window->handle_, &rect);
-
-    HDWP hdwp = BeginDeferWindowPos(1);
-    hdwp = DeferWindowPos(hdwp, window->handle_, NULL, rect.left, rect.top, width, height, SWP_NOZORDER);
-    EndDeferWindowPos(hdwp);
-  }
-}
 
 void ClientHandler::CloseMainWindow() {
   REQUIRE_UI_THREAD();
