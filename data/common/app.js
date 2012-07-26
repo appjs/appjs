@@ -37,7 +37,7 @@ window.on('ready', function(){
 
   window.addEventListener('keydown', function(e){
     if (e.keyCode === KEY_F12) {
-     window.frame.openDevTools();
+      window.frame.openDevTools();
     }
   });
 });
