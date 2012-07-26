@@ -23,20 +23,19 @@ __App__ is the entry point to AppJS. It is the access point for appjs generated 
 #### Window Creation Options
 Most of these options are adjustable after window creation. They are all optional with the defaults shown below.
 
-* __width__           640,
-* __height__          460,
-* __left__            -1,             // centered by default
-* __top__             -1,             // centered by default
-* __url__             'http://appjs', // serve static file root and routers
-* __autoResize__      false,          // resizes in response to html content
-* __showChrome__      true,           // show border and title bar
-* __resizable__       false,          // control if users can resize window
-* __disableSecurity__ true,           // allow cross origin requests
-* __opacity__         1,              // flat percent opacity for window
-* __alpha__           false,          // per-pixel alpha blended (Win & Mac)
-* __fullscreen__      false,          // client area covers whole screen
-* __icons__           {},
-
+* __width__           = 640
+* __height__          = 460
+* __left__            = centered
+* __top__             = centered
+* __url__             = 'http://appjs' - serve static file root and routers
+* __autoResize__      = false - resizes in response to html content
+* __showChrome__      = true - show border and title bar
+* __resizable__       = false - control if users can resize window
+* __disableSecurity__ = true - allow cross origin requests
+* __opacity__         = 1 - flat percent opacity for window
+* __alpha__           = false - per-pixel alpha blended (Win & Mac)
+* __fullscreen__      = false - client area covers whole screen
+* __icons__           = {} - window icon in tray/taskbar/titlebar
 
 ## Window
 
@@ -70,25 +69,26 @@ Most of the controls to control the browser container are found on `window.frame
 * __window.frame.title__ - string
 * __window.frame.state__ - one of ['normal', 'maximized', 'minimized', 'fullscreen']
 * __window.frame.resizable__ - boolean
+* __window.frame.autoResize__ - boolean
 * __window.frame.showChrome__ - boolean
 * __window.frame.alpha__ - boolean
 * __window.frame.topmost__ - boolean
 
 #### Frame Methods
 
-* __window.frame.fullscreen()__:
-* __window.frame.minimize()__:
-* __window.frame.maximize()__:
-* __window.frame.restore()__:
-* __window.frame.center()__:
-* __window.frame.show()__:
-* __window.frame.hide()__:
-* __window.frame.resize(width, height)__:
-* __window.frame.move(top, left, [width, [height]])__:
-* __window.frame.fade(toOpacity, milliseconds, callback)__:
-* __window.frame.drag()__:
-* __window.frame.openDevTools()__:
-* __window.frame.closeDevTools()__:
+* __window.frame.fullscreen()__
+* __window.frame.minimize()__
+* __window.frame.maximize()__
+* __window.frame.restore()__
+* __window.frame.center()__
+* __window.frame.show()__
+* __window.frame.hide()__
+* __window.frame.resize(width, height)__
+* __window.frame.move(top, left, [width, [height]])__
+* __window.frame.fade(toOpacity, milliseconds, callback)__
+* __window.frame.drag()__ - (Windows only currently)
+* __window.frame.openDevTools()__
+* __window.frame.closeDevTools()__
 
 
 
