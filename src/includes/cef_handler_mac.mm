@@ -34,17 +34,6 @@ CefWindowHandle ClientHandler::GetContainer(CefRefPtr<CefBrowser> browser){
 }
 
 
-bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, KeyEventType type, int code,
-                               int modifiers, bool isSystemKey, bool isAfterJavaScript) {
-
-  //TODO detect key squence to show dev tools.
-  if (!browser->IsPopup() && type == KEYEVENT_RAWKEYDOWN) {
-  //  browser->ShowDevTools();
-    //return true;
-  }
-  return false;
-};
-
 void ClientHandler::CloseMainWindow() {
   REQUIRE_UI_THREAD();
   appjs::Cef::Shutdown();

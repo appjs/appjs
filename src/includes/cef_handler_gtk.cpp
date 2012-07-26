@@ -17,16 +17,6 @@ CefWindowHandle ClientHandler::GetContainer(CefRefPtr<CefBrowser> browser){
   return gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()), GTK_TYPE_WINDOW);
 }
 
-bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> browser, KeyEventType type, int code,
-                               int modifiers, bool isSystemKey, bool isAfterJavaScript) {
-
-  if (!browser->IsPopup() && type == KEYEVENT_RAWKEYDOWN && code == 123) {
-    browser->ShowDevTools();
-    return true;
-  }
-  return false;
-};
-
 void ClientHandler::CloseMainWindow() {
   REQUIRE_UI_THREAD();
   appjs::Cef::Shutdown();

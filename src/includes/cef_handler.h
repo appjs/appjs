@@ -39,9 +39,6 @@ public:
   virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE {
     return this;
   }
-  virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() OVERRIDE {
-    return this;
-  }
   virtual CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE {
     return this;
   }
@@ -84,14 +81,6 @@ public:
   virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser,
                          CefRefPtr<CefFrame> frame,
                          int httpStatusCode) OVERRIDE;
-
-
-  virtual bool OnKeyEvent(CefRefPtr<CefBrowser> browser,
-                          KeyEventType type,
-                          int code,
-                          int modifiers,
-                          bool isSystemKey,
-                          bool isAfterJavaScript) OVERRIDE;
 
   // The child browser window
   CefRefPtr<CefBrowser> mainBrowser;
