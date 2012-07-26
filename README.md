@@ -19,13 +19,10 @@ __AppJS is under heavy development. Expect many API changes and things to break.
 ## 30 Second Quickstart
 The below packages include everything needed to get started with AppJS, including Node.js, all dependencies, binaries, and a launcher ready to go out of the box. 1.) Extract to a folder. 2.) Double click on launch. 3.) Hello World.
 
-__AppJS 0.0.16 Distributables:__
-
-* Linux 32 bit / [64 bit](http://dists.appjs.org/0.0.16/appjs-0.0.16-linux-x64.tar.gz) -> app.sh
-* [Mac](http://dists.appjs.org/0.0.16/appjs-0.0.16-darwin-ia32.zip) -> app.sh
-
 __AppJS 0.0.17 Distributables:__
 
+* Linux [32 bit](http://dists.appjs.org/0.0.17/appjs-0.0.17-linux-ia32.tar.gz) / [64 bit](http://dists.appjs.org/0.0.17/appjs-0.0.17-linux-x64.tar.gz) -> app.sh
+* [Mac](http://dists.appjs.org/0.0.17/appjs-0.0.17-darwin-ia32.zip) -> app.sh
 * [Windows](http://dists.appjs.org/0.0.17/appjs-0.0.17-win32-ia32.zip) -> app.exe
 
 (Windows requires [MSVC++ 2010 runtimes](http://www.microsoft.com/en-us/download/details.aspx?id=5555))
@@ -64,7 +61,6 @@ window.on('close', function(){
 ## Shared Contexts
 
 ![chrome-in-node-repl](https://github.com/appjs/appjs/raw/master/examples/chrome-in-node-repl.jpg "Chrome in Node REPL")
-![Browser/Node Cross Context](https://github.com/appjs/appjs/raw/master/examples/node-in-browser.png "Browser/Node Cross Context")
 
 ![DOM Event Listener in Node](https://github.com/appjs/appjs/raw/master/examples/shared-context.jpg "DOM Event Listener in Node")
 
