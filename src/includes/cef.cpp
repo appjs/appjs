@@ -16,7 +16,7 @@ void Cef::Init(Settings* initSettings) {
     CefSettings settings;
 
     CefString(&settings.pack_file_path) = initSettings->getString("chromePakPath", "");
-    CefString(&settings.locales_dir_path) = initSettings->getString("localsPakPath", "");
+    CefString(&settings.locales_dir_path) = initSettings->getString("localesPakPath", "");
     CefString(&settings.javascript_flags) = initSettings->getString("jsFlags", "");
     settings.log_severity = (cef_log_severity_t)initSettings->getInteger("logLevel", LOGSEVERITY_DISABLE);
     settings.multi_threaded_message_loop = false;
