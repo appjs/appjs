@@ -15,7 +15,7 @@
     });
 
 ## App
-__App__ is the entry point to AppJS. It is a singleton that is the central access point for appjs generated interfaces, application lifecycle, events, and in-process serving of files and routes to the browser.
+__App__ is the entry point to AppJS. It is the access point for appjs generated interfaces, application lifecycle, events, and in-process serving of files and routes to the browser.
 
 * __app.serveFilesFrom(path)__: Set path to serve static files from when the browser requests from __http://appjs/*__
 * __app.createWindow(options)__: Creates a new hidden browser window with the given options and returns it.  This window will begin loading immediately if it has a url to go to.
