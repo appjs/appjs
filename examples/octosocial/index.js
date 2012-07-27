@@ -1,6 +1,5 @@
 var app = require('appjs'),
-    Github = require('github'),
-    github = new Github({ version: '3.0.0', debug: true }),
+    github = new (require('github'))({ version: '3.0.0' }),
     KEY_F12 = process.platform === 'darwin' ? 63247 : 123;
 
 app.serveFilesFrom(__dirname + '/assets');
@@ -19,11 +18,6 @@ window.on('create', function(){
 });
 
 window.on('ready', function(){
-  window.addEventListener('keydown', function(e){
-    if (e.keyCode === KEY_F12) {
-      window.frame.openDevTools();
-    }
-  });
   var $ = window.$,
       $username = $('input[name=username]'),
       $password = $('input[name=password]'),
@@ -38,13 +32,19 @@ window.on('ready', function(){
   $info.succeed = function(label){
     this.removeClass('error').addClass('success');
     $label.text(label);
-  }
+  };
   $.fn.disable = function(){
     this.attr('disabled','disabled');
   };
   $.fn.enable = function(){
     this.removeAttr('disabled','disabled');
-  }
+  };
+
+  $(window).on('keydown', function(e){
+    if (e.keyCode === KEY_F12) {
+      window.frame.openDevTools();
+    }
+  });
 
   $('#login').submit(function(e){
     e.preventDefault();
@@ -82,7 +82,7 @@ window.on('ready', function(){
       if (err) {
         window.console.log(err);
       } else {
-        var html = result.reduce(function(ret, item, index){
+        var html = result.reduce(function(ret, item){
           return ret + match(followListTemplate, item);
         }, '');
         $('#' + type.toLowerCase() + 'List > ul').html(html).show();
