@@ -121,7 +121,7 @@ void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser, CefRefPt
   REQUIRE_UI_THREAD();
   if (!browser->IsPopup()) {
     NativeWindow* window = GetWindow(browser);
-    if (window->GetAutoResize()) {
+    if (window != NULL && window->GetAutoResize()) {
       window->Resize(width, height);
     }
   }
