@@ -48,7 +48,7 @@ static NSAutoreleasePool* g_autopool = nil;
 
 - (void)windowDidBecomeKey:(NSNotification*)notification {
   NSWindow* mainWnd = (NSWindow*)notification.object;
-  appjs::NativeWindow* nativewindow = g_handler->GetWindow(mainWnd);
+  appjs::NativeWindow* nativewindow = g_handler->GetWindow([mainWnd contentView]);
   nativewindow->GetBrowser()->SetFocus(true);
 }
 

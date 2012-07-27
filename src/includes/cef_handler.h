@@ -78,7 +78,7 @@ public:
                          CefRefPtr<CefFrame> frame,
                          int httpStatusCode) OVERRIDE;
 
-  CefWindowHandle mainBrowserHandle;
+  CefRefPtr<CefBrowser> mainBrowserHandle;
 
   IMPLEMENT_REFCOUNTING(ClientHandler);
   IMPLEMENT_LOCKING(ClientHandler);
