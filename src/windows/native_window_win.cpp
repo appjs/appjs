@@ -457,11 +457,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
       if (browser.get()) {
         return 0;
       }
+      break;
     case WM_CLOSE:
       if (browser.get()) {
         browser->ParentWindowWillClose();
       }
-    break;
+      break;
     //case WM_DESTROY:
     //  PostQuitMessage(0);
 
