@@ -17,7 +17,7 @@ bool AppjsSyncHandler::Execute(const CefString& name,
   REQUIRE_UI_THREAD();
   if (browser_.get()) {
     HandleScope scope;
-    Local<Object> global = Context::GetCurrent()->Global();
+    //Local<Object> global = Context::GetCurrent()->Global();
     Local<Value> argv[1] = { CefStringToV8(arguments[0]->GetStringValue()) };
     Handle<Object> window = ClientHandler::GetNodeWindow(browser_);
     Local<Function> handler = Local<Function>::Cast(window->Get(String::NewSymbol("onmessage")));

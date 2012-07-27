@@ -26,7 +26,6 @@ HICON smallIcon;
 HICON bigIcon;
 Settings* browserSettings;
 char* url_;
-bool initialized = false;
 bool emitFullscreen = false;
 
 
@@ -127,6 +126,10 @@ int NativeWindow::ScreenHeight() {
   return GetSystemMetrics(SM_CYSCREEN);
 }
 
+void NativeWindow::SetWindowTitle(CefWindowHandle handle, const char* title) {
+  SetWindowText(handle, title);
+}
+
 // ############################
 // ### NativeWindow methods ###
 // ############################
@@ -135,8 +138,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
   url_ = url;
 
 
-  if (!initialized) {
-    initialized = true;
+  if (is_main_window_) {
     dwmapiDLL = LoadLibrary(TEXT("dwmapi.dll"));
     if (dwmapiDLL != NULL) {
       DwmExtendFrameIntoClientArea = (DWMEFICA)GetProcAddress(dwmapiDLL, "DwmExtendFrameIntoClientArea");
@@ -455,11 +457,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
       if (browser.get()) {
         return 0;
       }
+      break;
     case WM_CLOSE:
       if (browser.get()) {
         browser->ParentWindowWillClose();
       }
-    break;
+      break;
     //case WM_DESTROY:
     //  PostQuitMessage(0);
 

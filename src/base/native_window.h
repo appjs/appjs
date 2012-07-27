@@ -32,12 +32,15 @@ public:
 
   static int ScreenWidth();
   static int ScreenHeight();
+  static void SetWindowTitle(CefWindowHandle handle, const char* title);
 
   void Emit(v8::Local<v8::Value>* args);
   void Emit(const char* event);
   void Emit(const char* event, v8::Local<v8::Value> arg);
   void Emit(const char* event, v8::Local<v8::Value> arg1, v8::Local<v8::Value> arg2);
   void Emit(const char* event, int arg1, int arg2);
+  void PrepareClose();
+  bool IsClosed();
 
   void Drag();
   void Drop();
@@ -63,6 +66,8 @@ public:
   bool GetTopmost();
   void SetShowChrome(bool showChrome);
   bool GetShowChrome();
+  void SetAutoResize(bool autoResize);
+  bool GetAutoResize();
   void SetResizable(bool resizable);
   bool GetResizable();
   void SetAlpha(bool alpha);
@@ -85,6 +90,7 @@ public:
   void OpenDevTools();
   void CloseDevTools();
   void RunInBrowser(char* script);
+  bool IsMainWindow();
 
   appjs_rect GetRect();
 
@@ -102,12 +108,14 @@ public:
 #endif
 
   CefWindowHandle handle_;
-  bool auto_resize;
 
 private:
   v8::Handle<v8::Object> v8handle_;
   CefRefPtr<CefBrowser> browser_;
 
+  bool closed_;
+  bool is_main_window_;
+  bool auto_resize_;
   bool show_chrome_;
   bool resizable_;
   bool show_resize_grip;

@@ -1,8 +1,9 @@
 {
-  "name": "appjs-win32",
-  "os": [ "win32" ],
+  "name": "appjs-linux-ia32",
+  "os": [ "linux" ],
+  "cpu": [ "ia32" ],
   "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS",
-  "version": "0.1.0",
+  "version": "0.0.17",
   "keywords": [ "cef", "webkit", "browser", "canvas", "html5", "desktop", "native", "gtk", "ui", "sdk" ],
   "homepage": "http://appjs.org",
   "repository": {
@@ -31,6 +32,9 @@
   },
   "dependencies": {
     "mime":"1.2.5"
+  },
+  "scripts": {
+    "install": "node cli/configure.js && node cli/build.js"
   },
   "licenses": [{
     "type": "MIT",

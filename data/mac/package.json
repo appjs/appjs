@@ -1,5 +1,5 @@
 {
-  "name": "appjs-mac",
+  "name": "appjs-darwin",
   "os": [ "darwin" ],
   "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS",
   "version": "0.1.0",

@@ -57,7 +57,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
   GtkWindow* window = (GtkWindow*)handle_;
 
   // Set default icon list
-  if( !g_handler->GetBrowserHwnd() ) {
+  if (is_main_window_) {
 
     GList* iconList;
     bool setIconFlag = false;
@@ -153,6 +153,10 @@ int NativeWindow::ScreenWidth() {
 int NativeWindow::ScreenHeight() {
   GdkScreen* screen = gdk_screen_get_default();
   return gdk_screen_get_height(screen);
+}
+
+void NativeWindow::SetWindowTitle(CefWindowHandle handle, const char* title) {
+  gtk_window_set_title((GtkWindow*)handle, title);
 }
 
 void NativeWindow::Minimize() {
@@ -272,7 +276,7 @@ bool NativeWindow::GetShowChrome() {
 void NativeWindow::SetAlpha(bool alpha) {
   fprintf(stderr, "%s\n", "appjs-warning: alpha compositing is not available in linux");
 }
-  
+
 bool NativeWindow::GetAlpha() {
   return false;
 }

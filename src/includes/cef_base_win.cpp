@@ -21,9 +21,6 @@ void CefBase::AddWebView(CefWindowHandle parent, RECT windowRect, char* url, Set
   windowInfo.SetAsChild(parent, windowRect);
   windowInfo.SetTransparentPainting(true);
 
-  if(!g_handler->GetBrowser().get()){
-    g_handler->SetMainHwnd(parent);
-  }
   CefBrowser::CreateBrowser(windowInfo, static_cast<CefRefPtr<CefClient>>(g_handler), url, browserSettings);
 }
 

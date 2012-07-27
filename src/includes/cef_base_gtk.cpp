@@ -8,7 +8,7 @@ namespace appjs {
 
 
 static void destroy_handler (int status = 0) {
-  g_handler->GetBrowser()->CloseBrowser();
+  g_handler->Shutdown();
 };
 
 void CefBase::Init() {
@@ -32,9 +32,7 @@ void CefBase::AddWebView(CefWindowHandle& ParentWidget,char* url,Settings* setti
                                 static_cast<CefRefPtr<CefClient> >(g_handler),
                                 url, browser_settings);
 
-  if(!g_handler->GetBrowser().get()){
-    g_handler->SetMainHwnd(ParentWidget);
-
+  if(!g_handler->HasMainWindow()){
     // Install a signal handler so we clean up after ourselves.
     signal(SIGINT, destroy_handler);
     signal(SIGTERM, destroy_handler);

@@ -1,8 +1,9 @@
 {
-  "name": "appjs-linux",
+  "name": "appjs-linux-x64",
   "os": [ "linux" ],
+  "cpu": [ "x64" ],
   "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS",
-  "version": "0.1.0",
+  "version": "0.0.17",
   "keywords": [ "cef", "webkit", "browser", "canvas", "html5", "desktop", "native", "gtk", "ui", "sdk" ],
   "homepage": "http://appjs.org",
   "repository": {

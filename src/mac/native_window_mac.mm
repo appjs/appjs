@@ -47,10 +47,9 @@ static NSAutoreleasePool* g_autopool = nil;
 @implementation AppjsWindowDelegate
 
 - (void)windowDidBecomeKey:(NSNotification*)notification {
-  if (g_handler.get() && g_handler->GetBrowserHwnd()) {
-    // Give focus to the browser window.
-    g_handler->GetBrowser()->SetFocus(true);
-  }
+  NSWindow* mainWnd = (NSWindow*)notification.object;
+  appjs::NativeWindow* nativewindow = g_handler->GetWindow([mainWnd contentView]);
+  nativewindow->GetBrowser()->SetFocus(true);
 }
 
 - (void)windowWillEnterFullScreen:(NSNotification*)notification {
@@ -202,7 +201,7 @@ void NativeWindow::Init (char* url, Settings* settings) {
   mainWndSettings = settings;
   mainWndUrl = url;
   // if it is the first time NativeWindow is called, create the Application.
-  if(!g_handler->GetBrowser().get()){
+  if (is_main_window_) {
     // Initialize the AutoRelease pool.
     g_autopool = [[NSAutoreleasePool alloc] init];
     // Initialize the Application instance.
@@ -276,16 +275,10 @@ void NativeWindow::Init (char* url, Settings* settings) {
 
 
 void NativeWindow::Show() {
-  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
-    NODE_ERROR("Browser window not available or not ready.");
-
   [[handle_ window] makeKeyAndOrderFront: nil];
 };
 
 void NativeWindow::Hide() {
-  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
-    NODE_ERROR("Browser window not available or not ready.");
-
   [[handle_ window] orderOut: nil];
 };
 
@@ -299,10 +292,13 @@ int NativeWindow::ScreenHeight() {
   return screen_rect.size.height;
 }
 
-void NativeWindow::Destroy() {
-  if (!g_handler.get() || !g_handler->GetBrowserHwnd())
-    NODE_ERROR("Browser window not available or not ready.");
+void NativeWindow::SetWindowTitle(CefWindowHandle handle, const char* title) {
+  NSWindow* win = [handle window];
+  [win setTitle: [NSString stringWithUTF8String:title]];
+}
 
+
+void NativeWindow::Destroy() {
   [[handle_ window] performSelectorOnMainThread:@selector(performClose:)
                          withObject:nil
                       waitUntilDone:NO];

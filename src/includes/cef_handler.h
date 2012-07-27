@@ -6,6 +6,7 @@
 #include <node.h>
 #include "include/cef_task.h"
 #include "include/cef_client.h"
+#include "includes/cef.h"
 #include "base/native_window.h"
 
 
@@ -39,9 +40,6 @@ public:
   virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE {
     return this;
   }
-  virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() OVERRIDE {
-    return this;
-  }
   virtual CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE {
     return this;
   }
@@ -54,15 +52,9 @@ public:
   static appjs::NativeWindow* GetWindow(CefWindowHandle handle);
   static appjs::NativeWindow* GetWindow(CefRefPtr<CefBrowser> browser);
   static CefWindowHandle GetContainer(CefRefPtr<CefBrowser> browser);
-  static void SetWindowTitle(CefWindowHandle handle, const char* title);
 
-  CefRefPtr<CefBrowser> GetBrowser() { return mainBrowser; }
-  CefWindowHandle GetBrowserHwnd() { return mainBrowserHwnd; }
-  CefWindowHandle GetMainHwnd();
-  void SetMainHwnd(CefWindowHandle&);
-  void CloseMainWindow();
-  void SetAutoResize(bool enable){ m_AutoResize = enable; }
-
+  virtual bool HasMainWindow();
+  virtual void Shutdown();
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
@@ -86,29 +78,10 @@ public:
                          CefRefPtr<CefFrame> frame,
                          int httpStatusCode) OVERRIDE;
 
-
-  virtual bool OnKeyEvent(CefRefPtr<CefBrowser> browser,
-                          KeyEventType type,
-                          int code,
-                          int modifiers,
-                          bool isSystemKey,
-                          bool isAfterJavaScript) OVERRIDE;
-
-  // The child browser window
-  CefRefPtr<CefBrowser> mainBrowser;
-
-  // The main frame window handle
-  CefWindowHandle mainHandle;
-
-  // The child browser window handle
-  CefWindowHandle mainBrowserHwnd;
-
-  // Should we handle content resize?
-  bool m_AutoResize;
+  CefRefPtr<CefBrowser> mainBrowserHandle;
 
   IMPLEMENT_REFCOUNTING(ClientHandler);
   IMPLEMENT_LOCKING(ClientHandler);
-
 };
 
 #endif  /* end APPJS_CEF_CLIENT_HANDLER_H_ */
