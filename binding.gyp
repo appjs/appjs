@@ -26,8 +26,8 @@
         {
           'destination': '<(module_root_dir)/app/data/',
           'files': [
-            '<(module_root_dir)/examples/appjs/content/',
-            '<(module_root_dir)/examples/appjs/app.js'
+            '<(module_root_dir)/examples/hello-world/content/',
+            '<(module_root_dir)/examples/hello-world/app.js'
           ]
         }
       ],
