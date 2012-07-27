@@ -39,6 +39,7 @@ public:
   void Emit(const char* event, v8::Local<v8::Value> arg);
   void Emit(const char* event, v8::Local<v8::Value> arg1, v8::Local<v8::Value> arg2);
   void Emit(const char* event, int arg1, int arg2);
+  void PrepareClose();
 
   void Drag();
   void Drop();
@@ -111,6 +112,7 @@ private:
   v8::Handle<v8::Object> v8handle_;
   CefRefPtr<CefBrowser> browser_;
 
+  bool closed_;
   bool is_main_window_;
   bool auto_resize_;
   bool show_chrome_;

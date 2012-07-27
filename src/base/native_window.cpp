@@ -32,7 +32,8 @@ NativeWindow::NativeWindow(char* url, Settings* settings){
     initialized = true;
   }
 
-  this->Init(url, settings);
+  Init(url, settings);
+  closed_ = false;
 
   if (settings->getBoolean("topmost",false)) {
     SetTopmost(true);
@@ -61,6 +62,11 @@ void NativeWindow::RunInBrowser(char* script){
   if (browser_) {
     browser_->GetMainFrame()->ExecuteJavaScript(script, "", 0);
   }
+}
+
+void NativeWindow::PrepareClose(){
+  Emit("close");
+  closed_ = true;
 }
 
 bool NativeWindow::IsMainWindow(){
@@ -177,32 +183,29 @@ appjs_rect NativeWindow::GetRect() {
 }
 
 void NativeWindow::Emit(Local<Value>* args){
-  HandleScope scope;
-  node::MakeCallback(v8handle_, "emit", ARRAY_SIZE(args), args);
+  if (!closed_) {
+    node::MakeCallback(v8handle_, "emit", ARRAY_SIZE(args), args);
+  }
 }
 
 void NativeWindow::Emit(const char* event){
-  HandleScope scope;
   Local<Value> args[1] = { String::New(event) };
-  node::MakeCallback(v8handle_, "emit", 1, args);
+  Emit(args);
 }
 
 void NativeWindow::Emit(const char* event, Local<Value> arg){
-  HandleScope scope;
   Local<Value> args[2] = { String::New(event), arg };
-  node::MakeCallback(v8handle_, "emit", 2, args);
+  Emit(args);
 }
 
 void NativeWindow::Emit(const char* event, Local<Value> arg1, Local<Value> arg2){
-  HandleScope scope;
   Local<Value> args[3] = { String::New(event), arg1, arg2 };
-  node::MakeCallback(v8handle_, "emit", 3, args);
+  Emit(args);
 }
 
 void NativeWindow::Emit(const char* event, int arg1, int arg2){
-  HandleScope scope;
   Local<Value> args[3] = { String::New(event), Integer::New(arg1), Integer::New(arg2) };
-  node::MakeCallback(v8handle_, "emit", 3, args);
+  Emit(args);
 }
 
 

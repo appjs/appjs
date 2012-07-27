@@ -52,11 +52,11 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 }
 
 bool ClientHandler::HasMainWindow() {
-  return mainBrowserHandle.get() != NULL;
+  return mainBrowserHandle != NULL && mainBrowserHandle.get() != NULL;
 }
 
 void ClientHandler::Shutdown() {
-  if ( this->HasMainWindow() ) {
+  if ( HasMainWindow() ) {
     mainBrowserHandle->CloseBrowser();
   }
 }
@@ -89,8 +89,8 @@ bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
     Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
     Handle<Value> exitArgv[1] = {String::New("exit")};
     node::MakeCallback(emitter,"emit",1,exitArgv);
-    mainBrowserHandle = NULL;
     Cef::Shutdown();
+    mainBrowserHandle = NULL;
     return true;
   } else {
     return false;
@@ -101,7 +101,8 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   REQUIRE_UI_THREAD();
 
   if(!browser->IsPopup()) {
-    GetWindow(browser)->Emit("close");
+    NativeWindow* window = GetWindow(browser);
+    window->PrepareClose();
     DoClose(browser);
 #ifdef __WIN__
     delete GetWindow(browser);
