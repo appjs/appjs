@@ -52,8 +52,9 @@ public:
   static appjs::NativeWindow* GetWindow(CefWindowHandle handle);
   static appjs::NativeWindow* GetWindow(CefRefPtr<CefBrowser> browser);
   static CefWindowHandle GetContainer(CefRefPtr<CefBrowser> browser);
-  virtual bool HasMainWindow();
 
+  virtual bool HasMainWindow();
+  virtual void Shutdown();
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;

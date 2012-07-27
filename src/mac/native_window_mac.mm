@@ -47,10 +47,9 @@ static NSAutoreleasePool* g_autopool = nil;
 @implementation AppjsWindowDelegate
 
 - (void)windowDidBecomeKey:(NSNotification*)notification {
-  if (g_handler.get() && g_handler->GetBrowserHwnd()) {
-    // Give focus to the browser window.
-    g_handler->GetBrowser()->SetFocus(true);
-  }
+  NSWindow* mainWnd = (NSWindow*)notification.object;
+  appjs::NativeWindow* nativewindow = g_handler->GetWindow(mainWnd);
+  nativewindow->GetBrowser()->SetFocus(true);
 }
 
 - (void)windowWillEnterFullScreen:(NSNotification*)notification {

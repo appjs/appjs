@@ -55,6 +55,16 @@ bool ClientHandler::HasMainWindow() {
   return mainBrowserHandle != NULL;
 }
 
+void ClientHandler::Shutdown() {
+  Local<Object> global = Context::GetCurrent()->Global();
+  Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
+  Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
+  Handle<Value> exitArgv[1] = {String::New("exit")};
+  node::MakeCallback(emitter,"emit",1,exitArgv);
+  mainBrowserHandle = NULL;
+  Cef::Shutdown();
+}
+
 void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
   REQUIRE_UI_THREAD();
   if (!browser->IsPopup()) {
@@ -77,20 +87,12 @@ void ClientHandler::OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 
 bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
   REQUIRE_UI_THREAD();
-
   if (!browser->IsPopup() && mainBrowserHandle == browser->GetWindowHandle()) {
-
-    Local<Object> global = Context::GetCurrent()->Global();
-    Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
-    Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
-    Handle<Value> exitArgv[1] = {String::New("exit")};
-    node::MakeCallback(emitter,"emit",1,exitArgv);
-
-    mainBrowserHandle = NULL;
-    Cef::Shutdown();
+    Shutdown();
     return true;
+  } else {
+    return false;
   }
-  return false;
 }
 
 void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
