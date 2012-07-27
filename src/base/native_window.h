@@ -32,6 +32,7 @@ public:
 
   static int ScreenWidth();
   static int ScreenHeight();
+  static void SetWindowTitle(CefWindowHandle handle, const char* title);
 
   void Emit(v8::Local<v8::Value>* args);
   void Emit(const char* event);

@@ -143,7 +143,7 @@ int NativeWindow::GetTop(){
 }
 
 void NativeWindow::SetTitle(const char* title) {
-  ClientHandler::SetWindowTitle(handle_, title);
+  SetWindowTitle(handle_, title);
 }
 
 bool NativeWindow::GetTopmost(){

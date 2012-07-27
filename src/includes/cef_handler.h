@@ -6,6 +6,7 @@
 #include <node.h>
 #include "include/cef_task.h"
 #include "include/cef_client.h"
+#include "includes/cef.h"
 #include "base/native_window.h"
 
 
@@ -51,13 +52,7 @@ public:
   static appjs::NativeWindow* GetWindow(CefWindowHandle handle);
   static appjs::NativeWindow* GetWindow(CefRefPtr<CefBrowser> browser);
   static CefWindowHandle GetContainer(CefRefPtr<CefBrowser> browser);
-  static void SetWindowTitle(CefWindowHandle handle, const char* title);
-
-  CefRefPtr<CefBrowser> GetBrowser() { return mainBrowser; }
-  CefWindowHandle GetBrowserHwnd() { return mainBrowserHwnd; }
-  CefWindowHandle GetMainHwnd();
-  void SetMainHwnd(CefWindowHandle&);
-  void CloseMainWindow();
+  virtual bool HasMainWindow();
 
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
@@ -82,14 +77,7 @@ public:
                          CefRefPtr<CefFrame> frame,
                          int httpStatusCode) OVERRIDE;
 
-  // The child browser window
-  CefRefPtr<CefBrowser> mainBrowser;
-
-  // The main frame window handle
-  CefWindowHandle mainHandle;
-
-  // The child browser window handle
-  CefWindowHandle mainBrowserHwnd;
+  CefWindowHandle mainBrowserHandle;
 
   IMPLEMENT_REFCOUNTING(ClientHandler);
   IMPLEMENT_LOCKING(ClientHandler);
