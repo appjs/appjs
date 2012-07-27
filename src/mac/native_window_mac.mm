@@ -57,6 +57,57 @@ static NSAutoreleasePool* g_autopool = nil;
   NSWindow* mainWnd = (NSWindow*)notification.object;
   [mainWnd setFrame:[mainWnd frameRectForContentRect:[[NSScreen mainScreen] frame]] display:YES];
 }
+
+- (void)windowDidEnterFullScreen:(NSNotification*)notification {
+  NSWindow* window = (NSWindow*)notification.object;
+  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  nativewindow->Emit("fullscreen");
+}
+
+- (void)windowDidExitFullScreen:(NSNotification*)notification {
+  NSWindow* window = (NSWindow*)notification.object;
+  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  nativewindow->Emit("restore");
+}
+
+- (void)windowDidMiniaturize:(NSNotification*)notification {
+  NSWindow* window = (NSWindow*)notification.object;
+  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  nativewindow->Emit("minimize");
+}
+
+- (void)windowDidDeminiaturize:(NSNotification*)notification {
+  NSWindow* window = (NSWindow*)notification.object;
+  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  nativewindow->Emit("restore");
+}
+
+- (bool)windowShouldZoom:(NSWindow*)window {
+  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  nativewindow->Emit("maximize");
+  return YES;
+}
+
+- (NSRect)windowWillUseStandardFrame:(NSWindow*)window:(NSRect)frame {
+  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  nativewindow->Emit("maximize");
+   return frame;
+}
+
+- (void)windowDidResize:(NSNotification*)notification {
+  NSWindow* window = (NSWindow*)notification.object;
+  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  NSRect rect = [window frame];
+  if(nativewindow != NULL && nativewindow->GetState() != appjs::NW_STATE_FULLSCREEN)
+    nativewindow->Emit("resize",rect.size.width,rect.size.height);
+}
+
+- (void)windowDidMove:(NSNotification*)notification {
+  NSWindow* window = (NSWindow*)notification.object;
+  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  NSRect rect = [window frame];
+  nativewindow->Emit("move",rect.origin.x,rect.origin.y);
+}
 // Called when the window is about to close. Perform the self-destruction
 // sequence by getting rid of the window. By returning YES, we allow the window
 // to be removed from the screen.
@@ -106,7 +157,7 @@ struct Wrap;
 Wrap* object_;
 
 }
-- (id)initWithV8Object:(appjs::NativeWindow*)window;
+- (id)initWithNativeWindow:(appjs::NativeWindow*)window;
 @property (nonatomic,readwrite,assign) appjs::NativeWindow* handle;
 
 @end
@@ -125,7 +176,7 @@ public:
   appjs::NativeWindow* handle;
 };
 
-- (id)initWithV8Object:(appjs::NativeWindow*)window {
+- (id)initWithNativeWindow:(appjs::NativeWindow*)window {
   self = [super init];
   if(self != nil){
     self.object = new Wrap(window);
@@ -197,25 +248,27 @@ void NativeWindow::Init (char* url, Settings* settings) {
                        defer:NO];
   [mainWnd setAlphaValue:opacity_];
   [mainWnd setTitle:@"cefclient"];
-  [mainWnd setDelegate:windowDelegate];
   [mainWnd setReleasedWhenClosed:YES];
   [mainWnd setOpaque:NO];
   [mainWnd setBackgroundColor:[NSColor clearColor]];
 
-  Wrapper* wrap = [[Wrapper alloc] initWithV8Object:this];
+  Wrapper* wrap = [[Wrapper alloc] initWithNativeWindow:this];
   objc_setAssociatedObject(mainWnd,(char *)("nativewindow"),wrap,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-
-  if(fullscreen_) {
-    Fullscreen();
-  }
 
   // Add browser view to newly created window.
   NSView* contentView = [mainWnd contentView];
   handle_ = contentView;
+
+  if(fullscreen_) {
+    fullscreen_ = false;
+    Fullscreen();
+  }
+
   appjs::Cef::AddWebView(contentView,url,settings);
 
   // Size the window.
   //[mainWnd setFrame:[mainWnd frameRectForContentRect:[mainWnd frame]] display:YES];
+  [mainWnd setDelegate:windowDelegate];
   // Run CEF message loop
   appjs::Cef::Run();
 
@@ -279,13 +332,14 @@ void NativeWindow::Restore() {
                          withObject:nil
                       waitUntilDone:NO];
   }
+
   if ( fullscreen_ ) {
 
-#ifdef NSAppKitVersionNumber10_6
+//#ifdef NSAppKitVersionNumber10_6
     if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6) {
       [win toggleFullScreen: nil];
     } else {
-#endif
+//#endif
       NSUInteger styles = NSTitledWindowMask |
                           NSClosableWindowMask |
                           NSMiniaturizableWindowMask;
@@ -293,12 +347,14 @@ void NativeWindow::Restore() {
       [[NSApplication sharedApplication] setPresentationOptions: NSApplicationPresentationDefault];
       NSRect window_rect = { {rect_.left, rect_.top} , {rect_.width, rect_.height} };
       [win setFrame:[win frameRectForContentRect: window_rect] display:YES];
-#ifdef NSAppKitVersionNumber10_6
+      this->Emit("restore");
+//#ifdef NSAppKitVersionNumber10_6
     }
-#endif
+//#endif
     fullscreen_ = false;
 
   }
+
   if( [win isMiniaturized]) {
     [win performSelectorOnMainThread:@selector(deminiaturize:)
                          withObject:nil
@@ -309,24 +365,30 @@ void NativeWindow::Restore() {
 
 
 void NativeWindow::Fullscreen(){
-  NSWindow* win = [handle_ window];
 
   if(fullscreen_) return;
 
-#ifdef NSAppKitVersionNumber10_6
+  fullscreen_ = true;
+  NSWindow* win = [handle_ window];
+
+//#ifdef NSAppKitVersionNumber10_6
   if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6) {
     [win setCollectionBehavior: NSWindowCollectionBehaviorFullScreenPrimary];
     [win toggleFullScreen: nil];
   } else {
-#endif
+//#endif
+
     NSUInteger styles = NSBorderlessWindowMask;
     [win setStyleMask:(styles)];
     [[NSApplication sharedApplication] setPresentationOptions: NSApplicationPresentationAutoHideDock | NSApplicationPresentationAutoHideMenuBar];
-#ifdef NSAppKitVersionNumber10_6
+
+    if(this->GetBrowser().get())
+      this->Emit("fullscreen");
+
+//#ifdef NSAppKitVersionNumber10_6
   }
-#endif
+//#endif
   [win setFrame:[win frameRectForContentRect:[[NSScreen mainScreen] frame]] display:YES];
-  fullscreen_ = true;
 }
 
 
@@ -335,14 +397,16 @@ void NativeWindow::Drag() {
 }
 
 void NativeWindow::Move(int top, int left, int width, int height) {
+  if(fullscreen_) return;
   NSRect windowRect = { { left  , top } , { width , height} };
   [[handle_ window] setFrame:[[handle_ window] frameRectForContentRect: windowRect] display:YES];
 }
 
 void NativeWindow::Move(int top, int left) {
+  if(fullscreen_) return;
   NSRect windowRect = [[handle_ window] frame];
   windowRect.origin.y = top;
-  windowRect.origin.y = left;
+  windowRect.origin.x = left;
   [[handle_ window] setFrame:[[handle_ window] frameRectForContentRect: windowRect] display:YES];
 }
 
