@@ -1,41 +1,57 @@
 <html>
 <head>
-  <meta charset='utf-8'>
+  <meta charset="utf-8">
   <title>Octosocial</title>
-  <link href='css/bootstrap.min.css' rel='stylesheet'>
-  <link href='css/bootstrap-responsive.min.css' rel='stylesheet'>
-  <link href='css/google-prettify.css' rel='stylesheet'>
-  <link href='css/style.css' rel='stylesheet'>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+  <link href="css/google-prettify.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
-  <div class='container'>
-    <div id='loginPage' class='box-login'>
-      <div class='row'>
-        <form id='login' action='/login' method='post' class='well'>
-          <div class='control-group'>
-            <label class='control-label' for='username'>Username</label>
-            <input name='username' type='text' class='span3' placeholder='Github Username' required>
+  <div class="container">
+    <section id="login-section">
+      <div class="row">
+        <form id="login-form" action="/login" method="post" class="well">
+          <div class="control-group">
+            <label class="control-label" for="username">Username</label>
+            <input id="username" name="username" type="text" class="span3" placeholder="Github Username" required>
           </div>
-          <div class='control-group'>
-            <label class='control-label' for='password'>Password</label>
-            <input name='password' type='password' class='span3' placeholder='Github Password' required>
+          <div class="control-group">
+            <label class="control-label" for="password">Password</label>
+            <input id="password" name="password" type="password" class="span3" placeholder="Github Password" required>
           </div>
-          <div id='info-login' class='control-group'>
-            <span id='info-text' class='help-block'></span>
+          <div id="info-login" class="control-group">
+            <span id="info-text" class="help-block"></span>
           </div>
-          <button type='submit' class='btn'>Submit</button>
+          <button type="submit" class="btn">Submit</button>
         </form>
       </div>
-      <div class='row'>
-        <div class='note-login'>
+      <div class="row">
+        <div id="login-note">
           Don't worry. We do not store your account info. You can always take a look at source code!
         </div>
       </div>
-    </div>
-    <div id='profilePage' class='profile' style='display:none;'></div>
+    </section>
+    <section id="profile-section">
+      <div id="user" class="row">
+        <div class="span2">
+          <div id="user-avatar" class="avatar"></div>
+          <h1 id="user-name"></h1>
+        </div>
+      </div>
+      <div id="followers" class="row">
+        <h2>Followers <span class="count"></span></h2>
+        <ul class="thumbnails"></ul>
+      </div>
+      <div id="following" class="row">
+        <h2>Following <span class="count"></span></h2>
+        <ul class="thumbnails"></ul>
+      </div>
+    </section>
+
   </div>
-  <script src='js/jquery.js'></script>
-  <script src='js/bootstrap.js'></script>
-  <script src='js/google-prettify.js'></script>
+  <script src="js/jquery.js"></script>
+  <script src="js/bootstrap.js"></script>
+  <script src="js/google-prettify.js"></script>
 </body>
 </html>

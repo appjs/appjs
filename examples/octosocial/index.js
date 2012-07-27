@@ -46,7 +46,9 @@ window.on('ready', function(){
     }
   });
 
-  $('#login').submit(function(e){
+  $username.focus();
+
+  $('#login-form').submit(function(e){
     e.preventDefault();
 
     $info.succeed('Logging in...');
@@ -70,61 +72,26 @@ window.on('ready', function(){
 
   function loggedIn(result){
     $info.succeed('Logged in!');
-    $('#loginPage').hide();
-    $('#profilePage').html(match(profileTemplate, result)).show();
+    $('#user-avatar').append('<img src="'+result.avatar_url+'" width="64" height="64">');
+    $('#user-name').text(result.name);
+    $('#login-section').hide();
+    $('#profile-section').show();
     ['Followers', 'Following'].forEach(function(type){
       populate(type, { user: result.login });
     });
   }
 
+  function appendAvatar(item){
+    this.append('<li class="span2"><img src="'+item.avatar_url+'" width="64" height="64" title="'+item.name+'"></li>');
+  }
+
   function populate(type, user){
     github.user['get'+type](user, function(err, result){
-      if (err) {
-        window.console.log(err);
-      } else {
-        var html = result.reduce(function(ret, item){
-          return ret + match(followListTemplate, item);
-        }, '');
-        $('#' + type.toLowerCase() + 'List > ul').html(html).show();
-      }
+      if (err) return window.console.log(err);
+
+      var container = $('#'+type.toLowerCase());
+      $('.count', container).text(result.length);
+      result.forEach(appendAvatar, $('.thumbnails', container));
     });
   }
 });
-
-var profileTemplate = '\
-    <div class="row">\
-      <div class="top"></div>\
-    </div>\
-    <div class="row ribbon">\
-      <div class="span2">\
-        <div class="avatar"><img src="%avatar_url%" width="64" height="64"/></div>\
-        <div class="name"><h1>%name%</h1></div>\
-      </div>\
-    </div>\
-    <div class="row followers">\
-      <h2>Followers (%followers%)</h2>\
-      <div id="followersList" >\
-        <ul class="thumbnails" style="display:none">\
-        </ul>\
-      </div>\
-    </div>\
-    <div class="row following">\
-      <h2>Following (%following%)</h2>\
-      <div id="followingList" >\
-        <ul class="thumbnails" style="display:none">\
-        </ul>\
-      </div>\
-    </div>\
-';
-
-var followListTemplate = '\
-  <li class="span2">\
-    <img src="%avatar_url%" width="64" height="64" title="%name%"/>\
-  </li>\
-';
-
-function match(template, obj){
-  return template.replace(/(?:%(\w+?)%)/g, function(s, m){
-    return obj[m] || '';
-  });
-}
