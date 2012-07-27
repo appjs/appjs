@@ -236,6 +236,9 @@ void NativeWindow::Init (char* url, Settings* settings) {
     styles |= NSResizableWindowMask;
   }
 
+  int screenHeight = [[NSScreen mainScreen] visibleFrame].size.height;
+  rect_.top = screenHeight - rect_.height - rect_.top;
+
   // Create the main application window.
   NSRect window_rect = { {rect_.left, rect_.top} , {rect_.width, rect_.height} };
 
@@ -394,16 +397,23 @@ void NativeWindow::Drag() {
 
 void NativeWindow::Move(int top, int left, int width, int height) {
   if(fullscreen_) return;
+
+  int screenHeight = [[NSScreen mainScreen] visibleFrame].size.height;
+  top = screenHeight - height - top;
+
   NSRect windowRect = { { left  , top } , { width , height} };
   [[handle_ window] setFrame:[[handle_ window] frameRectForContentRect: windowRect] display:YES];
 }
 
 void NativeWindow::Move(int top, int left) {
   if(fullscreen_) return;
+
   NSRect windowRect = [[handle_ window] frame];
-  windowRect.origin.y = top;
-  windowRect.origin.x = left;
-  [[handle_ window] setFrame:[[handle_ window] frameRectForContentRect: windowRect] display:YES];
+  int screenHeight = [[NSScreen mainScreen] visibleFrame].size.height;
+  top = screenHeight - windowRect.size.height - top;
+
+  NSPoint origin = {left,top};
+  [[handle_ window] setFrameOrigin:origin];
 }
 
 void NativeWindow::Resize(int width, int height) {
@@ -415,9 +425,12 @@ void NativeWindow::Resize(int width, int height) {
 
 void NativeWindow::UpdatePosition(){
   NSRect rect = [[handle_ window] frame];
+
+  int screenHeight = [[NSScreen mainScreen] visibleFrame].size.height;
+
   rect_.width  = rect.size.width;
   rect_.height = rect.size.height;
-  rect_.top    = rect.origin.y;
+  rect_.top    = screenHeight - rect_.height - rect.origin.y;
   rect_.left   = rect.origin.x;
 }
 
