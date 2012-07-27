@@ -16,13 +16,11 @@ bool App::initialized_ = false;
 Persistent<Function> App::constructor;
 
 void App::Init () {
-
-  CREATE_NODE_CONSTRUCTOR("App");
-  DEFINE_PROTOTYPE_METHOD("on",On);
-  DEFINE_PROTOTYPE_METHOD("createWindow",CreateWindow2);
-  DEFINE_PROTOTYPE_METHOD("screenWidth",ScreenWidth);
-  DEFINE_PROTOTYPE_METHOD("screenHeight",ScreenHeight);
-
+  DECLARE_CONSTRUCTOR("App");
+  DECLARE_PROTOTYPE_METHOD("on",On);
+  DECLARE_PROTOTYPE_METHOD("createWindow",CreateWindow2);
+  DECLARE_CLASS_FUNCTION(screenWidth,ScreenWidth);
+  DECLARE_CLASS_FUNCTION(screenHeight,ScreenHeight);
   END_CONSTRUCTOR();
 }
 
