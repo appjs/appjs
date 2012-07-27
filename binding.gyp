@@ -14,6 +14,7 @@
             '<(module_root_dir)/examples/',
             '<(module_root_dir)/lib/',
             '<(module_root_dir)/data/common/appjs/package.json',
+            '<(module_root_dir)/data/common/appjs/cli/',
           ]
         },
         {
@@ -40,7 +41,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-mac/build/Release',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-darwin/build/Release',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
                 '<(module_root_dir)/deps/cef/Release/lib.target/ffmpegsumo.so',
@@ -48,7 +49,7 @@
               ],
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-mac',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-darwin',
               'files': [
                 '<(module_root_dir)/data/mac/package.json',
                 '<(module_root_dir)/data/mac/index.js',
@@ -62,7 +63,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-mac/data/pak',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-darwin/data/pak',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/Resources/chrome.pak',
               ]
@@ -156,7 +157,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win/build/Release/',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win32/build/Release/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/libcef.dll',
                 '<(module_root_dir)/deps/cef/Release/avcodec-54.dll',
@@ -171,7 +172,7 @@
               ],
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win/',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win32/',
               'files': [
                 '<(module_root_dir)/data/win/package.json',
                 '<(module_root_dir)/data/win/index.js',
@@ -191,7 +192,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win/data/pak',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win32/data/pak',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/chrome.pak',
                 '<(module_root_dir)/deps/cef/Release/locales/'

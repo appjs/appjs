@@ -1,7 +1,7 @@
 {
   "name": "appjs",
   "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS",
-  "version": "0.0.17",
+  "version": "0.0.17-fix2",
   "keywords": [ "cef", "webkit", "browser", "canvas", "html5", "desktop", "native", "gtk", "ui", "sdk" ],
   "homepage": "http://appjs.org",
   "repository": {
@@ -32,11 +32,8 @@
   "dependencies": {
     "mime": "1.2.5"
   },
-  "optionalDependencies": {
-    "appjs-win": "0.0.17",
-    "appjs-mac": "0.0.17",
-    "appjs-linux-x64": "0.0.17",
-    "appjs-linux-ia32": "0.0.17"
+  "scripts": {
+    "postinstall": "node cli/postinstall.js"
   },
   "licenses": [{
     "type": "MIT",
