@@ -1,97 +1,130 @@
-var app = require('../../index.js')
-  , path = require('path')
-  , Github = require('github');
+var app = require('appjs'),
+    Github = require('github'),
+    github = new Github({ version: '3.0.0', debug: true }),
+    KEY_F12 = process.platform === 'darwin' ? 63247 : 123;
 
-var github = new Github({version: '3.0.0',debug:true})
-  // get screen dimension
-  , screenWidth = app.screenWidth()
-  , screenHeight = app.screenHeight()
+app.serveFilesFrom(__dirname + '/assets');
 
-var windowSettings = {
+var window = app.createWindow({
   width: 460,
   height: 640,
-  left: -1, // remove x and y if you want to put window at center, -1 means the same
-  top: -1, // remove x and y if you want to put window at center, -1 means the same
-  autoResize: false, // set to true if you want to change screen size dynamically using html elements
-  resizable: false, // prevent users from changing screen width or height
-  showChrome: true, // show border and title bar
-  opacity:1, // you can set opacity of window.
-  fullscreen:false, // we don't need fullscreen window
-  showResizeGrip:false, // resize grip is an annoying triangle at the right bottom corner of window
-  disableSecurity:true, // allow cross origin requests
-  icons: {
-    smaller: './assets/icons/16.png', //16x16
-    small: './assets/icons/32.png', // 32x32
-    big: './assets/icons/48.png', // 48x48
-    bigger: './assets/icons/64.png' // 64x64 or 128x128
-  }
-};
+  resizable: false,
+  disableSecurity: true,
+  icons: __dirname + '/assets/icons'
+});
 
-/**
- * Create a new window. appjs:// is a special scheme for appjs requests.
- * Use this scheme to communicate with nodejs. Use appjs routers to handle
- * these special requests. Note that there is no http server in between.
- **/
-var window = app.createWindow("http://appjs/",windowSettings);
-
-window.on("create",function(){
-  console.log("Window created");
+window.on('create', function(){
   window.frame.show();
+  window.frame.center();
 });
 
-window.on("ready",function(){
-  console.log("Window is ready");
-});
-
-window.on("close",function(){
-  console.log("Window closed");
-});
-
-app.on("exit",function(){
-  console.log("Event Exit called");
-});
-
-app.serveFilesFrom(path.resolve(__dirname, 'assets'));
-
-app.post('/login',function(req,res,next){
-  var username = req.post('username')
-    , password = req.post('password');
-
-  github.authenticate({
-    type:'basic',
-    username: username,
-    password: password
+window.on('ready', function(){
+  window.addEventListener('keydown', function(e){
+    if (e.keyCode === KEY_F12) {
+      window.frame.openDevTools();
+    }
   });
+  var $ = window.$,
+      $username = $('input[name=username]'),
+      $password = $('input[name=password]'),
+      $info = $('#info-login'),
+      $label = $info.find('span'),
+      $buttons = $('input, button');
 
-  github.user.get({}, function(err, result) {
-      if(err) {
-        res.send(401,{error:'Login Failed. Try Again.'});
-        return;
+  $info.error = function(label){
+    this.removeClass('success').addClass('error');
+    $label.text(label);
+  };
+  $info.succeed = function(label){
+    this.removeClass('error').addClass('success');
+    $label.text(label);
+  }
+  $.fn.disable = function(){
+    this.attr('disabled','disabled');
+  };
+  $.fn.enable = function(){
+    this.removeAttr('disabled','disabled');
+  }
+
+  $('#login').submit(function(e){
+    e.preventDefault();
+
+    $info.succeed('Logging in...');
+    $buttons.disable();
+
+    github.authenticate({
+      type: 'basic',
+      username: $username.val(),
+      password: $password.val()
+    });
+
+    github.user.get({}, function(err, result) {
+      if (err) {
+        $info.error('Login Failed. Try Again.');
+        $buttons.enable();
+      } else {
+        loggedIn(result);
       }
-
-      res.send(200,result);
+    });
   });
 
+  function loggedIn(result){
+    $info.succeed('Logged in!');
+    $('#loginPage').hide();
+    $('#profilePage').html(match(profileTemplate, result)).show();
+    ['Followers', 'Following'].forEach(function(type){
+      populate(type, { user: result.login });
+    });
+  }
+
+  function populate(type, user){
+    github.user['get'+type](user, function(err, result){
+      if (err) {
+        window.console.log(err);
+      } else {
+        var html = result.reduce(function(ret, item, index){
+          return ret + match(followListTemplate, item);
+        }, '');
+        $('#' + type.toLowerCase() + 'List > ul').html(html).show();
+      }
+    });
+  }
 });
 
-app.get('/followers',function(req,res,next){
-  github.user.getFollowers({user:req.param('user')},function(err,result){
-    if(err) {
-      res.send(200,{error:'Could not get followers list'});
-      return;
-    }
+var profileTemplate = '\
+    <div class="row">\
+      <div class="top"></div>\
+    </div>\
+    <div class="row ribbon">\
+      <div class="span2">\
+        <div class="avatar"><img src="%avatar_url%" width="64" height="64"/></div>\
+        <div class="name"><h1>%name%</h1></div>\
+      </div>\
+    </div>\
+    <div class="row followers">\
+      <h2>Followers (%followers%)</h2>\
+      <div id="followersList" >\
+        <ul class="thumbnails" style="display:none">\
+        </ul>\
+      </div>\
+    </div>\
+    <div class="row following">\
+      <h2>Following (%following%)</h2>\
+      <div id="followingList" >\
+        <ul class="thumbnails" style="display:none">\
+        </ul>\
+      </div>\
+    </div>\
+';
 
-    res.send(200,result);
-  })
-});
+var followListTemplate = '\
+  <li class="span2">\
+    <img src="%avatar_url%" width="64" height="64" title="%name%"/>\
+  </li>\
+';
 
-app.get('/following',function(req,res,next){
-  github.user.getFollowing({user:req.param('user')},function(err,result){
-    if(err) {
-      res.send(200,{error:'Could not get following list'});
-      return;
-    }
-
-    res.send(200,result);
-  })
-});
+function match(template, obj){
+  return template.replace(/(?:%(\w+?)%)/g, function(s, m){
+    return obj[m] || '';
+  });
+}
