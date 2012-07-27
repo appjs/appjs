@@ -7,22 +7,14 @@ extern CefRefPtr<ClientHandler> g_handler;
 
 namespace appjs {
 
-void CefBase::Init() {
-
-};
+void CefBase::Init(){}
 
 void CefBase::AddWebView(CefWindowHandle parent, RECT windowRect, char* url, Settings* settings) {
-
   CefWindowInfo windowInfo;
-  CefBrowserSettings browserSettings;
-
-  browserSettings.web_security_disabled = settings->getBoolean("disableSecurity", false);
-
   windowInfo.SetAsChild(parent, windowRect);
   windowInfo.SetTransparentPainting(true);
-
-  CefBrowser::CreateBrowser(windowInfo, static_cast<CefRefPtr<CefClient>>(g_handler), url, browserSettings);
+  g_handler->browserSettings_.web_security_disabled = settings->getBoolean("disableSecurity", false);
+  CefBrowser::CreateBrowser(windowInfo, static_cast<CefRefPtr<CefClient>>(g_handler), url, g_handler->browserSettings_);
 }
 
 } /* appjs */
-

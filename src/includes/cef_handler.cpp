@@ -13,8 +13,9 @@ using namespace appjs;
 
 int windowCount = 0;
 
-ClientHandler::ClientHandler()
-  : mainBrowserHandle(NULL) {
+ClientHandler::ClientHandler(CefBrowserSettings browserSettings)
+  : mainBrowserHandle(NULL),
+  browserSettings_(browserSettings) {
 }
 
 ClientHandler::~ClientHandler() {

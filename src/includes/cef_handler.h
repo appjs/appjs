@@ -31,7 +31,7 @@ class ClientHandler : public CefClient,
                       public CefV8ContextHandler {
 
 public:
-  ClientHandler();
+  ClientHandler(CefBrowserSettings browserSettings);
   virtual ~ClientHandler();
 
   virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE {
@@ -79,6 +79,7 @@ public:
                          int httpStatusCode) OVERRIDE;
 
   CefRefPtr<CefBrowser> mainBrowserHandle;
+  CefBrowserSettings browserSettings_;
 
   IMPLEMENT_REFCOUNTING(ClientHandler);
   IMPLEMENT_LOCKING(ClientHandler);
