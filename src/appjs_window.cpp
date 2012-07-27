@@ -206,7 +206,7 @@ Handle<Value> Window::SendSync(const Arguments& args) {
 
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
 
-  if (window->GetBrowser()) {
+  if (!window->IsClosed()) {
     // find browser's v8 context
     CefRefPtr<CefV8Context> context = window->GetBrowser()->GetMainFrame()->GetV8Context();
 

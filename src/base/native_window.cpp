@@ -32,8 +32,8 @@ NativeWindow::NativeWindow(char* url, Settings* settings){
     initialized = true;
   }
 
-  Init(url, settings);
   closed_ = false;
+  Init(url, settings);
 
   if (settings->getBoolean("topmost",false)) {
     SetTopmost(true);
@@ -67,6 +67,10 @@ void NativeWindow::RunInBrowser(char* script){
 void NativeWindow::PrepareClose(){
   Emit("close");
   closed_ = true;
+}
+
+bool NativeWindow::IsClosed(){
+  return closed_;
 }
 
 bool NativeWindow::IsMainWindow(){

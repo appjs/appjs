@@ -40,6 +40,7 @@ public:
   void Emit(const char* event, v8::Local<v8::Value> arg1, v8::Local<v8::Value> arg2);
   void Emit(const char* event, int arg1, int arg2);
   void PrepareClose();
+  bool IsClosed();
 
   void Drag();
   void Drop();
