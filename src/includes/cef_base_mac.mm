@@ -23,16 +23,8 @@ void CefBase::AddWebView(CefWindowHandle ParentWidget,char* url,Settings* settin
   }
 
   NSRect contentFrame = [ParentWidget frame];
-
   window_info.SetAsChild(ParentWidget,0,0,contentFrame.size.width,contentFrame.size.height);
-
-  CefBrowser::CreateBrowser(window_info,
-                                g_handler.get(),
-                                url, browser_settings);
-
-  if(!g_handler->GetBrowser().get()) {
-    g_handler->SetMainHwnd(ParentWidget);
-  }
+  CefBrowser::CreateBrowser(window_info, g_handler.get(), url, browser_settings);
 }
 
 

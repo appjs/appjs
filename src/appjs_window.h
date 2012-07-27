@@ -40,6 +40,7 @@ class Window : public node::ObjectWrap {
   DEFINE_CPP_ACCESSOR(ShowChrome);
   DEFINE_CPP_ACCESSOR(Alpha);
   DEFINE_CPP_ACCESSOR(Opacity);
+  DEFINE_CPP_ACCESSOR(AutoResize);
 
 #if defined(__WIN__)
   DEFINE_CPP_METHOD(Style);

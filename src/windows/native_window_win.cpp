@@ -127,6 +127,10 @@ int NativeWindow::ScreenHeight() {
   return GetSystemMetrics(SM_CYSCREEN);
 }
 
+void NativeWindow::SetWindowTitle(CefWindowHandle handle, const char* title) {
+  SetWindowText(handle, title);
+}
+
 // ############################
 // ### NativeWindow methods ###
 // ############################

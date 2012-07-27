@@ -16,12 +16,11 @@ NativeWindow::NativeWindow(char* url, Settings* settings){
   opacity_ = settings->getNumber("opacity",1);
   alpha_ = settings->getBoolean("alpha",false);
   show_chrome_ = settings->getBoolean("showChrome",true);
+  auto_resize_ = settings->getBoolean("autoResize",false);
   resizable_ = settings->getBoolean("resizable",true);
   show_resize_grip = settings->getBoolean("showResizeGrip",false);
-  auto_resize = settings->getBoolean("autoResize",false);
   fullscreen_ = settings->getBoolean("fullscreen",false);
   icons = new Settings(settings->getObject("icons", Object::New()));
-  g_handler->SetAutoResize(auto_resize);
 
   this->Init(url, settings);
 
@@ -144,11 +143,19 @@ int NativeWindow::GetTop(){
 }
 
 void NativeWindow::SetTitle(const char* title) {
-  ClientHandler::SetWindowTitle(handle_, title);
+  SetWindowTitle(handle_, title);
 }
 
 bool NativeWindow::GetTopmost(){
   return topmost_;
+}
+
+bool NativeWindow::GetAutoResize(){
+  return auto_resize_;
+}
+
+void NativeWindow::SetAutoResize(bool autoResize) {
+  auto_resize_ = autoResize;
 }
 
 appjs_rect NativeWindow::GetRect() {

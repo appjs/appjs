@@ -4,6 +4,7 @@
 #include "include/cef_frame.h"
 #include "includes/cef_handler.h"
 #include "includes/cef_sync_handler.h"
+#include "base/native_window.h"
 #include "appjs_window.h"
 
 
@@ -13,8 +14,7 @@ using namespace appjs;
 
 
 ClientHandler::ClientHandler()
-  : mainHandle(NULL),
-    mainBrowserHwnd(NULL) {
+  : mainBrowserHandle(NULL) {
 }
 
 ClientHandler::~ClientHandler() {
@@ -42,14 +42,17 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
   AutoLock lock_scope(this);
 
   if (!browser->IsPopup()) {
-    if (!mainBrowser.get()) {
-      mainBrowser = browser;
-      mainBrowserHwnd = browser->GetWindowHandle();
+    if (!mainBrowserHandle) {
+      mainBrowserHandle = browser->GetWindowHandle();
     }
 
     CreatedBrowser(browser);
     GetWindow(browser)->Emit("create");
   }
+}
+
+bool ClientHandler::HasMainWindow() {
+  return mainBrowserHandle != NULL;
 }
 
 void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
@@ -75,7 +78,7 @@ void ClientHandler::OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
   REQUIRE_UI_THREAD();
 
-  if (!browser->IsPopup() && mainBrowserHwnd == browser->GetWindowHandle()) {
+  if (!browser->IsPopup() && mainBrowserHandle == browser->GetWindowHandle()) {
 
     Local<Object> global = Context::GetCurrent()->Global();
     Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
@@ -83,9 +86,8 @@ bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
     Handle<Value> exitArgv[1] = {String::New("exit")};
     node::MakeCallback(emitter,"emit",1,exitArgv);
 
-    mainBrowser = NULL;
-    mainBrowserHwnd = NULL;
-    CloseMainWindow();
+    mainBrowserHandle = NULL;
+    Cef::Shutdown();
     return true;
   }
   return false;
@@ -110,15 +112,20 @@ void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame>
   }
 }
 
-void ClientHandler::SetMainHwnd(CefWindowHandle& hwnd) {
-  AutoLock lock_scope(this);
-  mainHandle = hwnd;
+void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int width, int height) {
+  REQUIRE_UI_THREAD();
+  if (!browser->IsPopup()) {
+    NativeWindow* window = GetWindow(browser);
+    if (window->GetAutoResize()) {
+      window->Resize(width, height);
+    }
+  }
 }
 
 void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) {
   REQUIRE_UI_THREAD();
   std::string titleStr(title);
-  SetWindowTitle(GetContainer(browser),titleStr.c_str());
+  NativeWindow::SetWindowTitle(GetContainer(browser),titleStr.c_str());
   if (!browser->IsPopup()) {
     GetWindow(browser)->Emit("title-change");
   }

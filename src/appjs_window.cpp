@@ -43,6 +43,7 @@ void Window::Init () {
   CREATE_CPP_ACCESSOR("showChrome", ShowChrome);
   CREATE_CPP_ACCESSOR("alpha", Alpha);
   CREATE_CPP_ACCESSOR("opacity", Opacity);
+  CREATE_CPP_ACCESSOR("autoResize", AutoResize);
 #ifdef __WIN__
   DEFINE_PROTOTYPE_METHOD("style", Style);
 #endif
@@ -244,6 +245,7 @@ WINDOW_ACCESSOR(Resizable, Boolean, MAKE_BOOLEAN)
 WINDOW_ACCESSOR(ShowChrome, Boolean, MAKE_BOOLEAN)
 WINDOW_ACCESSOR(Alpha, Boolean, MAKE_BOOLEAN)
 WINDOW_ACCESSOR(Opacity, Number, MAKE_DOUBLE)
+WINDOW_ACCESSOR(AutoResize, Boolean, MAKE_BOOLEAN)
 
 
 

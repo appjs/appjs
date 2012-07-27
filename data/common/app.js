@@ -22,16 +22,24 @@ var window = app.createWindow({
 
 window.on('create', function(){
   console.log("Window Created");
-  this.frame.show();
-  this.frame.center();
+  window.frame.show();
+  window.frame.center();
 });
+
+var KEY_F12 = process.platform === 'darwin' ? 63247 : 123;
 
 window.on('ready', function(){
   console.log("Window Ready");
-  this.require = require;
-  this.process = process;
-  this.module = module;
-  this.console.log('process', process);
+  window.require = require;
+  window.process = process;
+  window.module = module;
+  window.console.log('process', process);
+
+  window.addEventListener('keydown', function(e){
+    if (e.keyCode === KEY_F12) {
+      window.frame.openDevTools();
+    }
+  });
 });
 
 window.on('close', function(){
