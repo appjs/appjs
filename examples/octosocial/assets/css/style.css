@@ -29,4 +29,6 @@ h2
     .thumbnails
     { height: 210px; overflow-y: scroll; }
       .thumbnails > li
-      { margin: 0 0 10px 10px; }
+      { margin: 0 0 10px 10px; opacity: 1; -webkit-transition: 0.3s; }
+      .thumbnails > li.hidden
+      { opacity: 0; }
