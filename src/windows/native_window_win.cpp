@@ -26,7 +26,6 @@ HICON smallIcon;
 HICON bigIcon;
 Settings* browserSettings;
 char* url_;
-bool initialized = false;
 bool emitFullscreen = false;
 
 
@@ -139,8 +138,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
   url_ = url;
 
 
-  if (!initialized) {
-    initialized = true;
+  if (is_main_window_) {
     dwmapiDLL = LoadLibrary(TEXT("dwmapi.dll"));
     if (dwmapiDLL != NULL) {
       DwmExtendFrameIntoClientArea = (DWMEFICA)GetProcAddress(dwmapiDLL, "DwmExtendFrameIntoClientArea");

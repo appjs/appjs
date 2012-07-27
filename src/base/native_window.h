@@ -88,6 +88,7 @@ public:
   void OpenDevTools();
   void CloseDevTools();
   void RunInBrowser(char* script);
+  bool IsMainWindow();
 
   appjs_rect GetRect();
 
@@ -110,6 +111,7 @@ private:
   v8::Handle<v8::Object> v8handle_;
   CefRefPtr<CefBrowser> browser_;
 
+  bool is_main_window_;
   bool auto_resize_;
   bool show_chrome_;
   bool resizable_;

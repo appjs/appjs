@@ -57,7 +57,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
   GtkWindow* window = (GtkWindow*)handle_;
 
   // Set default icon list
-  if( !g_handler->HasMainWindow() ) {
+  if (is_main_window_) {
 
     GList* iconList;
     bool setIconFlag = false;

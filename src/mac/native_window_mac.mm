@@ -150,7 +150,7 @@ void NativeWindow::Init (char* url, Settings* settings) {
   mainWndSettings = settings;
   mainWndUrl = url;
   // if it is the first time NativeWindow is called, create the Application.
-  if(!g_handler->HasMainWindow()){
+  if (is_main_window_) {
     // Initialize the AutoRelease pool.
     g_autopool = [[NSAutoreleasePool alloc] init];
     // Initialize the Application instance.

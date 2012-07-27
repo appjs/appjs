@@ -4,6 +4,9 @@
 
 extern CefRefPtr<ClientHandler> g_handler;
 
+bool initialized = false;
+
+
 namespace appjs {
 
 using namespace v8;
@@ -21,6 +24,13 @@ NativeWindow::NativeWindow(char* url, Settings* settings){
   show_resize_grip = settings->getBoolean("showResizeGrip",false);
   fullscreen_ = settings->getBoolean("fullscreen",false);
   icons = new Settings(settings->getObject("icons", Object::New()));
+
+  if (initialized) {
+    is_main_window_ = false;
+  } else {
+    is_main_window_ = true;
+    initialized = true;
+  }
 
   this->Init(url, settings);
 
@@ -51,6 +61,10 @@ void NativeWindow::RunInBrowser(char* script){
   if (browser_) {
     browser_->GetMainFrame()->ExecuteJavaScript(script, "", 0);
   }
+}
+
+bool NativeWindow::IsMainWindow(){
+  return is_main_window_;
 }
 
 void NativeWindow::SetBrowser(CefRefPtr<CefBrowser> browser) {
