@@ -39,6 +39,8 @@ public:
   void Emit(const char* event, v8::Local<v8::Value> arg);
   void Emit(const char* event, v8::Local<v8::Value> arg1, v8::Local<v8::Value> arg2);
   void Emit(const char* event, int arg1, int arg2);
+  void Emit(const char* event, const int arg1, const int arg2, const int arg3);
+  long JSResult();
   void PrepareClose();
   bool IsClosed();
 
