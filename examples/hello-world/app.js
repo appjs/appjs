@@ -1,5 +1,4 @@
 var app = module.exports = require('appjs');
-var KEY_F12 = process.platform === 'darwin' ? 63247 : 123;
 
 app.serveFilesFrom(__dirname + '/content');
 
@@ -21,7 +20,7 @@ window.on('ready', function(){
   window.process = process;
   window.module = module;
   window.addEventListener('keydown', function(e){
-    if (e.keyCode === KEY_F12) {
+    if (e.keyIdentifier === 'F12') {
       window.frame.openDevTools();
     }
   });
