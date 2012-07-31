@@ -93,7 +93,7 @@ Handle<Object> NativeWindow::GetV8Handle() {
   return v8handle_;
 }
 
-void NativeWindow::UpdatePosition(int top, int left, int width, int height){
+void NativeWindow::UpdatePosition(int left, int top, int width, int height){
   rect_.width = width;
   rect_.height = height;
   rect_.left = left;
@@ -125,7 +125,7 @@ void NativeWindow::SetState(NW_STATE state){
 }
 
 void NativeWindow::Move(appjs_rect rect){
-  Move(rect.top, rect.left, rect.width, rect.height);
+  Move(rect.left, rect.top, rect.width, rect.height);
 }
 
 void NativeWindow::SetWidth(int width){

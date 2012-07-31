@@ -181,7 +181,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
   }
   browser_ = NULL;
   handle_ = CreateWindowEx(NULL, szWindowClass,"", WS_OVERLAPPEDWINDOW,
-                           rect_.top, rect_.left, rect_.width, rect_.height,
+                           rect_.left, rect_.top, rect_.width, rect_.height,
                            NULL, NULL, hInstance, NULL);
 
   SetWindowLongPtr(handle_, GWLP_USERDATA, (LONG)this);
@@ -269,14 +269,14 @@ const char* NativeWindow::GetTitle() {
 }
 
 
-void NativeWindow::Move(int top, int left, int width, int height) {
-  UpdatePosition(top, left, width, height);
+void NativeWindow::Move(int left, int top, int width, int height) {
+  UpdatePosition(left, top, width, height);
   SetWindowPos(handle_, NULL, left, top, width, height, NULL);
 }
 
-void NativeWindow::Move(int top, int left) {
-  rect_.top = top;
+void NativeWindow::Move(int left, int top) {
   rect_.left = left;
+  rect_.top = top;
   SetWindowPos(handle_, NULL, left, top, NULL, NULL, SWP_NOSIZE);
 }
 
@@ -289,10 +289,10 @@ void NativeWindow::Resize(int width, int height) {
 void NativeWindow::UpdatePosition(){
   RECT rect;
   GetWindowRect(handle_, &rect);
-  rect_.width = rect.right - rect.left;
-  rect_.height = rect.bottom - rect.top;
   rect_.left = rect.left;
   rect_.top = rect.top;
+  rect_.width = rect.right - rect.left;
+  rect_.height = rect.bottom - rect.top;
 }
 
 void NativeWindow::SetTopmost(bool ontop){
@@ -451,8 +451,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         window->Emit("move", (int)LOWORD(lParam), (int)HIWORD(lParam));
       }
       break;
-    // case WM_ERASEBKGND:
-    //   return 1;
+    case WM_NCHITTEST: {
+      LRESULT result;
+      if (DwmDefWindowProc != NULL) {
+        if (DwmDefWindowProc(hwnd, message, wParam, lParam, &result)) {
+          return result;
+        }
+      }
+      break;
+    }
     case WM_ERASEBKGND:
       if (browser.get()) {
         return 0;

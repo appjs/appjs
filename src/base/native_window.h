@@ -54,11 +54,11 @@ public:
   void Hide();
   void Destroy();
 
-  void Move(int top, int left, int width, int height);
-  void Move(int top, int left);
+  void Move(int left, int top, int width, int height);
+  void Move(int left, int top);
   void Move(appjs_rect rect);
   void Resize(int width, int height);
-  void UpdatePosition(int top, int left, int width, int height);
+  void UpdatePosition(int left, int top, int width, int height);
   void UpdatePosition(appjs_rect rect);
   void UpdatePosition();
 

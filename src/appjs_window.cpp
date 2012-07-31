@@ -93,14 +93,14 @@ Handle<Value> Window::Move(const Arguments& args) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
 
-  int top = args[0]->Int32Value();
-  int left = args[1]->Int32Value();
+  int left = args[0]->Int32Value();
+  int top = args[1]->Int32Value();
   if (args[2]->IsNumber()) {
     int width = args[2]->Int32Value();
     int height = args[3]->Int32Value();
-    window->Move(top, left, width, height);
+    window->Move(left, top, width, height);
   } else {
-    window->Move(top, left);
+    window->Move(left, top);
   }
 
   return scope.Close(args.This());

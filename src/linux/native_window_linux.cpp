@@ -208,16 +208,16 @@ void NativeWindow::Drag() {
 
 }
 
-void NativeWindow::Move(int top, int left, int width, int height) {
+void NativeWindow::Move(int left, int top, int width, int height) {
   GtkWindow* window = (GtkWindow*)handle_;
-  gtk_window_move(window,top,left);
+  gtk_window_move(window,left,top);
   gtk_window_resize(window,width,height);
 }
 
-void NativeWindow::Move(int top, int left) {
-  rect_.top = top;
+void NativeWindow::Move(int left, int top) {
   rect_.left = left;
-  gtk_window_move((GtkWindow*)handle_,top,left);
+  rect_.top = top;
+  gtk_window_move((GtkWindow*)handle_,left,top);
 }
 
 void NativeWindow::Resize(int width, int height) {
