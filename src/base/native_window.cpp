@@ -93,7 +93,7 @@ Handle<Object> NativeWindow::GetV8Handle() {
   return v8handle_;
 }
 
-void NativeWindow::UpdatePosition(int top, int left, int width, int height){
+void NativeWindow::UpdatePosition(int left, int top, int width, int height){
   rect_.width = width;
   rect_.height = height;
   rect_.left = left;
@@ -125,7 +125,7 @@ void NativeWindow::SetState(NW_STATE state){
 }
 
 void NativeWindow::Move(appjs_rect rect){
-  Move(rect.top, rect.left, rect.width, rect.height);
+  Move(rect.left, rect.top, rect.width, rect.height);
 }
 
 void NativeWindow::SetWidth(int width){
@@ -212,6 +212,29 @@ void NativeWindow::Emit(const char* event, int arg1, int arg2){
   Emit(args);
 }
 
+void NativeWindow::Emit(const char* event, const int arg1, const int arg2, const int arg3){
+  HandleScope handlescope;
+  Local<Value> args[4] = {
+    Local<Value>::New(String::New(event)),
+    Local<Value>::New(Integer::New(arg1)),
+    Local<Value>::New(Integer::New(arg2)),
+    Local<Value>::New(Integer::New(arg3))
+  };
+  if (!closed_) {
+    node::MakeCallback(v8handle_, "emit", 4, args);
+  }
+}
+
+
+long NativeWindow::JSResult(){
+  Local<Value> result = v8handle_->Get(String::NewSymbol("result"));
+  if (result->IsUndefined() || result->IsNull()) {
+    return NULL;
+  } else {
+    v8handle_->Set(String::NewSymbol("result"), Undefined());
+    return result->Int32Value();
+  }
+}
 
 
 } /* appjs */

@@ -6,39 +6,26 @@ extern CefRefPtr<ClientHandler> g_handler;
 
 namespace appjs {
 
-
-static void destroy_handler (int status = 0) {
+static void destroyHandler(int status = 0) {
   g_handler->Shutdown();
-};
+}
 
 void CefBase::Init() {
-
-  g_thread_init (NULL);
-  gdk_threads_init ();
+  g_thread_init(NULL);
+  gdk_threads_init();
   gtk_init(NULL,NULL);
+}
 
-};
+void CefBase::AddWebView(CefWindowHandle& parent, char* url, Settings* settings) {
+  CefWindowInfo windowInfo;
+  windowInfo.SetAsChild(parent);
+  g_handler->browserSettings_.web_security_disabled = settings->getBoolean("disableSecurity", false);
+  CefBrowser::CreateBrowser(windowInfo, static_cast<CefRefPtr<CefClient>>(g_handler), url, g_handler->browserSettings_);
 
-void CefBase::AddWebView(CefWindowHandle& ParentWidget,char* url,Settings* settings) {
-
-  CefWindowInfo window_info;
-  CefBrowserSettings browser_settings;
-
-  browser_settings.web_security_disabled = settings->getBoolean("disableSecurity",false);
-
-  window_info.SetAsChild(ParentWidget);
-
-  CefBrowser::CreateBrowser(window_info,
-                                static_cast<CefRefPtr<CefClient> >(g_handler),
-                                url, browser_settings);
-
-  if(!g_handler->HasMainWindow()){
-    // Install a signal handler so we clean up after ourselves.
-    signal(SIGINT, destroy_handler);
-    signal(SIGTERM, destroy_handler);
+  if (!g_handler->HasMainWindow()) {
+    signal(SIGINT, destroyHandler);
+    signal(SIGTERM, destroyHandler);
   }
 }
 
-
 } /* appjs */
-

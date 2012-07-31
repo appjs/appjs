@@ -330,31 +330,31 @@ void NativeWindow::Drag() {
 
 }
 
-void NativeWindow::Move(int top, int left, int width, int height) {
+void NativeWindow::Move(int left, int top, int width, int height) {
   NSRect windowRect = { { left  , top } , { width , height} };
   [[handle_ window] setFrame:[[handle_ window] frameRectForContentRect: windowRect] display:YES];
 }
 
-void NativeWindow::Move(int top, int left) {
+void NativeWindow::Move(int left, int top) {
   NSRect windowRect = [[handle_ window] frame];
-  windowRect.origin.y = top;
-  windowRect.origin.y = left;
+  rect_.left = windowRect.origin.x = left;
+  rect_.top = windowRect.origin.y = top;
   [[handle_ window] setFrame:[[handle_ window] frameRectForContentRect: windowRect] display:YES];
 }
 
 void NativeWindow::Resize(int width, int height) {
   NSRect windowRect = [[handle_ window] frame];
-  windowRect.size.width = width;
-  windowRect.size.height = height;
+  rect_.width  = windowRect.size.width = width;
+  rect_.height = windowRect.size.height = height;
   [[handle_ window] setFrame:[[handle_ window] frameRectForContentRect: windowRect] display:YES];
 }
 
 void NativeWindow::UpdatePosition(){
   NSRect rect = [[handle_ window] frame];
+  rect_.left   = rect.origin.x;
+  rect_.top    = rect.origin.y;
   rect_.width  = rect.size.width;
   rect_.height = rect.size.height;
-  rect_.top    = rect.origin.y;
-  rect_.left   = rect.origin.x;
 }
 
 NW_STATE NativeWindow::GetState(){

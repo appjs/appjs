@@ -13,8 +13,9 @@ using namespace appjs;
 
 int windowCount = 0;
 
-ClientHandler::ClientHandler()
-  : mainBrowserHandle(NULL) {
+ClientHandler::ClientHandler(CefBrowserSettings browserSettings)
+  : mainBrowserHandle(NULL),
+  browserSettings_(browserSettings) {
 }
 
 ClientHandler::~ClientHandler() {
@@ -112,7 +113,7 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 
 void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode) {
   REQUIRE_UI_THREAD();
-  if (!browser->IsPopup()) {
+  if (!browser->IsPopup() && frame->IsMain()) {
     GetWindow(browser)->Emit("ready");
   }
 }
