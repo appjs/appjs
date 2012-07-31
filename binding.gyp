@@ -46,15 +46,20 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-darwin/build/Release',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-darwin/libs/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
                 '<(module_root_dir)/deps/cef/Release/lib.target/ffmpegsumo.so',
-                '<(PRODUCT_DIR)/appjs.node'
               ],
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-darwin',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs/bindings/darwin/ia32/',
+              'files': [
+                '<(PRODUCT_DIR)/appjs.node'
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-darwin/',
               'files': [
                 '<(module_root_dir)/data/mac/package.json',
                 '<(module_root_dir)/data/mac/index.js',
@@ -68,7 +73,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-darwin/data/pak',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-darwin/data/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/Resources/chrome.pak',
               ]
@@ -102,10 +107,15 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-linux-<(target_arch)/build/Release/',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs/bindings/linux/<(target_arch)/',
+              'files': [
+                '<(PRODUCT_DIR)/appjs.node'
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-linux-<(target_arch)/libs/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.so',
-                '<(PRODUCT_DIR)/appjs.node'
               ],
             },
             {
@@ -130,7 +140,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-linux-<(target_arch)/data/pak',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-linux-<(target_arch)/data/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/chrome.pak',
                 '<(module_root_dir)/deps/cef/Release/locales/'
@@ -162,7 +172,13 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win32/build/Release/',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs/bindings/win32/ia32/',
+              'files': [
+                '<(PRODUCT_DIR)/appjs.node'
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win32/libs/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/libcef.dll',
                 '<(module_root_dir)/deps/cef/Release/avcodec-54.dll',
@@ -173,7 +189,6 @@
                 '<(module_root_dir)/deps/cef/Release/icudt.dll',
                 '<(module_root_dir)/deps/cef/Release/libEGL.dll',
                 '<(module_root_dir)/deps/cef/Release/libGLESv2.dll',
-                '<(PRODUCT_DIR)/appjs.node'
               ],
             },
             {
@@ -197,7 +212,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win32/data/pak',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win32/data/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/chrome.pak',
                 '<(module_root_dir)/deps/cef/Release/locales/'
