@@ -1,13 +1,13 @@
 var npm          = require('npm'),
-    errorHandler =require('npm/lib/utils/error-handler'),
+    errorHandler = require('npm/lib/utils/error-handler'),
     platform     = process.platform,
     arch         = process.arch,
     dependency   = 'appjs-' + platform;
 
-if(platform == "linux") {
-    dependency += '-' + arch;
+if (platform == "linux") {
+  dependency += '-' + arch;
 }
 
-npm.load({},function(){
-    npm.commands.install([dependency],errorHandler);
-})
+npm.load({}, function(){
+  npm.commands.install([dependency], errorHandler);
+});

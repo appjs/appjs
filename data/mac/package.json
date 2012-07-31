@@ -2,7 +2,7 @@
   "name": "appjs-darwin",
   "os": [ "darwin" ],
   "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS",
-  "version": "0.1.0",
+  "version": "0.0.18",
   "keywords": [ "cef", "webkit", "browser", "canvas", "html5", "desktop", "native", "gtk", "ui", "sdk" ],
   "homepage": "http://appjs.org",
   "repository": {
@@ -29,9 +29,7 @@
   "engines": {
     "node": ">=0.8"
   },
-  "dependencies": {
-    "mime":"1.2.5"
-  },
+  "dependencies": {},
   "scripts": {
     "install": "node cli/configure.js && node cli/build.js"
   },

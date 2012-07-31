@@ -30,8 +30,8 @@
     "postinstall" : "node-gyp rebuild"
   },
   "dependencies": {
-    "mime": "1.2.5",
-    "request": "2.9.x",
+    "mime": ">= 1.2.5",
+    "request": "2.9",
     "tar": ">= 0.1.13"
   },
   "licenses": [{
