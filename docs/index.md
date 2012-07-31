@@ -84,7 +84,7 @@ Most of the controls to control the browser container are found on `window.frame
 * __window.frame.show()__
 * __window.frame.hide()__
 * __window.frame.resize(width, height)__
-* __window.frame.move(top, left, [width, [height]])__
+* __window.frame.move(left, top, [width], [height])__
 * __window.frame.fade(toOpacity, milliseconds, callback)__
 * __window.frame.drag()__ - (Windows only currently)
 * __window.frame.openDevTools()__

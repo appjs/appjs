@@ -39,6 +39,8 @@ public:
   void Emit(const char* event, v8::Local<v8::Value> arg);
   void Emit(const char* event, v8::Local<v8::Value> arg1, v8::Local<v8::Value> arg2);
   void Emit(const char* event, int arg1, int arg2);
+  void Emit(const char* event, const int arg1, const int arg2, const int arg3);
+  long JSResult();
   void PrepareClose();
   bool IsClosed();
 
@@ -52,11 +54,11 @@ public:
   void Hide();
   void Destroy();
 
-  void Move(int top, int left, int width, int height);
-  void Move(int top, int left);
+  void Move(int left, int top, int width, int height);
+  void Move(int left, int top);
   void Move(appjs_rect rect);
   void Resize(int width, int height);
-  void UpdatePosition(int top, int left, int width, int height);
+  void UpdatePosition(int left, int top, int width, int height);
   void UpdatePosition(appjs_rect rect);
   void UpdatePosition();
 

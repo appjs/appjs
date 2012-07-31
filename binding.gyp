@@ -11,10 +11,15 @@
           'destination': '<(module_root_dir)/app/data/node_modules/appjs/',
           'files': [
             '<(module_root_dir)/README.md',
+            '<(module_root_dir)/package.json',
             '<(module_root_dir)/examples/',
             '<(module_root_dir)/lib/',
-            '<(module_root_dir)/data/common/appjs/package.json',
-            '<(module_root_dir)/data/common/appjs/cli/',
+          ]
+        },
+        {
+          'destination': '<(module_root_dir)/app/data/node_modules/appjs/cli/',
+          'files': [
+            '<(module_root_dir)/cli/postinstall.js',
           ]
         },
         {

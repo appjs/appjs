@@ -395,7 +395,7 @@ void NativeWindow::Drag() {
 
 }
 
-void NativeWindow::Move(int top, int left, int width, int height) {
+void NativeWindow::Move(int left, int top, int width, int height) {
   if(fullscreen_) return;
 
   int screenHeight = [[NSScreen mainScreen] visibleFrame].size.height;
@@ -405,7 +405,7 @@ void NativeWindow::Move(int top, int left, int width, int height) {
   [[handle_ window] setFrame:[[handle_ window] frameRectForContentRect: windowRect] display:YES];
 }
 
-void NativeWindow::Move(int top, int left) {
+void NativeWindow::Move(int left, int top) {
   if(fullscreen_) return;
 
   NSRect windowRect = [[handle_ window] frame];
@@ -418,8 +418,8 @@ void NativeWindow::Move(int top, int left) {
 
 void NativeWindow::Resize(int width, int height) {
   NSRect windowRect = [[handle_ window] frame];
-  windowRect.size.width = width;
-  windowRect.size.height = height;
+  rect_.width  = windowRect.size.width = width;
+  rect_.height = windowRect.size.height = height;
   [[handle_ window] setFrame:[[handle_ window] frameRectForContentRect: windowRect] display:YES];
 }
 
