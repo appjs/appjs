@@ -1,7 +1,7 @@
 {
-  "name": "appjs-dev",
-  "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS. This is development package.",
-  "version": "0.1.0",
+  "name": "appjs",
+  "description": "AppJS is a SDK on top of nodejs to develop desktop applications using HTML/CSS/JS",
+  "version": "0.0.18",
   "keywords": [ "cef", "webkit", "browser", "canvas", "html5", "desktop", "native", "gtk", "ui", "sdk" ],
   "homepage": "http://appjs.org",
   "repository": {
@@ -20,19 +20,20 @@
     "email": "brandon@bbenvie.com"
   }],
   "directories": {
-    "lib": "./lib"
+    "doc": "./doc",
+    "lib": "./lib",
+    "bin": "./bin",
+    "test": "./tests"
   },
+  "main": "./lib/index.js",
   "engines": {
     "node": ">=0.8"
   },
-  "scripts" : {
-    "install" : "node cli/configure.js",
-    "postinstall" : "node-gyp rebuild"
-  },
   "dependencies": {
-    "mime": ">= 1.2.5",
-    "request": "2.9",
-    "tar": ">= 0.1.13"
+    "mime": ">=1.2.5"
+  },
+  "scripts": {
+    "postinstall": "node cli/postinstall.js"
   },
   "licenses": [{
     "type": "MIT",
