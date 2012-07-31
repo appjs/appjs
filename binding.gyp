@@ -246,7 +246,6 @@
         ['OS=="mac"', {
           'sources': [
             'src/includes/cef_base_mac.mm',
-            'src/includes/cef_handler_mac.mm',
             'src/mac/native_window_mac.mm'
           ],
           'defines': [
@@ -268,7 +267,6 @@
         ['OS=="linux"', {
           'sources': [
             'src/includes/cef_base_gtk.cpp',
-            'src/includes/cef_handler_gtk.cpp',
             'src/linux/native_window_linux.cpp',
           ],
           'defines': [
@@ -293,7 +291,6 @@
         ['OS=="win"', {
           'sources': [
             'src/includes/cef_base_win.cpp',
-            'src/includes/cef_handler_win.cpp',
             'src/windows/native_window_win.cpp'
           ],
           'defines': [

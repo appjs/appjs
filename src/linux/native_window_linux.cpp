@@ -155,8 +155,13 @@ int NativeWindow::ScreenHeight() {
   return gdk_screen_get_height(screen);
 }
 
-void NativeWindow::SetWindowTitle(CefWindowHandle handle, const char* title) {
-  gtk_window_set_title((GtkWindow*)handle, title);
+
+NativeWindow* NativeWindow::GetWindow(CefWindowHandle handle){
+  return (NativeWindow*)g_object_get_data(G_OBJECT(handle), "nativewindow");
+}
+
+NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
+  return GetWindow(gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()), GTK_TYPE_WINDOW));
 }
 
 void NativeWindow::Minimize() {
@@ -231,6 +236,11 @@ const char* NativeWindow::GetTitle() {
   if( title == NULL ) return "";
   return title;
 }
+
+void NativeWindow::SetTitle(const char* title) {
+  gtk_window_set_title((GtkWindow*)handle_, title);
+}
+
 
 void NativeWindow::Fullscreen(){
   gtk_window_fullscreen((GtkWindow*)handle_);

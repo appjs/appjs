@@ -126,8 +126,17 @@ int NativeWindow::ScreenHeight() {
   return GetSystemMetrics(SM_CYSCREEN);
 }
 
-void NativeWindow::SetWindowTitle(CefWindowHandle handle, const char* title) {
-  SetWindowText(handle, title);
+NativeWindow* NativeWindow::GetWindow(CefWindowHandle handle){
+  return (NativeWindow*)GetWindowLongPtr(handle, GWLP_USERDATA);
+}
+
+NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
+  return GetWindow(GetParent(browser->GetWindowHandle()));
+}
+
+
+void NativeWindow::SetTitle(const char* title) {
+  SetWindowText(handle_, title);
 }
 
 // ############################
@@ -387,7 +396,7 @@ ATOM MyRegisterClass(HINSTANCE hInst) {
 
 // Processes messages for the main window.
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-  NativeWindow* window = ClientHandler::GetWindow(hwnd);
+  NativeWindow* window = NativeWindow::GetWindow(hwnd);
   CefRefPtr<CefBrowser> browser;
   if (window) {
     browser = window->GetBrowser();

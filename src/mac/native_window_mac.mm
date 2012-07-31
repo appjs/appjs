@@ -48,7 +48,7 @@ static NSAutoreleasePool* g_autopool = nil;
 
 - (void)windowDidBecomeKey:(NSNotification*)notification {
   NSWindow* mainWnd = (NSWindow*)notification.object;
-  appjs::NativeWindow* nativewindow = g_handler->GetWindow([mainWnd contentView]);
+  appjs::NativeWindow* nativewindow = GetWindow([mainWnd contentView]);
   nativewindow->GetBrowser()->SetFocus(true);
 }
 
@@ -112,7 +112,7 @@ static NSAutoreleasePool* g_autopool = nil;
 // to be removed from the screen.
 - (BOOL)windowShouldClose:(id)window {
 
-  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  appjs::NativeWindow* nativewindow = GetWindow([window contentView]);
   nativewindow->GetBrowser()->ParentWindowWillClose();
 
   // Clean ourselves up after clearing the stack of anything that might have the
@@ -295,11 +295,22 @@ int NativeWindow::ScreenHeight() {
   return screen_rect.size.height;
 }
 
-void NativeWindow::SetWindowTitle(CefWindowHandle handle, const char* title) {
-  NSWindow* win = [handle window];
+void NativeWindow::SetTitle(const char* title) {
+  NSWindow* win = [handle_ window];
   [win setTitle: [NSString stringWithUTF8String:title]];
 }
 
+
+NativeWindow* NativeWindow::GetWindow(CefWindowHandle handle){
+  NSWindow* win = [handle window];
+  Wrapper* wrap = (Wrapper*) objc_getAssociatedObject(win, (char *)"nativewindow");
+  NativeWindow* window = [wrap handle];
+  return window;
+}
+
+NativeWindow* NativeWindow::GetWindow(CefWindowHandle handle){
+  return GetWindow(browser->GetWindowHandle());
+}
 
 void NativeWindow::Destroy() {
   [[handle_ window] performSelectorOnMainThread:@selector(performClose:)

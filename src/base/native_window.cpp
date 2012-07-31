@@ -25,14 +25,10 @@ NativeWindow::NativeWindow(char* url, Settings* settings){
   fullscreen_ = settings->getBoolean("fullscreen",false);
   icons = new Settings(settings->getObject("icons", Object::New()));
 
-  if (initialized) {
-    is_main_window_ = false;
-  } else {
-    is_main_window_ = true;
-    initialized = true;
-  }
-
+  is_main_window_ = !initialized;
+  initialized = true;
   closed_ = false;
+
   Init(url, settings);
 
   if (settings->getBoolean("topmost",false)) {
@@ -164,10 +160,6 @@ int NativeWindow::GetLeft(){
 }
 int NativeWindow::GetTop(){
   return rect_.top;
-}
-
-void NativeWindow::SetTitle(const char* title) {
-  SetWindowTitle(handle_, title);
 }
 
 bool NativeWindow::GetTopmost(){

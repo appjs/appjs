@@ -32,7 +32,8 @@ public:
 
   static int ScreenWidth();
   static int ScreenHeight();
-  static void SetWindowTitle(CefWindowHandle handle, const char* title);
+  static NativeWindow* GetWindow(CefWindowHandle handle);
+  static NativeWindow* GetWindow(CefRefPtr<CefBrowser> browser);
 
   void Emit(v8::Local<v8::Value>* args);
   void Emit(const char* event);

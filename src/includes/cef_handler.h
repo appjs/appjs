@@ -47,12 +47,6 @@ public:
     return this;
   }
 
-  static v8::Handle<v8::Object> CreatedBrowser(CefRefPtr<CefBrowser> browser);
-  static v8::Handle<v8::Object> GetNodeWindow(CefRefPtr<CefBrowser> browser);
-  static appjs::NativeWindow* GetWindow(CefWindowHandle handle);
-  static appjs::NativeWindow* GetWindow(CefRefPtr<CefBrowser> browser);
-  static CefWindowHandle GetContainer(CefRefPtr<CefBrowser> browser);
-
   virtual bool HasMainWindow();
   virtual void Shutdown();
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
