@@ -52,8 +52,6 @@ Window objects are created and returned by app.createWindow. A window object wil
 * __window.on('restore')__ - window was just restored
 * __window.on('move')__ - window was just moveed
 * __window.on('resize')__ - window was just resized
-* __window.on('title-change')__ - window title just change
-
 
 ## Frame
 
