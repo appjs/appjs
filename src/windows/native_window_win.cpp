@@ -134,11 +134,6 @@ NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
   return GetWindow(GetParent(browser->GetWindowHandle()));
 }
 
-
-void NativeWindow::SetTitle(const char* title) {
-  SetWindowText(handle_, title);
-}
-
 // ############################
 // ### NativeWindow methods ###
 // ############################
@@ -277,6 +272,9 @@ const char* NativeWindow::GetTitle() {
   return title;
 }
 
+void NativeWindow::SetTitle(const char* title) {
+  SetWindowText(handle_, title);
+}
 
 void NativeWindow::Move(int left, int top, int width, int height) {
   UpdatePosition(left, top, width, height);
@@ -336,7 +334,7 @@ void NativeWindow::SetResizable(bool resizable) {
 }
 
 bool NativeWindow::GetResizable() {
-  return GetWindowLongPtr(handle_, GWL_STYLE) & WS_SIZEBOX;
+  return GetWindowLongPtr(handle_, GWL_STYLE) & WS_SIZEBOX > 0;
 }
 
 void NativeWindow::SetShowChrome(bool showChrome) {

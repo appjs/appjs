@@ -98,6 +98,11 @@ Local<Object> Settings::getObject(const char* property, Local<Object> defaultVal
   return (tmp->IsObject())? tmp->ToObject() : defaultValue;
 }
 
+Local<Object> Settings::getObject(const char* property) {
+  Local<Value> tmp = get(property);
+  return tmp->IsObject() ? tmp->ToObject() : Object::New();
+}
+
 Local<Value> Settings::get(const char* property) {
   return settings_->Get(String::New(property));
 }

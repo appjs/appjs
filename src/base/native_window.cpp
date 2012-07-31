@@ -11,27 +11,27 @@ namespace appjs {
 
 using namespace v8;
 
-NativeWindow::NativeWindow(char* url, Settings* settings){
-  rect_.width = settings->getNumber("width",800);
-  rect_.height = settings->getNumber("height",600);
-  rect_.left = settings->getNumber("left",-1);
-  rect_.top = settings->getNumber("top",-1);
-  opacity_ = settings->getNumber("opacity",1);
-  alpha_ = settings->getBoolean("alpha",false);
-  show_chrome_ = settings->getBoolean("showChrome",true);
-  auto_resize_ = settings->getBoolean("autoResize",false);
-  resizable_ = settings->getBoolean("resizable",true);
-  show_resize_grip = settings->getBoolean("showResizeGrip",false);
-  fullscreen_ = settings->getBoolean("fullscreen",false);
-  icons = new Settings(settings->getObject("icons", Object::New()));
-
+NativeWindow::NativeWindow(Settings* settings){
   is_main_window_ = !initialized;
   initialized = true;
   closed_ = false;
 
-  Init(url, settings);
+  rect_.width      = settings->getInteger("width", 800);
+  rect_.height     = settings->getInteger("height", 600);
+  rect_.left       = settings->getInteger("left", -1);
+  rect_.top        = settings->getInteger("top", -1);
+  opacity_         = settings->getInteger("opacity", 1);
+  alpha_           = settings->getBoolean("alpha", false);
+  show_chrome_     = settings->getBoolean("showChrome", true);
+  auto_resize_     = settings->getBoolean("autoResize", false);
+  resizable_       = settings->getBoolean("resizable", true);
+  show_resize_grip = settings->getBoolean("showResizeGrip", false);
+  fullscreen_      = settings->getBoolean("fullscreen", false);
+  icons            = new Settings(settings->getObject("icons"));
 
-  if (settings->getBoolean("topmost",false)) {
+  Init(settings->getString("url", ""), settings);
+
+  if (settings->getBoolean("topmost", false)) {
     SetTopmost(true);
   }
 

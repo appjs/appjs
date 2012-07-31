@@ -15,8 +15,8 @@ Window::~Window() {};
 
 Persistent<Function> Window::constructor;
 
-void Window::Init () {
-  DECLARE_CONSTRUCTOR("Window");
+void Window::Init() {
+  DECLARE_CONSTRUCTOR("NativeWindow");
   DECLARE_PROTOTYPE_METHOD("openDevTools", OpenDevTools);
   DECLARE_PROTOTYPE_METHOD("closeDevTools", CloseDevTools);
   DECLARE_PROTOTYPE_METHOD("restore", Restore);
@@ -52,28 +52,21 @@ void Window::Init () {
 Handle<Value> Window::New(const Arguments& args) {
   HandleScope scope;
 
-  Handle<Object> self = Persistent<Object>::New(args.This());
+  Persistent<Object> options = Persistent<Object>::New(args[0]->ToObject());
+  Settings* settings = new Settings(options);
+  NativeWindow* window = new NativeWindow(settings);
 
-  char* url = (args[0]->IsString()) ? V8StringToChar(args[0]->ToString()) : (char*) "/";
-  Persistent<Object> windowSettings = Persistent<Object>::New((args[1]->IsObject()) ? args[1]->ToObject() : Object::New());
-
-  Settings* settings = new Settings(windowSettings);
-  NativeWindow* window = new NativeWindow(url, settings);
+  Persistent<Object> self = Persistent<Object>::New(args.This());
   window->SetV8Handle(self);
-
-  self->SetPointerInInternalField (0, window);
+  self->SetPointerInInternalField(0, window);
 
   return scope.Close(args.This());
 }
 
 Handle<Value> Window::NewInstance(const Arguments& args) {
   HandleScope scope;
-
-  const unsigned argc = 2;
-  Handle<Value> argv[argc] = { args[0],args[1] };
-  Local<Object> instance = constructor->NewInstance(argc, argv);
-
-  return scope.Close(instance);
+  Handle<Value> argv[1] = { args[0] };
+  return scope.Close(constructor->NewInstance(1, argv));
 }
 
 CREATE_INSTANCE_ACCESSOR(Window, Left, Integer, MAKE_INT32)

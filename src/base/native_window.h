@@ -26,7 +26,7 @@ enum NW_STATE {
 class NativeWindow {
 
 public:
-  NativeWindow(char* url, Settings* settings);
+  NativeWindow(Settings* settings);
   ~NativeWindow();
   void Init(char* url, Settings* settings);
 

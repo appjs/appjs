@@ -17,7 +17,7 @@ void Init(Handle<v8::Object> target) {
 
   target->Set(String::NewSymbol("init"), FunctionTemplate::New(InitApp)->GetFunction());
   target->Set(String::NewSymbol("App"), App::constructor);
-  target->Set(String::NewSymbol("Window"), Window::constructor);
+  target->Set(String::NewSymbol("NativeWindow"), Window::constructor);
 }
 
 } /* appjs */
