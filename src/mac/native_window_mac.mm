@@ -38,7 +38,17 @@ static NSAutoreleasePool* g_autopool = nil;
 
 @end
 
+@interface AppjsWindow : NSWindow
+@end
 
+@implementation AppjsWindow
+-(BOOL)canBecomeKeyWindow {
+  return YES;
+}
+-(BOOL)canBecomeMainWindow {
+  return YES;
+}
+@end
 // Receives notifications from the browser window. Will delete
 // itself when done.
 @interface AppjsWindowDelegate : NSObject <NSWindowDelegate>
@@ -230,10 +240,11 @@ void NativeWindow::Init (char* url, Settings* settings) {
     styles = NSTitledWindowMask |
              NSClosableWindowMask |
              NSMiniaturizableWindowMask;
-  }
 
-  if( resizable_ ) {
-    styles |= NSResizableWindowMask;
+    if( resizable_ ) {
+      styles |= NSResizableWindowMask;
+    }
+
   }
 
   int screenHeight = [[NSScreen mainScreen] visibleFrame].size.height;
@@ -243,7 +254,7 @@ void NativeWindow::Init (char* url, Settings* settings) {
   NSRect window_rect = { {rect_.left, rect_.top} , {rect_.width, rect_.height} };
 
   // Create the window
-  NSWindow* mainWnd = [[NSWindow alloc]
+  NSWindow* mainWnd = [[AppjsWindow alloc]
                        initWithContentRect:window_rect
                        styleMask:(styles)
                        backing:NSBackingStoreBuffered
@@ -470,6 +481,7 @@ void NativeWindow::SetTopmost(bool ontop){
 
 void NativeWindow::SetResizable(bool resizable) {
   NSWindow* win = [handle_ window];
+  resizable_ = resizable;
   [win setStyleMask:(resizable ? [win styleMask] | NSResizableWindowMask
                                : [win styleMask] & ~NSResizableWindowMask)];
 }
@@ -479,14 +491,24 @@ bool NativeWindow::GetResizable() {
 }
 
 void NativeWindow::SetShowChrome(bool showChrome) {
-  NSWindow* win = [handle_ window];
-  [win setStyleMask:(showChrome ? [win styleMask] | NSBorderlessWindowMask
-                               : [win styleMask] & ~NSBorderlessWindowMask)];
+  NSWindow*    win = [handle_ window];
+  NSUInteger style =  NSTitledWindowMask |
+                      NSClosableWindowMask |
+                      NSMiniaturizableWindowMask;
+
+  if( resizable_ ) {
+    style |= NSResizableWindowMask;
+  }
+
+  [win setStyleMask:(showChrome ? style
+                               : NSBorderlessWindowMask)];
 
 }
 
 bool NativeWindow::GetShowChrome() {
-  return [[handle_ window] styleMask] & NSBorderlessWindowMask;
+  // NSBorderlessWindowMask is equal to zero. so we can not use
+  // bitwise and to determine it.
+  return [[handle_ window] styleMask] == NSBorderlessWindowMask;
 }
 
 void NativeWindow::SetAlpha(bool alpha) {
