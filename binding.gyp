@@ -294,7 +294,7 @@
           'link_settings': {
               'ldflags': [
                 '<!@(pkg-config --libs-only-L --libs-only-other gtk+-2.0 gthread-2.0)',
-                '-Wl,-R,\'$$ORIGIN/\'',
+                '-Wl,-R,\'$$ORIGIN/../../../../appjs-linux-<(target_arch)/libs/\'',
               ],
               'libraries': [
                 '<!@(pkg-config --libs-only-l gtk+-2.0 gthread-2.0)',
