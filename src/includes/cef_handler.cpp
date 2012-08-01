@@ -51,7 +51,7 @@ void ClientHandler::Shutdown() {
 
 void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
   REQUIRE_UI_THREAD();
-  if (!browser->IsPopup()) {
+  if (!browser->IsPopup() && frame->IsMain()) {
     context->Enter();
     CefRefPtr<CefV8Value> appjsObj = CefV8Value::CreateObject(NULL);
     CefRefPtr<CefV8Value> func = CefV8Value::CreateFunction("send", new AppjsSyncHandler(browser));
@@ -64,7 +64,7 @@ void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
 
 void ClientHandler::OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
   REQUIRE_UI_THREAD();
-  if (!browser->IsPopup()) {
+  if (!browser->IsPopup() && frame->IsMain()) {
     NativeWindow::GetWindow(browser)->Emit("context-released");
   }
 }
@@ -107,7 +107,7 @@ void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame>
 
 void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int width, int height) {
   REQUIRE_UI_THREAD();
-  if (!browser->IsPopup()) {
+  if (!browser->IsPopup() && frame->IsMain()) {
     NativeWindow* window = NativeWindow::GetWindow(browser);
     if (window != NULL && window->GetAutoResize()) {
       window->Resize(width, height);
