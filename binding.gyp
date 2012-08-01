@@ -269,7 +269,7 @@
           'cflags': [ '-m32' ],
           'ldflags': [ '-m32' ],
           'xcode_settings': {
-            'OTHER_LDFLAGS':['-Xlinker -rpath -Xlinker @loader_path/'],
+            'OTHER_LDFLAGS':['-Xlinker -rpath -Xlinker @loader_path/../../../../appjs-darwin/libs/'],
             'ARCHS': [ 'i386' ]
           },
           'link_settings': {

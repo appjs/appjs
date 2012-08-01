@@ -48,7 +48,7 @@ static NSAutoreleasePool* g_autopool = nil;
 
 - (void)windowDidBecomeKey:(NSNotification*)notification {
   NSWindow* mainWnd = (NSWindow*)notification.object;
-  appjs::NativeWindow* nativewindow = GetWindow([mainWnd contentView]);
+  appjs::NativeWindow* nativewindow = appjs::NativeWindow::GetWindow([mainWnd contentView]);
   nativewindow->GetBrowser()->SetFocus(true);
 }
 
@@ -59,43 +59,43 @@ static NSAutoreleasePool* g_autopool = nil;
 
 - (void)windowDidEnterFullScreen:(NSNotification*)notification {
   NSWindow* window = (NSWindow*)notification.object;
-  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  appjs::NativeWindow* nativewindow = appjs::NativeWindow::GetWindow([window contentView]);
   nativewindow->Emit("fullscreen");
 }
 
 - (void)windowDidExitFullScreen:(NSNotification*)notification {
   NSWindow* window = (NSWindow*)notification.object;
-  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  appjs::NativeWindow* nativewindow = appjs::NativeWindow::GetWindow([window contentView]);
   nativewindow->Emit("restore");
 }
 
 - (void)windowDidMiniaturize:(NSNotification*)notification {
   NSWindow* window = (NSWindow*)notification.object;
-  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  appjs::NativeWindow* nativewindow = appjs::NativeWindow::GetWindow([window contentView]);
   nativewindow->Emit("minimize");
 }
 
 - (void)windowDidDeminiaturize:(NSNotification*)notification {
   NSWindow* window = (NSWindow*)notification.object;
-  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  appjs::NativeWindow* nativewindow = appjs::NativeWindow::GetWindow([window contentView]);
   nativewindow->Emit("restore");
 }
 
 - (bool)windowShouldZoom:(NSWindow*)window {
-  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  appjs::NativeWindow* nativewindow = appjs::NativeWindow::GetWindow([window contentView]);
   nativewindow->Emit("maximize");
   return YES;
 }
 
 - (NSRect)windowWillUseStandardFrame:(NSWindow*)window:(NSRect)frame {
-  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  appjs::NativeWindow* nativewindow = appjs::NativeWindow::GetWindow([window contentView]);
   nativewindow->Emit("maximize");
    return frame;
 }
 
 - (void)windowDidResize:(NSNotification*)notification {
   NSWindow* window = (NSWindow*)notification.object;
-  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  appjs::NativeWindow* nativewindow = appjs::NativeWindow::GetWindow([window contentView]);
   NSRect rect = [window frame];
   if(nativewindow != NULL && nativewindow->GetState() != appjs::NW_STATE_FULLSCREEN)
     nativewindow->Emit("resize",rect.size.width,rect.size.height);
@@ -103,7 +103,7 @@ static NSAutoreleasePool* g_autopool = nil;
 
 - (void)windowDidMove:(NSNotification*)notification {
   NSWindow* window = (NSWindow*)notification.object;
-  appjs::NativeWindow* nativewindow = g_handler->GetWindow([window contentView]);
+  appjs::NativeWindow* nativewindow = appjs::NativeWindow::GetWindow([window contentView]);
   NSRect rect = [window frame];
   nativewindow->Emit("move",rect.origin.x,rect.origin.y);
 }
@@ -112,7 +112,7 @@ static NSAutoreleasePool* g_autopool = nil;
 // to be removed from the screen.
 - (BOOL)windowShouldClose:(id)window {
 
-  appjs::NativeWindow* nativewindow = GetWindow([window contentView]);
+  appjs::NativeWindow* nativewindow = appjs::NativeWindow::GetWindow([window contentView]);
   nativewindow->GetBrowser()->ParentWindowWillClose();
 
   // Clean ourselves up after clearing the stack of anything that might have the
@@ -308,8 +308,8 @@ NativeWindow* NativeWindow::GetWindow(CefWindowHandle handle){
   return window;
 }
 
-NativeWindow* NativeWindow::GetWindow(CefWindowHandle handle){
-  return GetWindow(browser->GetWindowHandle());
+NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
+  return NativeWindow::GetWindow(browser->GetWindowHandle());
 }
 
 void NativeWindow::Destroy() {
