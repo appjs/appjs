@@ -237,7 +237,7 @@
         'src/appjs.cpp',
         'src/appjs_app.cpp',
         'src/appjs_window.cpp',
-        'src/base/native_window.cpp',
+        'src/native_window/native_window.cpp',
         'src/includes/cef_handler.cpp',
         'src/includes/cef.cpp',
         'src/includes/cef_loop.cpp',
@@ -261,7 +261,7 @@
         ['OS=="mac"', {
           'sources': [
             'src/includes/cef_base_mac.mm',
-            'src/mac/native_window_mac.mm'
+            'src/native_window/native_window_mac.mm'
           ],
           'defines': [
             '__MAC__',
@@ -282,7 +282,7 @@
         ['OS=="linux"', {
           'sources': [
             'src/includes/cef_base_gtk.cpp',
-            'src/linux/native_window_linux.cpp',
+            'src/native_window/native_window_linux.cpp',
           ],
           'defines': [
             '__LINUX__',
@@ -306,7 +306,7 @@
         ['OS=="win"', {
           'sources': [
             'src/includes/cef_base_win.cpp',
-            'src/windows/native_window_win.cpp'
+            'src/native_window/native_window_win.cpp'
           ],
           'defines': [
             '__WIN__',
