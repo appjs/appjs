@@ -10,8 +10,9 @@ AppJS is an SDK to develop desktop applications using Node.js melded with Chromi
 ---
 
 * __Site: [appjs.org](http://appjs.org)__
-* __Google+: [Google+](https://plus.google.com/u/0/112803615725562877790/posts)__
-* __Community: [mailing list](https://groups.google.com/forum/#!forum/appjs-dev)__
+* __[Google+](https://plus.google.com/u/0/112803615725562877790/posts)__
+* __Mailing List: [mailing list](https://groups.google.com/forum/#!forum/appjs-dev)__
+* __IRC: #appjs at irc.freenode.net__
 
 ---
 
