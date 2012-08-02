@@ -3,7 +3,7 @@
 #pragma once
 
 #include "appjs.h"
-#include "base/native_window.h"
+#include "native_window/native_window.h"
 
 namespace appjs {
 

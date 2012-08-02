@@ -2,7 +2,7 @@
 #include "includes/cef.h"
 #include "includes/cef_sync_handler.h"
 #include "includes/util.h"
-#include "base/native_window.h"
+#include "native_window/native_window.h"
 
 namespace appjs {
 

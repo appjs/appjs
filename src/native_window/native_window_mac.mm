@@ -5,7 +5,7 @@
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
-#include "base/native_window.h"
+#include "native_window/native_window.h"
 
 // The global ClientHandler reference.
 extern CefRefPtr<ClientHandler> g_handler;

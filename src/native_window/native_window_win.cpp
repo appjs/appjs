@@ -8,7 +8,7 @@
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
-#include "base/native_window.h"
+#include "native_window/native_window.h"
 
 #define MAX_LOADSTRING 100
 #define SWP_STATECHANGED 0x8000

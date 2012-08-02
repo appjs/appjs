@@ -1,7 +1,7 @@
 #include <node.h>
 #include <gtk/gtk.h>
 #include "appjs.h"
-#include "base/native_window.h"
+#include "native_window/native_window.h"
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
