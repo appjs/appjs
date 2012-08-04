@@ -62,6 +62,7 @@ void NativeWindow::RunInBrowser(char* script){
 
 void NativeWindow::PrepareClose(){
   Emit("close");
+  browser_ = NULL;
   closed_ = true;
 }
 
@@ -221,7 +222,7 @@ void NativeWindow::Emit(const char* event, const int arg1, const int arg2, const
 long NativeWindow::JSResult(){
   Local<Value> result = v8handle_->Get(String::NewSymbol("result"));
   if (result->IsUndefined() || result->IsNull()) {
-    return NULL;
+    return 0;
   } else {
     v8handle_->Set(String::NewSymbol("result"), Undefined());
     return result->Int32Value();
