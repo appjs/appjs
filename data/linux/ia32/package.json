@@ -22,7 +22,7 @@
     "email": "brandon@bbenvie.com"
   }],
   "directories": {
-    "lib": "./lib",
+    "lib": "./lib"
   },
   "main": "./index.js",
   "engines": {
