@@ -12,8 +12,13 @@
           'files': [
             '<(module_root_dir)/README.md',
             '<(module_root_dir)/package.json',
-            '<(module_root_dir)/examples/',
             '<(module_root_dir)/lib/',
+          ]
+        },
+        {
+          'destination': '<(module_root_dir)/app/data/node_modules/appjs/examples/',
+          'files': [
+            '<(module_root_dir)/examples/hello-world/',
           ]
         },
         {
@@ -23,7 +28,7 @@
           ]
         },
         {
-          'destination': '<(module_root_dir)/app/data/node_modules/appjs/node_modules/',
+          'destination': '<(module_root_dir)/app/data/node_modules/',
           'files': [
             '<(module_root_dir)/node_modules/mime/',
           ]
