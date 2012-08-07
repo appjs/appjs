@@ -29,7 +29,7 @@ NativeWindow::NativeWindow(Settings* settings){
   fullscreen_      = settings->getBoolean("fullscreen", false);
   icons            = new Settings(settings->getObject("icons"));
 
-  Init(settings->getString("url", ""), settings);
+  Init(settings->getString("url", (char *)""), settings);
 
   if (settings->getBoolean("topmost", false)) {
     SetTopmost(true);
