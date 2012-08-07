@@ -5,7 +5,7 @@
 
 #define O_ENABLE(N) !initOptions->getBoolean(#N, true)
 #define O_DISABLE(N) !initOptions->getBoolean(#N, false)
-#define O_STRING(N) initOptions->getString(#N, "")
+#define O_STRING(N) initOptions->getString(#N, (char *)"")
 #define O_INTEGER(N) initOptions->getInteger(#N, 0)
 
 extern CefRefPtr<ClientHandler> g_handler;

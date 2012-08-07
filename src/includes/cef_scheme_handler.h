@@ -59,3 +59,4 @@ public:
 } /* appjs */
 
 #endif /* end of APPJS_CEF_SCHEME_HANDLER_H */
+
