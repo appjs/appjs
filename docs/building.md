@@ -7,7 +7,6 @@ The [Chromium Embedded Frame](https://github.com/appjs/appjs/downloads) distribu
 
 ## Mac
 
-``
     git clone git@github.com:appjs/appjs.git
     export NVERSION="0.8.5";
     export CEFVERSION="1.1180.724";
@@ -33,7 +32,6 @@ The [Chromium Embedded Frame](https://github.com/appjs/appjs/downloads) distribu
     ln -s cef_binary_${CEFVERSION}_darwin_ia32 cef
     cd ..
     node-gyp build
-``
 
 ## Windows
 Visual C++ 2010 must be available in some form. You can download [Visual C++ 2010 Express](http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express) for free.
