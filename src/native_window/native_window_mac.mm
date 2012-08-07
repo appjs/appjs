@@ -500,8 +500,12 @@ void NativeWindow::SetShowChrome(bool showChrome) {
     style |= NSResizableWindowMask;
   }
 
-  [win setStyleMask:(showChrome ? style
-                               : NSBorderlessWindowMask)];
+  if ( showChrome ) {
+    [win setStyleMask:(style)];
+  } else {
+    [win setStyleMask:(NSBorderlessWindowMask)];
+  }
+
 
 }
 
