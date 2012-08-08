@@ -44,6 +44,7 @@ public:
   static NativeWindow* GetWindow(CefRefPtr<CefBrowser> browser);
 
   void SetIcon(NW_ICONSIZE size, char* path);
+  void Emit(v8::Handle<v8::Value>* args);
   void Emit(v8::Local<v8::Value>* args);
   void Emit(const char* event);
   void Emit(const char* event, v8::Local<v8::Value> arg);
