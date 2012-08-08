@@ -7,6 +7,7 @@
 #include "appjs.h"
 #include "includes/cef.h"
 #include "includes/util.h"
+#include "includes/util_win.h"
 #include "includes/cef_handler.h"
 #include "native_window/native_window.h"
 
@@ -81,6 +82,20 @@ void BlurBehind(HWND hwnd, bool enable){
   }
 }
 
+void MakeIcon(HICON icon, char* path) {
+  Gdiplus::Bitmap* bitmap = Gdiplus::Bitmap::FromFile(ToWChar(path));
+  if (bitmap->GetWidth()) {
+    bitmap->GetHICON(&icon);
+    delete bitmap;
+  }
+}
+
+HICON MakeIcon(char* path) {
+  HICON icon;
+  MakeIcon(icon, path);
+  return icon;
+}
+
 void SetNCWidth(HWND hwnd, int left, int right, int top, int bottom){
   if (DwmExtendFrameIntoClientArea != NULL) {
     MARGINS margins = {left, right, top, bottom};
@@ -89,10 +104,7 @@ void SetNCWidth(HWND hwnd, int left, int right, int top, int bottom){
 }
 
 void SetNCWidth(HWND hwnd, int size){
-  if (DwmExtendFrameIntoClientArea != NULL) {
-    MARGINS margins = {size, size, size, size};
-    DwmExtendFrameIntoClientArea(hwnd, &margins);
-  }
+  SetNCWidth(hwnd, size, size, size, size);
 }
 
 void ForceForegroundWindow(HWND hwnd) {
@@ -114,6 +126,9 @@ void ForceForegroundWindow(HWND hwnd) {
     AttachThreadInput(localTID, activeTID, false);
   }
 }
+
+
+
 // #####################################
 // ### Static NativeWindow Functions ###
 // #####################################
@@ -141,6 +156,7 @@ NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
 void NativeWindow::Init(char* url, Settings* settings) {
   url_ = url;
 
+  HINSTANCE hInstance = GetModuleHandle(NULL);
 
   if (is_main_window_) {
     dwmapiDLL = LoadLibrary(TEXT("dwmapi.dll"));
@@ -171,13 +187,12 @@ void NativeWindow::Init(char* url, Settings* settings) {
       delete[] wBigIconPath;
       delete bigIconBitmap;
     }
+
+    strcpy(szWindowClass,"AppjsWindow");
+    MyRegisterClass(hInstance);
   }
 
-  HINSTANCE hInstance = GetModuleHandle(NULL);
-  strcpy(szWindowClass,"AppjsWindow");
   browserSettings = settings;
-
-  MyRegisterClass(hInstance);
 
   if (rect_.left < 0 || rect_.top < 0) {
     rect_.left = (GetSystemMetrics(SM_CXSCREEN) - rect_.width) / 2;
@@ -266,6 +281,30 @@ void NativeWindow::Fullscreen(){
   }
 }
 
+
+// void NativeWindow::SetAppIcon(NW_ICONSIZE size, wchar_t* path) {
+//   int flag;
+//   switch (size) {
+//     case NW_ICONSIZE_SMALLER: flag = ICON_SMALL; break;
+//     case NW_ICONSIZE_SMALL:   flag = ICON_SMALL; break;
+//     case NW_ICONSIZE_BIG:     flag = ICON_BIG; break;
+//     case NW_ICONSIZE_BIGGER:  flag = ICON_BIG; break;
+//   }
+//   SetClassLongPtr(hwnd, (int)large, (LONG_PTR)MakeIcon(path));
+// }
+
+
+void NativeWindow::SetIcon(NW_ICONSIZE size, char* path) {
+  int flag;
+  switch (size) {
+    case NW_ICONSIZE_SMALLER: flag = ICON_SMALL; break;
+    case NW_ICONSIZE_SMALL:   flag = ICON_SMALL; break;
+    case NW_ICONSIZE_BIG:     flag = ICON_BIG; break;
+    case NW_ICONSIZE_BIGGER:  flag = ICON_BIG; break;
+  }
+  SendMessage(handle_, WM_SETICON, flag, (LPARAM)MakeIcon(path));
+}
+
 const char* NativeWindow::GetTitle() {
   TCHAR title[80];
   GetWindowText(handle_, title, 80);
@@ -334,7 +373,7 @@ void NativeWindow::SetResizable(bool resizable) {
 }
 
 bool NativeWindow::GetResizable() {
-  return GetWindowLongPtr(handle_, GWL_STYLE) & WS_SIZEBOX > 0;
+  return (GetWindowLongPtr(handle_, GWL_STYLE) & WS_SIZEBOX) > 0;
 }
 
 void NativeWindow::SetShowChrome(bool showChrome) {
