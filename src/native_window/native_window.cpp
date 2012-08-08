@@ -179,6 +179,12 @@ appjs_rect NativeWindow::GetRect() {
   return rect_;
 }
 
+void NativeWindow::Emit(Handle<Value>* args){
+  if (!closed_) {
+    node::MakeCallback(v8handle_, "emit", ARRAY_SIZE(args), args);
+  }
+}
+
 void NativeWindow::Emit(Local<Value>* args){
   if (!closed_) {
     node::MakeCallback(v8handle_, "emit", ARRAY_SIZE(args), args);

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>appjsexample</string>
+	<key>CFBundleDisplayName</key>
+	<string>AppJSExample</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.appjs.example</string>
+	<key>CFBundleIconFile</key>
+	<string>example</string>
+	<key>CFBundleVersion</key>
+	<string>0.0.MASTER</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>APSE</string>
+	<key>CFBundleExecutable</key>
+	<string>appjs</string>
+</dict>
+</plist>
