@@ -311,7 +311,8 @@
         ['OS=="win"', {
           'sources': [
             'src/includes/cef_base_win.cpp',
-            'src/native_window/native_window_win.cpp'
+            'src/includes/util_win.cpp',
+            'src/native_window/native_window_win.cpp',
           ],
           'defines': [
             '__WIN__',
