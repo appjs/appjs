@@ -1,0 +1,9 @@
+#!/bin/bash
+
+function realpath_f () {(cd "$1" && echo "$(pwd -P)")}
+
+basedir="$( realpath_f `dirname ${0}` )";
+basedir="$( dirname ${basedir} )";
+
+NODE_PATH="${basedir}/MacOS/node_modules";
+exec $basedir/MacOS/bin/node --harmony $basedir/Resources/app.js;
