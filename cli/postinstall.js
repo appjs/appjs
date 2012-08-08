@@ -1,5 +1,4 @@
-var npm          = require('npm'),
-    path         = require('path'),
+var path         = require('path'),
     //errorHandler = require('npm/lib/utils/error-handler'),
     exec         = require('child_process').exec,
     platform     = process.platform,

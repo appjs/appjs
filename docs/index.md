@@ -27,6 +27,7 @@ Most of these options are adjustable after window creation. They are all optiona
 * __height__          = 460
 * __left__            = centered
 * __top__             = centered
+* __name__            = auto-generated, it's only used to identify the window on `app.windows`
 * __url__             = 'http://appjs' - serve static file root and routers
 * __autoResize__      = false - resizes in response to html content
 * __showChrome__      = true - show border and title bar
