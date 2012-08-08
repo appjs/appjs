@@ -39,6 +39,7 @@ public:
   #endif
 
   v8::Local<v8::Object> getObject(const char*,v8::Local<v8::Object>);
+  v8::Local<v8::Object> getObject(const char*);
 
 private:
   v8::Persistent<v8::Object> settings_;

@@ -1,21 +1,6 @@
 {
   'targets': [
     {
-      'target_name': 'wrap',
-      'type':'none',
-      'dependencies': [
-        'publish'
-      ],
-      'copies':[
-        {
-          'destination': '<(module_root_dir)/app/data/node_modules/',
-          'files': [
-
-          ]
-        }
-      ]
-    },
-    {
       'target_name': 'publish',
       'type':'none',
       'dependencies': [
@@ -26,13 +11,24 @@
           'destination': '<(module_root_dir)/app/data/node_modules/appjs/',
           'files': [
             '<(module_root_dir)/README.md',
-            '<(module_root_dir)/examples/',
+            '<(module_root_dir)/package.json',
             '<(module_root_dir)/lib/',
-            '<(module_root_dir)/data/common/appjs/package.json',
           ]
         },
         {
-          'destination': '<(module_root_dir)/app/data/node_modules/appjs/node_modules/',
+          'destination': '<(module_root_dir)/app/data/node_modules/appjs/examples/',
+          'files': [
+            '<(module_root_dir)/examples/hello-world/',
+          ]
+        },
+        {
+          'destination': '<(module_root_dir)/app/data/node_modules/appjs/cli/',
+          'files': [
+            '<(module_root_dir)/cli/postinstall.js',
+          ]
+        },
+        {
+          'destination': '<(module_root_dir)/app/data/node_modules/',
           'files': [
             '<(module_root_dir)/node_modules/mime/',
           ]
@@ -40,8 +36,8 @@
         {
           'destination': '<(module_root_dir)/app/data/',
           'files': [
-            '<(module_root_dir)/data/common/content/',
-            '<(module_root_dir)/data/common/app.js'
+            '<(module_root_dir)/examples/hello-world/content/',
+            '<(module_root_dir)/examples/hello-world/app.js'
           ]
         }
       ],
@@ -55,15 +51,20 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-mac/build/Release',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-darwin/libs/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
                 '<(module_root_dir)/deps/cef/Release/lib.target/ffmpegsumo.so',
-                '<(PRODUCT_DIR)/appjs.node'
               ],
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-mac',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs/bindings/darwin/ia32/',
+              'files': [
+                '<(PRODUCT_DIR)/appjs.node'
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-darwin/',
               'files': [
                 '<(module_root_dir)/data/mac/package.json',
                 '<(module_root_dir)/data/mac/index.js',
@@ -83,7 +84,7 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-mac/data/pak',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-darwin/data/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/Resources/chrome.pak',
               ]
@@ -101,23 +102,6 @@
               ]
             }
           ]
-        },{ # !mac
-          'copies': [
-            {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-<(OS)/data/pak',
-              'files': [
-                '<(module_root_dir)/deps/cef/Release/chrome.pak',
-                '<(module_root_dir)/deps/cef/Release/locales/'
-              ]
-            },
-            {
-              'destination': '<(module_root_dir)/data/pak',
-              'files': [
-                '<(module_root_dir)/deps/cef/Release/chrome.pak',
-                '<(module_root_dir)/deps/cef/Release/locales/'
-              ]
-            }
-          ]
         }],
         ['OS=="linux"', {
           'copies': [
@@ -128,16 +112,21 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-linux/build/Release/',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs/bindings/linux/<(target_arch)/',
+              'files': [
+                '<(PRODUCT_DIR)/appjs.node'
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-linux-<(target_arch)/libs/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/lib.target/libcef.so',
-                '<(PRODUCT_DIR)/appjs.node'
               ],
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-linux/',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-linux-<(target_arch)/',
               'files': [
-                '<(module_root_dir)/data/linux/package.json',
+                '<(module_root_dir)/data/linux/<(target_arch)/package.json',
                 '<(module_root_dir)/data/linux/index.js',
                 '<(module_root_dir)/data/linux/README.md',
               ],
@@ -151,7 +140,22 @@
             {
               'destination': '<(module_root_dir)/app/data/bin/',
               'files': [
-                '<(module_root_dir)/data/linux/node-bin/<!@(node -e "console.log(require(\'os\').arch())")/node',
+                '<(module_root_dir)/data/linux/<(target_arch)/node-bin/node',
+                '<(module_root_dir)/deps/cef/Release/lib.target/libffmpegsumo.so'
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-linux-<(target_arch)/data/',
+              'files': [
+                '<(module_root_dir)/deps/cef/Release/chrome.pak',
+                '<(module_root_dir)/deps/cef/Release/locales/'
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/data/pak',
+              'files': [
+                '<(module_root_dir)/deps/cef/Release/chrome.pak',
+                '<(module_root_dir)/deps/cef/Release/locales/'
               ]
             }
           ]
@@ -173,7 +177,13 @@
               ]
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win/build/Release/',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs/bindings/win32/ia32/',
+              'files': [
+                '<(PRODUCT_DIR)/appjs.node'
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win32/libs/',
               'files': [
                 '<(module_root_dir)/deps/cef/Release/libcef.dll',
                 '<(module_root_dir)/deps/cef/Release/avcodec-54.dll',
@@ -184,11 +194,10 @@
                 '<(module_root_dir)/deps/cef/Release/icudt.dll',
                 '<(module_root_dir)/deps/cef/Release/libEGL.dll',
                 '<(module_root_dir)/deps/cef/Release/libGLESv2.dll',
-                '<(PRODUCT_DIR)/appjs.node'
               ],
             },
             {
-              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win/',
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win32/',
               'files': [
                 '<(module_root_dir)/data/win/package.json',
                 '<(module_root_dir)/data/win/index.js',
@@ -206,6 +215,20 @@
               'files': [
                 '<(module_root_dir)/data/win/node-bin/node.exe',
               ]
+            },
+            {
+              'destination': '<(module_root_dir)/app/data/node_modules/appjs-win32/data/',
+              'files': [
+                '<(module_root_dir)/deps/cef/Release/chrome.pak',
+                '<(module_root_dir)/deps/cef/Release/locales/'
+              ]
+            },
+            {
+              'destination': '<(module_root_dir)/data/pak',
+              'files': [
+                '<(module_root_dir)/deps/cef/Release/chrome.pak',
+                '<(module_root_dir)/deps/cef/Release/locales/'
+              ]
             }
           ]
         }]
@@ -219,7 +242,7 @@
         'src/appjs.cpp',
         'src/appjs_app.cpp',
         'src/appjs_window.cpp',
-        'src/base/native_window.cpp',
+        'src/native_window/native_window.cpp',
         'src/includes/cef_handler.cpp',
         'src/includes/cef.cpp',
         'src/includes/cef_loop.cpp',
@@ -243,8 +266,7 @@
         ['OS=="mac"', {
           'sources': [
             'src/includes/cef_base_mac.mm',
-            'src/includes/cef_handler_mac.mm',
-            'src/mac/native_window_mac.mm'
+            'src/native_window/native_window_mac.mm'
           ],
           'defines': [
             '__MAC__',
@@ -252,7 +274,7 @@
           'cflags': [ '-m32' ],
           'ldflags': [ '-m32' ],
           'xcode_settings': {
-            'OTHER_LDFLAGS':['-Xlinker -rpath -Xlinker @loader_path/'],
+            'OTHER_LDFLAGS':['-Xlinker -rpath -Xlinker @loader_path/../../../../appjs-darwin/libs/'],
             'ARCHS': [ 'i386' ]
           },
           'link_settings': {
@@ -265,8 +287,7 @@
         ['OS=="linux"', {
           'sources': [
             'src/includes/cef_base_gtk.cpp',
-            'src/includes/cef_handler_gtk.cpp',
-            'src/linux/native_window_linux.cpp',
+            'src/native_window/native_window_linux.cpp',
           ],
           'defines': [
             '__LINUX__',
@@ -278,7 +299,7 @@
           'link_settings': {
               'ldflags': [
                 '<!@(pkg-config --libs-only-L --libs-only-other gtk+-2.0 gthread-2.0)',
-                '-Wl,-R,\'$$ORIGIN/\'',
+                '-Wl,-R,\'$$ORIGIN/../../../../appjs-linux-<(target_arch)/libs/\'',
               ],
               'libraries': [
                 '<!@(pkg-config --libs-only-l gtk+-2.0 gthread-2.0)',
@@ -290,8 +311,7 @@
         ['OS=="win"', {
           'sources': [
             'src/includes/cef_base_win.cpp',
-            'src/includes/cef_handler_win.cpp',
-            'src/windows/native_window_win.cpp'
+            'src/native_window/native_window_win.cpp'
           ],
           'defines': [
             '__WIN__',

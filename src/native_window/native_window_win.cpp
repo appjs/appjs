@@ -8,9 +8,10 @@
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
-#include "base/native_window.h"
+#include "native_window/native_window.h"
 
 #define MAX_LOADSTRING 100
+#define SWP_STATECHANGED 0x8000
 
 extern CefRefPtr<ClientHandler> g_handler;
 
@@ -25,35 +26,35 @@ HICON smallIcon;
 HICON bigIcon;
 Settings* browserSettings;
 char* url_;
-bool initialized = false;
+bool emitFullscreen = false;
 
 
 // ###################################################
 // ### DWM functions that don't exist in WindowsXP ###
 // ###################################################
 
-typedef struct _pBLURBEHIND {
+typedef struct _BLURBEHIND {
   DWORD dwFlags;
   BOOL  fEnable;
   HRGN  hRgnBlur;
   BOOL  fTransitionOnMaximized;
-} pBLURBEHIND, *pPBLURBEHIND;
+} BLURBEHIND, *PBLURBEHIND;
 
-typedef struct _pMARGINS {
+typedef struct _MARGINS {
   int cxLeftWidth;
   int cxRightWidth;
   int cyTopHeight;
   int cyBottomHeight;
-} pMARGINS, *pPMARGINS;
+} MARGINS, *PMARGINS;
 
-typedef HRESULT (WINAPI *DWMEFICA)(HWND, pMARGINS*);
-typedef HRESULT (WINAPI *DWMEBBW)(HWND, pBLURBEHIND*);
+typedef HRESULT (WINAPI *DWMEFICA)(HWND, MARGINS*);
+typedef HRESULT (WINAPI *DWMEBBW)(HWND, BLURBEHIND*);
+typedef BOOL (WINAPI *DWMWP)(HWND, UINT, WPARAM, LPARAM, LRESULT*);
 
-static DWMEFICA pDwmExtendFrameIntoClientArea = NULL;
-static DWMEBBW pDwmEnableBlurBehindWindow = NULL;
+static DWMEFICA DwmExtendFrameIntoClientArea = NULL;
+static DWMEBBW DwmEnableBlurBehindWindow = NULL;
+static DWMWP DwmDefWindowProc = NULL;
 static HMODULE dwmapiDLL = NULL;
-
-
 
 // #################################
 // ### Windows Utility Functions ###
@@ -71,30 +72,48 @@ void NewStyle(HWND hwnd, int index, LONG value){
 }
 
 void BlurBehind(HWND hwnd, bool enable){
-  if (pDwmEnableBlurBehindWindow != NULL) {
-    pBLURBEHIND bb = {0};
+  if (DwmEnableBlurBehindWindow != NULL) {
+    BLURBEHIND bb = {0};
     bb.fEnable = enable;
     bb.hRgnBlur = NULL;
     bb.dwFlags = 1;
-    pDwmEnableBlurBehindWindow(hwnd, &bb);
+    DwmEnableBlurBehindWindow(hwnd, &bb);
   }
 }
 
 void SetNCWidth(HWND hwnd, int left, int right, int top, int bottom){
-  if (pDwmExtendFrameIntoClientArea != NULL) {
-    pMARGINS margins = {left, right, top, bottom};
-    pDwmExtendFrameIntoClientArea(hwnd, &margins);
+  if (DwmExtendFrameIntoClientArea != NULL) {
+    MARGINS margins = {left, right, top, bottom};
+    DwmExtendFrameIntoClientArea(hwnd, &margins);
   }
 }
 
 void SetNCWidth(HWND hwnd, int size){
-  if (pDwmExtendFrameIntoClientArea != NULL) {
-    pMARGINS margins = {size, size, size, size};
-    pDwmExtendFrameIntoClientArea(hwnd, &margins);
+  if (DwmExtendFrameIntoClientArea != NULL) {
+    MARGINS margins = {size, size, size, size};
+    DwmExtendFrameIntoClientArea(hwnd, &margins);
   }
 }
 
+void ForceForegroundWindow(HWND hwnd) {
+  DWORD lockTime = 0;
+  DWORD localTID = GetCurrentThreadId();
+  DWORD activeTID = GetWindowThreadProcessId(GetForegroundWindow(), 0);
 
+  if (localTID != activeTID) {
+    AttachThreadInput(localTID, activeTID, true);
+    SystemParametersInfo(SPI_GETFOREGROUNDLOCKTIMEOUT, 0, &lockTime, 0);
+    SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, 0, SPIF_SENDWININICHANGE | SPIF_UPDATEINIFILE);
+    AllowSetForegroundWindow(ASFW_ANY);
+  }
+
+  SetForegroundWindow(hwnd);
+
+  if (localTID != activeTID) {
+    SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, (PVOID)lockTime, SPIF_SENDWININICHANGE | SPIF_UPDATEINIFILE);
+    AttachThreadInput(localTID, activeTID, false);
+  }
+}
 // #####################################
 // ### Static NativeWindow Functions ###
 // #####################################
@@ -107,6 +126,14 @@ int NativeWindow::ScreenHeight() {
   return GetSystemMetrics(SM_CYSCREEN);
 }
 
+NativeWindow* NativeWindow::GetWindow(CefWindowHandle handle){
+  return (NativeWindow*)GetWindowLongPtr(handle, GWLP_USERDATA);
+}
+
+NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
+  return GetWindow(GetParent(browser->GetWindowHandle()));
+}
+
 // ############################
 // ### NativeWindow methods ###
 // ############################
@@ -114,12 +141,13 @@ int NativeWindow::ScreenHeight() {
 void NativeWindow::Init(char* url, Settings* settings) {
   url_ = url;
 
-  if (!initialized) {
-    initialized = true;
+
+  if (is_main_window_) {
     dwmapiDLL = LoadLibrary(TEXT("dwmapi.dll"));
     if (dwmapiDLL != NULL) {
-      pDwmExtendFrameIntoClientArea = (DWMEFICA)GetProcAddress(dwmapiDLL, "DwmExtendFrameIntoClientArea");
-      pDwmEnableBlurBehindWindow = (DWMEBBW)GetProcAddress(dwmapiDLL, "DwmEnableBlurBehindWindow");
+      DwmExtendFrameIntoClientArea = (DWMEFICA)GetProcAddress(dwmapiDLL, "DwmExtendFrameIntoClientArea");
+      DwmEnableBlurBehindWindow = (DWMEBBW)GetProcAddress(dwmapiDLL, "DwmEnableBlurBehindWindow");
+      DwmDefWindowProc = (DWMWP)GetProcAddress(dwmapiDLL, "DwmDefWindowProc");
     }
 
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
@@ -157,7 +185,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
   }
   browser_ = NULL;
   handle_ = CreateWindowEx(NULL, szWindowClass,"", WS_OVERLAPPEDWINDOW,
-                           rect_.top, rect_.left, rect_.width, rect_.height,
+                           rect_.left, rect_.top, rect_.width, rect_.height,
                            NULL, NULL, hInstance, NULL);
 
   SetWindowLongPtr(handle_, GWLP_USERDATA, (LONG)this);
@@ -200,19 +228,9 @@ void NativeWindow::Restore() {
   }
 }
 
-void SendKeyEvent(WORD key, DWORD flag){
-  INPUT input = { INPUT_KEYBOARD };
-  input.ki.wVk = key;
-  input.ki.wScan = MapVirtualKey(key, 0);
-  input.ki.dwFlags = flag;
-  SendInput(1, &input, sizeof(input));
-}
-
 void NativeWindow::Show() {
-  ShowWindow(handle_, SW_NORMAL);
-  SendKeyEvent(VK_MENU, 0);
-  SetForegroundWindow(handle_);
-  SendKeyEvent(VK_MENU, KEYEVENTF_KEYUP);
+  ShowWindow(handle_, SW_SHOWNORMAL);
+  ForceForegroundWindow(handle_);
 }
 
 void NativeWindow::Hide() {
@@ -242,6 +260,7 @@ void NativeWindow::Fullscreen(){
     SetWindowLongPtr(handle_, GWL_EXSTYLE, restoreExStyle_ & ~(WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE));
     SetWindowPos(handle_, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     HDC hDC = GetWindowDC(NULL);
+    emitFullscreen = true;
     SetWindowPos(handle_, NULL, 0, 0, GetDeviceCaps(hDC, HORZRES), GetDeviceCaps(hDC, VERTRES), SWP_FRAMECHANGED);
     UpdatePosition();
   }
@@ -253,15 +272,18 @@ const char* NativeWindow::GetTitle() {
   return title;
 }
 
+void NativeWindow::SetTitle(const char* title) {
+  SetWindowText(handle_, title);
+}
 
-void NativeWindow::Move(int top, int left, int width, int height) {
-  UpdatePosition(top, left, width, height);
+void NativeWindow::Move(int left, int top, int width, int height) {
+  UpdatePosition(left, top, width, height);
   SetWindowPos(handle_, NULL, left, top, width, height, NULL);
 }
 
-void NativeWindow::Move(int top, int left) {
-  rect_.top = top;
+void NativeWindow::Move(int left, int top) {
   rect_.left = left;
+  rect_.top = top;
   SetWindowPos(handle_, NULL, left, top, NULL, NULL, SWP_NOSIZE);
 }
 
@@ -274,10 +296,10 @@ void NativeWindow::Resize(int width, int height) {
 void NativeWindow::UpdatePosition(){
   RECT rect;
   GetWindowRect(handle_, &rect);
-  rect_.width = rect.right - rect.left;
-  rect_.height = rect.bottom - rect.top;
   rect_.left = rect.left;
   rect_.top = rect.top;
+  rect_.width = rect.right - rect.left;
+  rect_.height = rect.bottom - rect.top;
 }
 
 void NativeWindow::SetTopmost(bool ontop){
@@ -312,7 +334,7 @@ void NativeWindow::SetResizable(bool resizable) {
 }
 
 bool NativeWindow::GetResizable() {
-  return GetWindowLongPtr(handle_, GWL_STYLE) & WS_SIZEBOX;
+  return GetWindowLongPtr(handle_, GWL_STYLE) & WS_SIZEBOX > 0;
 }
 
 void NativeWindow::SetShowChrome(bool showChrome) {
@@ -345,11 +367,7 @@ void NativeWindow::SetStyle(long style, bool extended) {
 
 void NativeWindow::SetOpacity(double opacity) {
   opacity_ = opacity;
-  if (opacity < 1) {
-    UpdateStyle(handle_, GWL_EXSTYLE, WS_EX_LAYERED);
-  } else {
-    UpdateStyle(handle_, GWL_EXSTYLE, ~WS_EX_LAYERED);
-  }
+  UpdateStyle(handle_, GWL_EXSTYLE, opacity < 1 ? WS_EX_LAYERED : ~WS_EX_LAYERED);
   SetLayeredWindowAttributes(handle_, NULL, (char)(opacity * 255), LWA_ALPHA);
 }
 
@@ -369,14 +387,14 @@ ATOM MyRegisterClass(HINSTANCE hInst) {
   wcex.hIconSm       = smallIcon;
   wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
   wcex.lpszMenuName  = NULL;
-  wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+  wcex.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
   wcex.lpszClassName = szWindowClass;
   return RegisterClassEx(&wcex);
 }
 
 // Processes messages for the main window.
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-  NativeWindow* window = ClientHandler::GetWindow(hwnd);
+  NativeWindow* window = NativeWindow::GetWindow(hwnd);
   CefRefPtr<CefBrowser> browser;
   if (window) {
     browser = window->GetBrowser();
@@ -411,14 +429,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
                               rect.left, rect.top, rect.right - rect.left,
                               rect.bottom - rect.top, SWP_NOZORDER);
         EndDeferWindowPos(hdwp);
-        if (wParam & SIZE_MAXIMIZED) {
-          window->Emit("maximize");
-        } else if (wParam & SIZE_MINIMIZED) {
-          window->Emit("minimize");
-        } else if (wParam & SIZE_RESTORED) {
-          window->Emit("restore");
-        } else if (!(wParam & SIZE_MAXHIDE || wParam & SIZE_MAXSHOW)) {
+        if (emitFullscreen) {
+          emitFullscreen = false;
+          window->Emit("fullscreen");
+        } else {
           window->Emit("resize", (int)LOWORD(lParam), (int)HIWORD(lParam));
+        }
+      }
+      break;
+    }
+    case WM_WINDOWPOSCHANGING: {
+      WINDOWPOS *position;
+      position = (WINDOWPOS*)lParam;
+      if (position->flags & SWP_STATECHANGED) {
+        if (IsIconic(window->handle_)) {
+          window->Emit("minimize");
+        } else if (IsZoomed(window->handle_)) {
+          window->Emit("maximize");
+        } else {
+          window->Emit("restore");
         }
       }
       break;
@@ -429,17 +458,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         window->Emit("move", (int)LOWORD(lParam), (int)HIWORD(lParam));
       }
       break;
-    // case WM_ERASEBKGND:
-    //   return 1;
+    case WM_NCHITTEST: {
+      LRESULT result;
+      if (DwmDefWindowProc != NULL) {
+        if (DwmDefWindowProc(hwnd, message, wParam, lParam, &result)) {
+          return result;
+        }
+      }
+      break;
+    }
     case WM_ERASEBKGND:
       if (browser.get()) {
         return 0;
       }
+      break;
     case WM_CLOSE:
       if (browser.get()) {
         browser->ParentWindowWillClose();
       }
-    break;
+      break;
     //case WM_DESTROY:
     //  PostQuitMessage(0);
 

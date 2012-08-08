@@ -1,31 +1,37 @@
 #include "includes/cef.h"
 #include "includes/cef_handler.h"
-#include "base/native_window.h"
+#include "native_window/native_window.h"
 
 extern CefRefPtr<ClientHandler> g_handler;
+
+bool initialized = false;
+
 
 namespace appjs {
 
 using namespace v8;
 
-NativeWindow::NativeWindow(char* url, Settings* settings){
-  rect_.width = settings->getNumber("width",800);
-  rect_.height = settings->getNumber("height",600);
-  rect_.left = settings->getNumber("left",-1);
-  rect_.top = settings->getNumber("top",-1);
-  opacity_ = settings->getNumber("opacity",1);
-  alpha_ = settings->getBoolean("alpha",false);
-  show_chrome_ = settings->getBoolean("showChrome",true);
-  resizable_ = settings->getBoolean("resizable",true);
-  show_resize_grip = settings->getBoolean("showResizeGrip",false);
-  auto_resize = settings->getBoolean("autoResize",false);
-  fullscreen_ = settings->getBoolean("fullscreen",false);
-  icons = new Settings(settings->getObject("icons", Object::New()));
-  g_handler->SetAutoResize(auto_resize);
+NativeWindow::NativeWindow(Settings* settings){
+  is_main_window_ = !initialized;
+  initialized = true;
+  closed_ = false;
 
-  this->Init(url, settings);
+  rect_.width      = settings->getInteger("width", 800);
+  rect_.height     = settings->getInteger("height", 600);
+  rect_.left       = settings->getInteger("left", -1);
+  rect_.top        = settings->getInteger("top", -1);
+  opacity_         = settings->getInteger("opacity", 1);
+  alpha_           = settings->getBoolean("alpha", false);
+  show_chrome_     = settings->getBoolean("showChrome", true);
+  auto_resize_     = settings->getBoolean("autoResize", false);
+  resizable_       = settings->getBoolean("resizable", true);
+  show_resize_grip = settings->getBoolean("showResizeGrip", false);
+  fullscreen_      = settings->getBoolean("fullscreen", false);
+  icons            = new Settings(settings->getObject("icons"));
 
-  if (settings->getBoolean("topmost",false)) {
+  Init(settings->getString("url", (char *)""), settings);
+
+  if (settings->getBoolean("topmost", false)) {
     SetTopmost(true);
   }
 
@@ -54,6 +60,20 @@ void NativeWindow::RunInBrowser(char* script){
   }
 }
 
+void NativeWindow::PrepareClose(){
+  Emit("close");
+  browser_ = NULL;
+  closed_ = true;
+}
+
+bool NativeWindow::IsClosed(){
+  return closed_;
+}
+
+bool NativeWindow::IsMainWindow(){
+  return is_main_window_;
+}
+
 void NativeWindow::SetBrowser(CefRefPtr<CefBrowser> browser) {
   browser_ = browser;
 }
@@ -70,7 +90,7 @@ Handle<Object> NativeWindow::GetV8Handle() {
   return v8handle_;
 }
 
-void NativeWindow::UpdatePosition(int top, int left, int width, int height){
+void NativeWindow::UpdatePosition(int left, int top, int width, int height){
   rect_.width = width;
   rect_.height = height;
   rect_.left = left;
@@ -102,7 +122,7 @@ void NativeWindow::SetState(NW_STATE state){
 }
 
 void NativeWindow::Move(appjs_rect rect){
-  Move(rect.top, rect.left, rect.width, rect.height);
+  Move(rect.left, rect.top, rect.width, rect.height);
 }
 
 void NativeWindow::SetWidth(int width){
@@ -143,43 +163,71 @@ int NativeWindow::GetTop(){
   return rect_.top;
 }
 
-void NativeWindow::SetTitle(const char* title) {
-  ClientHandler::SetWindowTitle(handle_, title);
-}
-
 bool NativeWindow::GetTopmost(){
   return topmost_;
 }
 
+bool NativeWindow::GetAutoResize(){
+  return auto_resize_;
+}
+
+void NativeWindow::SetAutoResize(bool autoResize) {
+  auto_resize_ = autoResize;
+}
+
+appjs_rect NativeWindow::GetRect() {
+  return rect_;
+}
+
 void NativeWindow::Emit(Local<Value>* args){
-  HandleScope scope;
-  node::MakeCallback(v8handle_, "emit", ARRAY_SIZE(args), args);
+  if (!closed_) {
+    node::MakeCallback(v8handle_, "emit", ARRAY_SIZE(args), args);
+  }
 }
 
 void NativeWindow::Emit(const char* event){
-  HandleScope scope;
   Local<Value> args[1] = { String::New(event) };
-  node::MakeCallback(v8handle_, "emit", 1, args);
+  Emit(args);
 }
 
 void NativeWindow::Emit(const char* event, Local<Value> arg){
-  HandleScope scope;
   Local<Value> args[2] = { String::New(event), arg };
-  node::MakeCallback(v8handle_, "emit", 2, args);
+  Emit(args);
 }
 
 void NativeWindow::Emit(const char* event, Local<Value> arg1, Local<Value> arg2){
-  HandleScope scope;
   Local<Value> args[3] = { String::New(event), arg1, arg2 };
-  node::MakeCallback(v8handle_, "emit", 3, args);
+  Emit(args);
 }
 
 void NativeWindow::Emit(const char* event, int arg1, int arg2){
-  HandleScope scope;
   Local<Value> args[3] = { String::New(event), Integer::New(arg1), Integer::New(arg2) };
-  node::MakeCallback(v8handle_, "emit", 3, args);
+  Emit(args);
 }
 
+void NativeWindow::Emit(const char* event, const int arg1, const int arg2, const int arg3){
+  HandleScope handlescope;
+  Local<Value> args[4] = {
+    Local<Value>::New(String::New(event)),
+    Local<Value>::New(Integer::New(arg1)),
+    Local<Value>::New(Integer::New(arg2)),
+    Local<Value>::New(Integer::New(arg3))
+  };
+  if (!closed_) {
+    node::MakeCallback(v8handle_, "emit", 4, args);
+  }
+}
+
+
+long NativeWindow::JSResult(){
+  Local<Value> result = v8handle_->Get(String::NewSymbol("result"));
+  if (result->IsUndefined() || result->IsNull()) {
+    return 0;
+  } else {
+    v8handle_->Set(String::NewSymbol("result"), Undefined());
+    return result->Int32Value();
+  }
+}
 
 
 } /* appjs */

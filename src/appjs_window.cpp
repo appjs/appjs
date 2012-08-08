@@ -15,82 +15,85 @@ Window::~Window() {};
 
 Persistent<Function> Window::constructor;
 
-void Window::Init () {
-  CREATE_NODE_CONSTRUCTOR("Window");
-
-  DEFINE_PROTOTYPE_METHOD("openDevTools", OpenDevTools);
-  DEFINE_PROTOTYPE_METHOD("closeDevTools", CloseDevTools);
-  DEFINE_PROTOTYPE_METHOD("restore", Restore);
-  DEFINE_PROTOTYPE_METHOD("minimize", Minimize);
-  DEFINE_PROTOTYPE_METHOD("maximize", Maximize);
-  DEFINE_PROTOTYPE_METHOD("fullscreen", Fullscreen);
-  DEFINE_PROTOTYPE_METHOD("drag", Drag);
-  DEFINE_PROTOTYPE_METHOD("show", Show);
-  DEFINE_PROTOTYPE_METHOD("hide", Hide);
-  DEFINE_PROTOTYPE_METHOD("destroy", Destroy);
-  DEFINE_PROTOTYPE_METHOD("runInBrowser", RunInBrowser);
-  DEFINE_PROTOTYPE_METHOD("send", SendSync);
-  DEFINE_PROTOTYPE_METHOD("move", Move);
-  DEFINE_PROTOTYPE_METHOD("resize", Resize);
-  CREATE_CPP_ACCESSOR("left", Left);
-  CREATE_CPP_ACCESSOR("top", Top);
-  CREATE_CPP_ACCESSOR("height", Height);
-  CREATE_CPP_ACCESSOR("width", Width);
-  CREATE_CPP_ACCESSOR("title", Title);
-  CREATE_CPP_ACCESSOR("state", State);
-  CREATE_CPP_ACCESSOR("topmost", Topmost);
-  CREATE_CPP_ACCESSOR("resizable", Resizable);
-  CREATE_CPP_ACCESSOR("showChrome", ShowChrome);
-  CREATE_CPP_ACCESSOR("alpha", Alpha);
-  CREATE_CPP_ACCESSOR("opacity", Opacity);
+void Window::Init() {
+  DECLARE_CONSTRUCTOR("NativeWindow");
+  DECLARE_PROTOTYPE_METHOD("openDevTools", OpenDevTools);
+  DECLARE_PROTOTYPE_METHOD("closeDevTools", CloseDevTools);
+  DECLARE_PROTOTYPE_METHOD("restore", Restore);
+  DECLARE_PROTOTYPE_METHOD("minimize", Minimize);
+  DECLARE_PROTOTYPE_METHOD("maximize", Maximize);
+  DECLARE_PROTOTYPE_METHOD("fullscreen", Fullscreen);
+  DECLARE_PROTOTYPE_METHOD("drag", Drag);
+  DECLARE_PROTOTYPE_METHOD("show", Show);
+  DECLARE_PROTOTYPE_METHOD("hide", Hide);
+  DECLARE_PROTOTYPE_METHOD("destroy", Destroy);
+  DECLARE_PROTOTYPE_METHOD("runInBrowser", RunInBrowser);
+  DECLARE_PROTOTYPE_METHOD("send", SendSync);
+  DECLARE_PROTOTYPE_METHOD("move", Move);
+  DECLARE_PROTOTYPE_METHOD("resize", Resize);
+  DECLARE_INSTANCE_ACCESSOR("left", Left);
+  DECLARE_INSTANCE_ACCESSOR("top", Top);
+  DECLARE_INSTANCE_ACCESSOR("height", Height);
+  DECLARE_INSTANCE_ACCESSOR("width", Width);
+  DECLARE_INSTANCE_ACCESSOR("title", Title);
+  DECLARE_INSTANCE_ACCESSOR("state", State);
+  DECLARE_INSTANCE_ACCESSOR("topmost", Topmost);
+  DECLARE_INSTANCE_ACCESSOR("resizable", Resizable);
+  DECLARE_INSTANCE_ACCESSOR("showChrome", ShowChrome);
+  DECLARE_INSTANCE_ACCESSOR("alpha", Alpha);
+  DECLARE_INSTANCE_ACCESSOR("opacity", Opacity);
+  DECLARE_INSTANCE_ACCESSOR("autoResize", AutoResize);
 #ifdef __WIN__
-  DEFINE_PROTOTYPE_METHOD("style", Style);
+  DECLARE_PROTOTYPE_METHOD("style", Style);
 #endif
-
   END_CONSTRUCTOR();
 }
 
 Handle<Value> Window::New(const Arguments& args) {
   HandleScope scope;
 
-  Handle<Object> self = Persistent<Object>::New(args.This());
+  Persistent<Object> options = Persistent<Object>::New(args[0]->ToObject());
+  Settings* settings = new Settings(options);
+  NativeWindow* window = new NativeWindow(settings);
 
-  char* url = (args[0]->IsString()) ? V8StringToChar(args[0]->ToString()) : (char*) "/";
-  Persistent<Object> windowSettings = Persistent<Object>::New((args[1]->IsObject()) ? args[1]->ToObject() : Object::New());
-
-  Settings* settings = new Settings(windowSettings);
-  NativeWindow* window = new NativeWindow(url, settings);
+  Persistent<Object> self = Persistent<Object>::New(args.This());
   window->SetV8Handle(self);
-
-  self->SetPointerInInternalField (0, window);
+  self->SetPointerInInternalField(0, window);
 
   return scope.Close(args.This());
 }
 
 Handle<Value> Window::NewInstance(const Arguments& args) {
   HandleScope scope;
-
-  const unsigned argc = 2;
-  Handle<Value> argv[argc] = { args[0],args[1] };
-  Local<Object> instance = constructor->NewInstance(argc, argv);
-
-  return scope.Close(instance);
+  Handle<Value> argv[1] = { args[0] };
+  return scope.Close(constructor->NewInstance(1, argv));
 }
 
+CREATE_INSTANCE_ACCESSOR(Window, Left, Integer, MAKE_INT32)
+CREATE_INSTANCE_ACCESSOR(Window, Top, Integer, MAKE_INT32)
+CREATE_INSTANCE_ACCESSOR(Window, Width, Integer, MAKE_INT32)
+CREATE_INSTANCE_ACCESSOR(Window, Height, Integer, MAKE_INT32)
+CREATE_INSTANCE_ACCESSOR(Window, Title, String, V8StringToChar)
+CREATE_INSTANCE_ACCESSOR(Window, Topmost, Boolean, MAKE_BOOLEAN)
+CREATE_INSTANCE_ACCESSOR(Window, Resizable, Boolean, MAKE_BOOLEAN)
+CREATE_INSTANCE_ACCESSOR(Window, ShowChrome, Boolean, MAKE_BOOLEAN)
+CREATE_INSTANCE_ACCESSOR(Window, Alpha, Boolean, MAKE_BOOLEAN)
+CREATE_INSTANCE_ACCESSOR(Window, Opacity, Number, MAKE_DOUBLE)
+CREATE_INSTANCE_ACCESSOR(Window, AutoResize, Boolean, MAKE_BOOLEAN)
 
 
 Handle<Value> Window::Move(const Arguments& args) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
 
-  int top = args[0]->Int32Value();
-  int left = args[1]->Int32Value();
+  int left = args[0]->Int32Value();
+  int top = args[1]->Int32Value();
   if (args[2]->IsNumber()) {
     int width = args[2]->Int32Value();
     int height = args[3]->Int32Value();
-    window->Move(top, left, width, height);
+    window->Move(left, top, width, height);
   } else {
-    window->Move(top, left);
+    window->Move(left, top);
   }
 
   return scope.Close(args.This());
@@ -205,7 +208,7 @@ Handle<Value> Window::SendSync(const Arguments& args) {
 
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
 
-  if (window->GetBrowser()) {
+  if (!window->IsClosed()) {
     // find browser's v8 context
     CefRefPtr<CefV8Context> context = window->GetBrowser()->GetMainFrame()->GetV8Context();
 
@@ -234,16 +237,6 @@ Handle<Value> Window::SendSync(const Arguments& args) {
   return scope.Close(Undefined());
 }
 
-WINDOW_ACCESSOR(Left, Integer, MAKE_INT32)
-WINDOW_ACCESSOR(Top, Integer, MAKE_INT32)
-WINDOW_ACCESSOR(Width, Integer, MAKE_INT32)
-WINDOW_ACCESSOR(Height, Integer, MAKE_INT32)
-WINDOW_ACCESSOR(Title, String, V8StringToChar)
-WINDOW_ACCESSOR(Topmost, Boolean, MAKE_BOOLEAN)
-WINDOW_ACCESSOR(Resizable, Boolean, MAKE_BOOLEAN)
-WINDOW_ACCESSOR(ShowChrome, Boolean, MAKE_BOOLEAN)
-WINDOW_ACCESSOR(Alpha, Boolean, MAKE_BOOLEAN)
-WINDOW_ACCESSOR(Opacity, Number, MAKE_DOUBLE)
 
 
 

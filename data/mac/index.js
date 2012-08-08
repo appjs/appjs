@@ -11,3 +11,4 @@ module.exports.initConfig = {
   chromePakPath: path.join(__dirname, 'data/pak/chrome.pak'),
   jsFlags: ' --harmony_proxies --harmony_collections --harmony_scoping'
 };
+

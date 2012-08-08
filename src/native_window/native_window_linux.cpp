@@ -1,7 +1,7 @@
 #include <node.h>
 #include <gtk/gtk.h>
 #include "appjs.h"
-#include "base/native_window.h"
+#include "native_window/native_window.h"
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
@@ -12,13 +12,44 @@ namespace appjs {
 
 using namespace v8;
 
-void destroy_handler(GtkWidget* widget, NativeWindow* window) {
-  window->Emit("close");
-}
-
 void drag_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {
   gtk_window_begin_move_drag(GTK_WINDOW(widget), event->type, event->button.x_root,event->button.y_root,event->button.time);
   g_signal_handler_disconnect(G_OBJECT(widget), window->GetDragHandlerId());
+}
+
+void configure_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {
+  int x = event->configure.x;
+  int y = event->configure.y;
+  int width = event->configure.width;
+  int height = event->configure.height;
+  appjs_rect rect = window->GetRect();
+
+  if ( rect.left != x || rect.top != y ) {
+    window->Emit("move", x, y);
+    rect.left = x;
+    rect.top = y;
+  }
+  if( rect.width != width || rect.height != height ) {
+    window->Emit("resize", width, height);
+    rect.width = width;
+    rect.height = height;
+  }
+  window->UpdatePosition(rect);
+}
+
+void state_handler( GtkWidget* widget,GdkEventWindowState* event, NativeWindow* window ) {
+  if( event->new_window_state & GDK_WINDOW_STATE_ICONIFIED ) {
+    window->Emit("minimize");
+  } else if ( event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED ) {
+    window->Emit("maximize");
+  } else if ( event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN ) {
+    window->Emit("fullscreen");
+  } else if ( event->changed_mask == GDK_WINDOW_STATE_FULLSCREEN ||
+              event->changed_mask == GDK_WINDOW_STATE_MAXIMIZED ||
+              event->changed_mask == GDK_WINDOW_STATE_ICONIFIED )
+  {
+    window->Emit("restore");
+  }
 }
 
 void NativeWindow::Init(char* url, Settings* settings) {
@@ -26,7 +57,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
   GtkWindow* window = (GtkWindow*)handle_;
 
   // Set default icon list
-  if( !g_handler->GetBrowserHwnd() ) {
+  if (is_main_window_) {
 
     GList* iconList;
     bool setIconFlag = false;
@@ -99,10 +130,11 @@ void NativeWindow::Init(char* url, Settings* settings) {
 
   gtk_widget_add_events(handle_,  GDK_POINTER_MOTION_MASK |
                                   GDK_BUTTON_PRESS_MASK |
-                                  GDK_BUTTON_RELEASE_MASK);
+                                  GDK_BUTTON_RELEASE_MASK |
+                                  GDK_CONFIGURE);
 
-  g_signal_connect(G_OBJECT(handle_), "destroy",
-                   G_CALLBACK(destroy_handler), this);
+  g_signal_connect_after(G_OBJECT(handle_), "configure-event",G_CALLBACK(configure_handler), this );
+  g_signal_connect_after(G_OBJECT(handle_), "window-state-event",G_CALLBACK(state_handler), this );
 
   g_object_set_data(G_OBJECT(handle_),"nativewindow",this);
 
@@ -121,6 +153,15 @@ int NativeWindow::ScreenWidth() {
 int NativeWindow::ScreenHeight() {
   GdkScreen* screen = gdk_screen_get_default();
   return gdk_screen_get_height(screen);
+}
+
+
+NativeWindow* NativeWindow::GetWindow(CefWindowHandle handle){
+  return (NativeWindow*)g_object_get_data(G_OBJECT(handle), "nativewindow");
+}
+
+NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
+  return GetWindow(gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()), GTK_TYPE_WINDOW));
 }
 
 void NativeWindow::Minimize() {
@@ -172,16 +213,16 @@ void NativeWindow::Drag() {
 
 }
 
-void NativeWindow::Move(int top, int left, int width, int height) {
+void NativeWindow::Move(int left, int top, int width, int height) {
   GtkWindow* window = (GtkWindow*)handle_;
-  gtk_window_move(window,top,left);
+  gtk_window_move(window,left,top);
   gtk_window_resize(window,width,height);
 }
 
-void NativeWindow::Move(int top, int left) {
-  rect_.top = top;
+void NativeWindow::Move(int left, int top) {
   rect_.left = left;
-  gtk_window_move((GtkWindow*)handle_,top,left);
+  rect_.top = top;
+  gtk_window_move((GtkWindow*)handle_,left,top);
 }
 
 void NativeWindow::Resize(int width, int height) {
@@ -191,8 +232,15 @@ void NativeWindow::Resize(int width, int height) {
 }
 
 const char* NativeWindow::GetTitle() {
-  return gtk_window_get_title((GtkWindow*)handle_);
+  char* title = (char*) gtk_window_get_title((GtkWindow*)handle_);
+  if( title == NULL ) return "";
+  return title;
 }
+
+void NativeWindow::SetTitle(const char* title) {
+  gtk_window_set_title((GtkWindow*)handle_, title);
+}
+
 
 void NativeWindow::Fullscreen(){
   gtk_window_fullscreen((GtkWindow*)handle_);
@@ -238,7 +286,7 @@ bool NativeWindow::GetShowChrome() {
 void NativeWindow::SetAlpha(bool alpha) {
   fprintf(stderr, "%s\n", "appjs-warning: alpha compositing is not available in linux");
 }
-  
+
 bool NativeWindow::GetAlpha() {
   return false;
 }

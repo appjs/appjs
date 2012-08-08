@@ -26,18 +26,24 @@ enum NW_STATE {
 class NativeWindow {
 
 public:
-  NativeWindow(char* url, Settings* settings);
+  NativeWindow(Settings* settings);
   ~NativeWindow();
   void Init(char* url, Settings* settings);
 
   static int ScreenWidth();
   static int ScreenHeight();
+  static NativeWindow* GetWindow(CefWindowHandle handle);
+  static NativeWindow* GetWindow(CefRefPtr<CefBrowser> browser);
 
   void Emit(v8::Local<v8::Value>* args);
   void Emit(const char* event);
   void Emit(const char* event, v8::Local<v8::Value> arg);
   void Emit(const char* event, v8::Local<v8::Value> arg1, v8::Local<v8::Value> arg2);
   void Emit(const char* event, int arg1, int arg2);
+  void Emit(const char* event, const int arg1, const int arg2, const int arg3);
+  long JSResult();
+  void PrepareClose();
+  bool IsClosed();
 
   void Drag();
   void Drop();
@@ -49,11 +55,11 @@ public:
   void Hide();
   void Destroy();
 
-  void Move(int top, int left, int width, int height);
-  void Move(int top, int left);
+  void Move(int left, int top, int width, int height);
+  void Move(int left, int top);
   void Move(appjs_rect rect);
   void Resize(int width, int height);
-  void UpdatePosition(int top, int left, int width, int height);
+  void UpdatePosition(int left, int top, int width, int height);
   void UpdatePosition(appjs_rect rect);
   void UpdatePosition();
 
@@ -63,6 +69,8 @@ public:
   bool GetTopmost();
   void SetShowChrome(bool showChrome);
   bool GetShowChrome();
+  void SetAutoResize(bool autoResize);
+  bool GetAutoResize();
   void SetResizable(bool resizable);
   bool GetResizable();
   void SetAlpha(bool alpha);
@@ -85,14 +93,14 @@ public:
   void OpenDevTools();
   void CloseDevTools();
   void RunInBrowser(char* script);
+  bool IsMainWindow();
+
+  appjs_rect GetRect();
 
   void SetBrowser(CefRefPtr<CefBrowser> browser);
   void SetV8Handle(v8::Handle<v8::Object> v8handle);
   CefRefPtr<CefBrowser> GetBrowser();
   v8::Handle<v8::Object> GetV8Handle();
-  CefWindowHandle handle_;
-  bool auto_resize;
-
 #if defined(__WIN__)
   void SetStyle(long style, bool extended);
   long GetStyle(bool extended);
@@ -102,10 +110,15 @@ public:
   long GetDragHandlerId();
 #endif
 
+  CefWindowHandle handle_;
+
 private:
   v8::Handle<v8::Object> v8handle_;
   CefRefPtr<CefBrowser> browser_;
 
+  bool closed_;
+  bool is_main_window_;
+  bool auto_resize_;
   bool show_chrome_;
   bool resizable_;
   bool show_resize_grip;

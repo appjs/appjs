@@ -1,8 +1,8 @@
 #include <node.h>
 #include "includes/cef.h"
 #include "includes/cef_sync_handler.h"
-#include "includes/cef_handler.h"
 #include "includes/util.h"
+#include "native_window/native_window.h"
 
 namespace appjs {
 
@@ -14,12 +14,10 @@ bool AppjsSyncHandler::Execute(const CefString& name,
                                const CefV8ValueList& arguments,
                                CefRefPtr<CefV8Value>& retval,
                                CefString& exception) {
-  REQUIRE_UI_THREAD();
   if (browser_.get()) {
     HandleScope scope;
-    Local<Object> global = Context::GetCurrent()->Global();
     Local<Value> argv[1] = { CefStringToV8(arguments[0]->GetStringValue()) };
-    Handle<Object> window = ClientHandler::GetNodeWindow(browser_);
+    Handle<Object> window = NativeWindow::GetWindow(browser_)->GetV8Handle();;
     Local<Function> handler = Local<Function>::Cast(window->Get(String::NewSymbol("onmessage")));
     Local<Value> result = handler->Call(window, 1, argv);
     if (result->IsString()) {
