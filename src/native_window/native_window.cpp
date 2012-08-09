@@ -179,7 +179,7 @@ appjs_rect NativeWindow::GetRect() {
   return rect_;
 }
 
-void NativeWindow::Emit(Local<Value>* args){
+void NativeWindow::Emit(Handle<Value>* args){
   if (!closed_) {
     node::MakeCallback(v8handle_, "emit", ARRAY_SIZE(args), args);
   }
@@ -190,7 +190,7 @@ void NativeWindow::Emit(const char* event){
   Emit(args);
 }
 
-void NativeWindow::Emit(const char* event, Local<Value> arg){
+void NativeWindow::Emit(const char* event, Handle<Value> arg){
   Handle<Value> args[2] = {
     String::New(event),
     arg
@@ -198,7 +198,7 @@ void NativeWindow::Emit(const char* event, Local<Value> arg){
   Emit(args);
 }
 
-void NativeWindow::Emit(const char* event, Local<Value> arg1, Local<Value> arg2){
+void NativeWindow::Emit(const char* event, Handle<Value> arg1, Handle<Value> arg2){
   Handle<Value> args[3] = {
     String::New(event),
     arg1,
