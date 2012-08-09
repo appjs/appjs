@@ -179,39 +179,49 @@ appjs_rect NativeWindow::GetRect() {
   return rect_;
 }
 
-void NativeWindow::Emit(Local<Value>* args){
+void NativeWindow::Emit(Handle<Value>* args){
   if (!closed_) {
     node::MakeCallback(v8handle_, "emit", ARRAY_SIZE(args), args);
   }
 }
 
 void NativeWindow::Emit(const char* event){
-  Local<Value> args[1] = { String::New(event) };
+  Handle<Value> args[1] = { String::New(event) };
   Emit(args);
 }
 
-void NativeWindow::Emit(const char* event, Local<Value> arg){
-  Local<Value> args[2] = { String::New(event), arg };
+void NativeWindow::Emit(const char* event, Handle<Value> arg){
+  Handle<Value> args[2] = {
+    String::New(event),
+    arg
+  };
   Emit(args);
 }
 
-void NativeWindow::Emit(const char* event, Local<Value> arg1, Local<Value> arg2){
-  Local<Value> args[3] = { String::New(event), arg1, arg2 };
+void NativeWindow::Emit(const char* event, Handle<Value> arg1, Handle<Value> arg2){
+  Handle<Value> args[3] = {
+    String::New(event),
+    arg1,
+    arg2
+  };
   Emit(args);
 }
 
 void NativeWindow::Emit(const char* event, int arg1, int arg2){
-  Local<Value> args[3] = { String::New(event), Integer::New(arg1), Integer::New(arg2) };
+  Handle<Value> args[3] = {
+    String::New(event),
+    Integer::New(arg1),
+    Integer::New(arg2)
+  };
   Emit(args);
 }
 
 void NativeWindow::Emit(const char* event, const int arg1, const int arg2, const int arg3){
-  HandleScope handlescope;
-  Local<Value> args[4] = {
-    Local<Value>::New(String::New(event)),
-    Local<Value>::New(Integer::New(arg1)),
-    Local<Value>::New(Integer::New(arg2)),
-    Local<Value>::New(Integer::New(arg3))
+  Handle<Value> args[4] = {
+    String::New(event),
+    Integer::New(arg1),
+    Integer::New(arg2),
+    Integer::New(arg3)
   };
   if (!closed_) {
     node::MakeCallback(v8handle_, "emit", 4, args);

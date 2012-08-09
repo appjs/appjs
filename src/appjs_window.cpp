@@ -31,6 +31,7 @@ void Window::Init() {
   DECLARE_PROTOTYPE_METHOD("send", SendSync);
   DECLARE_PROTOTYPE_METHOD("move", Move);
   DECLARE_PROTOTYPE_METHOD("resize", Resize);
+  DECLARE_PROTOTYPE_METHOD("setIcon", SetIcon);
   DECLARE_INSTANCE_ACCESSOR("left", Left);
   DECLARE_INSTANCE_ACCESSOR("top", Top);
   DECLARE_INSTANCE_ACCESSOR("height", Height);
@@ -235,6 +236,26 @@ Handle<Value> Window::SendSync(const Arguments& args) {
   }
   // likely error condition
   return scope.Close(Undefined());
+}
+
+Handle<Value> Window::SetIcon(const Arguments& args) {
+  HandleScope scope;
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+  NW_ICONSIZE size;
+  Local<String> val = args[0]->ToString();
+  if (STRING_EQ(val, "smaller")) {
+    size = NW_ICONSIZE_SMALLER;
+  } else if (STRING_EQ(val, "small")) {
+    size = NW_ICONSIZE_SMALL;
+  } else if (STRING_EQ(val, "big")) {
+    size = NW_ICONSIZE_BIG;
+  } else if (STRING_EQ(val, "bigger")) {
+    size = NW_ICONSIZE_BIGGER;
+  } else {
+    return scope.Close(args.This());
+  }
+  window->SetIcon(size, V8StringToChar(args[1]->ToString()));
+  return scope.Close(args.This());
 }
 
 

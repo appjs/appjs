@@ -23,6 +23,13 @@ enum NW_STATE {
   NW_STATE_FULLSCREEN
 };
 
+enum NW_ICONSIZE {
+  NW_ICONSIZE_SMALLER,
+  NW_ICONSIZE_SMALL,
+  NW_ICONSIZE_BIG,
+  NW_ICONSIZE_BIGGER
+};
+
 class NativeWindow {
 
 public:
@@ -32,13 +39,15 @@ public:
 
   static int ScreenWidth();
   static int ScreenHeight();
+  //static void SetAppIcon(NW_ICONSIZE size, char* path);
   static NativeWindow* GetWindow(CefWindowHandle handle);
   static NativeWindow* GetWindow(CefRefPtr<CefBrowser> browser);
 
-  void Emit(v8::Local<v8::Value>* args);
+  void SetIcon(NW_ICONSIZE size, char* path);
+  void Emit(v8::Handle<v8::Value>* args);
   void Emit(const char* event);
-  void Emit(const char* event, v8::Local<v8::Value> arg);
-  void Emit(const char* event, v8::Local<v8::Value> arg1, v8::Local<v8::Value> arg2);
+  void Emit(const char* event, v8::Handle<v8::Value> arg);
+    void Emit(const char* event, v8::Handle<v8::Value> arg1, v8::Handle<v8::Value> arg2);
   void Emit(const char* event, int arg1, int arg2);
   void Emit(const char* event, const int arg1, const int arg2, const int arg3);
   long JSResult();
@@ -101,9 +110,15 @@ public:
   void SetV8Handle(v8::Handle<v8::Object> v8handle);
   CefRefPtr<CefBrowser> GetBrowser();
   v8::Handle<v8::Object> GetV8Handle();
+
+
 #if defined(__WIN__)
   void SetStyle(long style, bool extended);
   long GetStyle(bool extended);
+
+  //static void SetAppIcon(NW_ICONSIZE size, wchar_t* path);
+  //void SetTitle(const wchar_t* title);
+  //const wchar_t* GetTitle();
 #endif
 
 #if defined(__LINUX__)
