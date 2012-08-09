@@ -24,7 +24,6 @@ window.on('ready', function(){
   function Command_Option_J(e){ return e.keyCode === 74 && e.metaKey && e.altKey }
 
   window.addEventListener('keydown', function(e){
-    console.log(e);
     if (F12(e) || Command_Option_J(e)) {
       window.frame.openDevTools();
     }
