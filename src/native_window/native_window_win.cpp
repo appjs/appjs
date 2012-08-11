@@ -26,6 +26,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance);
 HICON smallIcon;
 HICON bigIcon;
 Settings* browserSettings;
+HINSTANCE hInstance;
 char* url_;
 bool emitFullscreen = false;
 
@@ -128,6 +129,12 @@ void ForceForegroundWindow(HWND hwnd) {
 }
 
 
+HMODULE GetCurrentModuleHandle() {
+  HMODULE module = NULL;
+  GetModuleHandleExW(6, reinterpret_cast<LPCWSTR>(&GetCurrentModuleHandle), &module);
+  return module;
+}
+
 
 // #####################################
 // ### Static NativeWindow Functions ###
@@ -156,9 +163,9 @@ NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
 void NativeWindow::Init(char* url, Settings* settings) {
   url_ = url;
 
-  HINSTANCE hInstance = GetModuleHandle(NULL);
 
   if (is_main_window_) {
+    hInstance = (HINSTANCE)GetCurrentModuleHandle();
     dwmapiDLL = LoadLibrary(TEXT("dwmapi.dll"));
     if (dwmapiDLL != NULL) {
       DwmExtendFrameIntoClientArea = (DWMEFICA)GetProcAddress(dwmapiDLL, "DwmExtendFrameIntoClientArea");
