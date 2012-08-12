@@ -163,9 +163,7 @@ NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
 void NativeWindow::Init(char* url, Settings* settings) {
   url_ = url;
 
-
   if (is_main_window_) {
-    hInstance = (HINSTANCE)GetCurrentModuleHandle();
     dwmapiDLL = LoadLibrary(TEXT("dwmapi.dll"));
     if (dwmapiDLL != NULL) {
       DwmExtendFrameIntoClientArea = (DWMEFICA)GetProcAddress(dwmapiDLL, "DwmExtendFrameIntoClientArea");
@@ -177,8 +175,8 @@ void NativeWindow::Init(char* url, Settings* settings) {
     ULONG_PTR gdiplusToken;
     Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-    WCHAR* wSmallIconPath = icons->getString("small",L"");
-    WCHAR* wBigIconPath = icons->getString("big",L"");
+    WCHAR* wSmallIconPath = icons->getString("small", L"");
+    WCHAR* wBigIconPath = icons->getString("big", L"");
 
     Gdiplus::Bitmap* smallIconBitmap = Gdiplus::Bitmap::FromFile(wSmallIconPath);
     Gdiplus::Bitmap* bigIconBitmap = Gdiplus::Bitmap::FromFile(wBigIconPath);
@@ -195,7 +193,8 @@ void NativeWindow::Init(char* url, Settings* settings) {
       delete bigIconBitmap;
     }
 
-    strcpy(szWindowClass,"AppjsWindow");
+    hInstance = (HINSTANCE)GetCurrentModuleHandle();
+    strcpy(szWindowClass, "AppjsWindow");
     MyRegisterClass(hInstance);
   }
 
@@ -206,7 +205,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
     rect_.top = (GetSystemMetrics(SM_CYSCREEN) - rect_.height) / 2;
   }
   browser_ = NULL;
-  handle_ = CreateWindowEx(NULL, szWindowClass,"", WS_OVERLAPPEDWINDOW,
+  handle_ = CreateWindowEx(NULL, szWindowClass, "", WS_OVERLAPPEDWINDOW,
                            rect_.left, rect_.top, rect_.width, rect_.height,
                            NULL, NULL, hInstance, NULL);
 
