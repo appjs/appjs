@@ -24,6 +24,8 @@ __AppJS 0.0.18 Distributables:__
 * [Windows](http://dists.appjs.org/0.0.18/appjs-0.0.18-win32-ia32.zip) -> app.exe
 
 __npm install__
+*OS X install is currently broken*
+
 AppJS can be now be installed via npm.
 
     npm install appjs
