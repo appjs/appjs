@@ -88,7 +88,7 @@
   Handle<Value> Type::Method(const Arguments& args) { \
     HandleScope scope; \
     Native##Type *obj = ObjectWrap::Unwrap<Native##Type>(args.This()); \
-    obj->##Method##(); \
+    obj->Method(); \
     return scope.Close(args.This()); \
   }
 
