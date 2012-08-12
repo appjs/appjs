@@ -156,6 +156,15 @@ NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
   return GetWindow(GetParent(browser->GetWindowHandle()));
 }
 
+void AddWebView(CefWindowHandle parent, RECT windowRect, char* url, Settings* settings) {
+  CefWindowInfo windowInfo;
+  windowInfo.SetAsChild(parent, windowRect);
+  windowInfo.SetTransparentPainting(true);
+  g_handler->browserSettings_.web_security_disabled = settings->getBoolean("disableSecurity", false);
+  CefBrowser::CreateBrowser(windowInfo, static_cast<CefRefPtr<CefClient>>(g_handler), url, g_handler->browserSettings_);
+}
+
+
 // ############################
 // ### NativeWindow methods ###
 // ############################
@@ -449,7 +458,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
     case WM_CREATE: {
       RECT rect;
       GetClientRect(hwnd, &rect);
-      Cef::AddWebView(hwnd, rect, url_, browserSettings);
+      AddWebView(hwnd, rect, url_, browserSettings);
       return 0;
     }
     case WM_PAINT: {

@@ -207,6 +207,17 @@ namespace appjs {
 
 using namespace v8;
 
+void AddWebView(CefWindowHandle parent, char* url, Settings* settings) {
+  CefWindowInfo windowInfo;
+  if (settings->getBoolean("alpha",false)) {
+    windowInfo.SetTransparentPainting(true);
+  }
+  g_handler->browserSettings_.web_security_disabled = settings->getBoolean("disableSecurity", false);
+  NSRect contentFrame = [parent frame];
+  windowInfo.SetAsChild(parent, 0, 0, contentFrame.size.width, contentFrame.size.height);
+  CefBrowser::CreateBrowser(windowInfo, g_handler.get(), url, g_handler->browserSettings_);
+}
+
 void NativeWindow::Init (char* url, Settings* settings) {
   mainWndSettings = settings;
   mainWndUrl = url;
@@ -277,7 +288,7 @@ void NativeWindow::Init (char* url, Settings* settings) {
     Fullscreen();
   }
 
-  appjs::Cef::AddWebView(contentView,url,settings);
+  AddWebView(contentView,url,settings);
 
   // Size the window.
   //[mainWnd setFrame:[mainWnd frameRectForContentRect:[mainWnd frame]] display:YES];

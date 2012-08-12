@@ -105,10 +105,14 @@ void Cef::Init(Settings* initOptions) {
     // http://code.google.com/p/chromiumembedded/issues/detail?id=404
     CefRegisterSchemeHandlerFactory("http", "appjs", new AppjsSchemeHandlerFactory());
 
-    CefBase::Init();
+#if defined(__LINUX__)
+    g_thread_init(NULL);
+    gdk_threads_init();
+    gtk_init(NULL,NULL);
+#endif
+
     Cef::initialized_ = true;
   }
-
-};
+}
 
 } /* appjs */

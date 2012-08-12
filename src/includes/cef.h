@@ -2,22 +2,12 @@
 #define APPJS_CEF_H
 #pragma once
 
-#if defined(__LINUX__)
-#include "cef_base_gtk.h"
-#elif defined(__MAC__)
-#include "cef_base_mac.h"
-#elif defined(__WIN__)
-#include "cef_base_win.h"
-#endif
-
+#include "util.h"
 #include "cef_loop.h"
 
 namespace appjs {
 
-class Cef
-  : public CefBase,
-    public CefLoop
-{
+class Cef : public CefLoop {
 
 public:
   static void Init(Settings* initSettings);
