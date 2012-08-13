@@ -260,6 +260,7 @@
       'cflags': [
         '-fPIC',
         '-Wall',
+        '-Wno-c++11-extensions',
         '-std=c++0x'
       ],
       'conditions': [

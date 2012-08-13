@@ -301,11 +301,11 @@ void NativeWindow::Init (char* url, Settings* settings) {
 
 void NativeWindow::Show() {
   [[handle_ window] makeKeyAndOrderFront: nil];
-};
+}
 
 void NativeWindow::Hide() {
   [[handle_ window] orderOut: nil];
-};
+}
 
 int NativeWindow::ScreenWidth() {
   NSRect screen_rect = [[NSScreen mainScreen] visibleFrame];
@@ -338,7 +338,7 @@ void NativeWindow::Destroy() {
   [[handle_ window] performSelectorOnMainThread:@selector(performClose:)
                          withObject:nil
                       waitUntilDone:NO];
-};
+}
 
 const char* NativeWindow::GetTitle() {
   return [[[handle_ window] title] cStringUsingEncoding:NSASCIIStringEncoding];
@@ -425,7 +425,23 @@ void NativeWindow::Fullscreen(){
 
 
 void NativeWindow::Drag() {
+  NSWindow* win = [handle_ window];
+  NSPoint origin = [win frame].origin;
+  NSPoint current = [NSEvent mouseLocation];
+  NSPoint offset;
+  origin.x -= current.x;
+  origin.y -= current.y;
 
+  while (YES) {
+    NSEvent* event = [win nextEventMatchingMask:(NSLeftMouseDraggedMask | NSLeftMouseUpMask)];
+    if ([event type] == NSLeftMouseUp) break;
+    current = [win convertBaseToScreen:[event locationInWindow]];
+    offset = origin;
+    offset.x += current.x;
+    offset.y += current.y;
+    [win setFrameOrigin:offset];
+    [win displayIfNeeded];
+  }
 }
 
 void NativeWindow::Move(int left, int top, int width, int height) {
