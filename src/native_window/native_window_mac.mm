@@ -207,6 +207,17 @@ namespace appjs {
 
 using namespace v8;
 
+void AddWebView(CefWindowHandle parent, char* url, Settings* settings) {
+  CefWindowInfo windowInfo;
+  if (settings->getBoolean("alpha",false)) {
+    windowInfo.SetTransparentPainting(true);
+  }
+  g_handler->browserSettings_.web_security_disabled = settings->getBoolean("disableSecurity", false);
+  NSRect contentFrame = [parent frame];
+  windowInfo.SetAsChild(parent, 0, 0, contentFrame.size.width, contentFrame.size.height);
+  CefBrowser::CreateBrowser(windowInfo, g_handler.get(), url, g_handler->browserSettings_);
+}
+
 void NativeWindow::Init (char* url, Settings* settings) {
   mainWndSettings = settings;
   mainWndUrl = url;
@@ -277,7 +288,7 @@ void NativeWindow::Init (char* url, Settings* settings) {
     Fullscreen();
   }
 
-  appjs::Cef::AddWebView(contentView,url,settings);
+  AddWebView(contentView,url,settings);
 
   // Size the window.
   //[mainWnd setFrame:[mainWnd frameRectForContentRect:[mainWnd frame]] display:YES];
@@ -290,11 +301,11 @@ void NativeWindow::Init (char* url, Settings* settings) {
 
 void NativeWindow::Show() {
   [[handle_ window] makeKeyAndOrderFront: nil];
-};
+}
 
 void NativeWindow::Hide() {
   [[handle_ window] orderOut: nil];
-};
+}
 
 int NativeWindow::ScreenWidth() {
   NSRect screen_rect = [[NSScreen mainScreen] visibleFrame];
@@ -327,7 +338,7 @@ void NativeWindow::Destroy() {
   [[handle_ window] performSelectorOnMainThread:@selector(performClose:)
                          withObject:nil
                       waitUntilDone:NO];
-};
+}
 
 const char* NativeWindow::GetTitle() {
   return [[[handle_ window] title] cStringUsingEncoding:NSASCIIStringEncoding];
@@ -414,7 +425,23 @@ void NativeWindow::Fullscreen(){
 
 
 void NativeWindow::Drag() {
+  NSWindow* win = [handle_ window];
+  NSPoint origin = [win frame].origin;
+  NSPoint current = [NSEvent mouseLocation];
+  NSPoint offset;
+  origin.x -= current.x;
+  origin.y -= current.y;
 
+  while (YES) {
+    NSEvent* event = [win nextEventMatchingMask:(NSLeftMouseDraggedMask | NSLeftMouseUpMask)];
+    if ([event type] == NSLeftMouseUp) break;
+    current = [win convertBaseToScreen:[event locationInWindow]];
+    offset = origin;
+    offset.x += current.x;
+    offset.y += current.y;
+    [win setFrameOrigin:offset];
+    [win displayIfNeeded];
+  }
 }
 
 void NativeWindow::Move(int left, int top, int width, int height) {

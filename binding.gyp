@@ -260,12 +260,12 @@
       'cflags': [
         '-fPIC',
         '-Wall',
+        '-Wno-c++11-extensions',
         '-std=c++0x'
       ],
       'conditions': [
         ['OS=="mac"', {
           'sources': [
-            'src/includes/cef_base_mac.mm',
             'src/native_window/native_window_mac.mm'
           ],
           'defines': [
@@ -286,7 +286,6 @@
         }],
         ['OS=="linux"', {
           'sources': [
-            'src/includes/cef_base_gtk.cpp',
             'src/native_window/native_window_linux.cpp',
           ],
           'defines': [
@@ -310,7 +309,6 @@
         }],
         ['OS=="win"', {
           'sources': [
-            'src/includes/cef_base_win.cpp',
             'src/includes/util_win.cpp',
             'src/native_window/native_window_win.cpp',
           ],
