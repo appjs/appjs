@@ -8,7 +8,7 @@ process.title = 'appjs-configure'
  * Necessary modules and variables
  */
 
-var util     = require('../cli/util')
+var util     = require('./util')
   , fs       = require('fs')
   , path     = require('path')
   , platform = require('os').platform()
@@ -37,7 +37,7 @@ function install(cef_version) {
 
     copyDllWrapper(function(err) {
       if (err) {
-        util.log('Failed to copy dll_wrapper.gyp');
+        util.log('Failed to copy dll_wrapper.gyp','error');
         throw err;
       }
 
@@ -53,7 +53,7 @@ function copyDllWrapper(fn) {
       fs.unlinkSync(target);
     }
 
-    fs.createReadStream(path.join(dataDir, 'common', 'dll_wrapper.gyp')).pipe(
+    fs.createReadStream(path.join(dataDir, 'dll_wrapper.gyp')).pipe(
       fs.createWriteStream(target)
     );
   });

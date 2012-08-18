@@ -26,11 +26,15 @@
     "test": "./tests"
   },
   "main": "./lib/index.js",
+  "bin": {
+    "appjs": "./bin/appjs"
+  },
   "engines": {
     "node": ">=0.8"
   },
   "dependencies": {
-    "mime": ">=1.2.5"
+    "mime": ">=1.2.5",
+    "nopt": ">=1.0.10"
   },
   "scripts": {
     "postinstall": "node cli/postinstall.js"
