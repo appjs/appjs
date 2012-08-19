@@ -140,13 +140,13 @@ void NativeWindow::SetHeight(int height){
 void NativeWindow::SetLeft(int left){
   if (rect_.left != left) {
     rect_.left = left;
-    Move(rect_.top, rect_.left);
+    Move(rect_.left, rect_.top);
   }
 }
 void NativeWindow::SetTop(int top){
   if (rect_.top != top) {
     rect_.top = top;
-    Move(rect_.top, rect_.left);
+    Move(rect_.left, rect_.top);
   }
 }
 
