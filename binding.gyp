@@ -308,6 +308,27 @@
           }
         }],
         ['OS=="win"', {
+          'msvs_settings': {
+            'VCCLCompilerTool': {
+              'WholeProgramOptimization': 'true', # /GL, whole program optimization, needed for LTCG
+              'OmitFramePointers': 'true',
+              'EnableFunctionLevelLinking': 'true',
+              'EnableIntrinsicFunctions': 'true',
+              'RuntimeTypeInfo': 'false',
+              'ExceptionHandling': '1',
+            },
+            'VCLibrarianTool': {
+              'AdditionalOptions': [
+                '/LTCG', # link time code generation
+              ],
+            },
+            'VCLinkerTool': {
+              'LinkTimeCodeGeneration': 1, # link-time code generation
+              'OptimizeReferences': 2, # /OPT:REF
+              'EnableCOMDATFolding': 2, # /OPT:ICF
+              'LinkIncremental': 1, # disable incremental linking
+            },
+          },
           'sources': [
             'src/includes/util_win.cpp',
             'src/native_window/native_window_win.cpp',
@@ -317,11 +338,11 @@
             '_WINSOCKAPI_'
           ],
           'link_settings': {
-              'libraries': [
-                'GdiPlus.lib',
-                '<(module_root_dir)/deps/cef/lib/Release/libcef.lib',
-                '<(module_root_dir)/build/Release/lib/libcef_dll_wrapper.node'
-              ],
+            'libraries': [
+              'GdiPlus.lib',
+              '<(module_root_dir)/deps/cef/lib/Release/libcef.lib',
+              '<(module_root_dir)/build/Release/lib/libcef_dll_wrapper.node'
+            ],
           },
         }]
       ]
