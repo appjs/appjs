@@ -120,7 +120,7 @@ Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
   Local<Array> names = Local<Array>::Cast(headerSets->Get(String::NewSymbol("names")));
   Local<Array> headers = Local<Array>::Cast(headerSets->Get(String::NewSymbol("headers")));
 
-  for(int i = 0; i < names->Length(); i++) {
+  for(uint i = 0; i < names->Length(); i++) {
     me->headers_.insert(
       std::pair<CefString,CefString>(
         V8StringToChar(names->Get(i)),
