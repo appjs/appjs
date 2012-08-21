@@ -260,7 +260,6 @@
       'cflags': [
         '-fPIC',
         '-Wall',
-        '-Wno-c++11-extensions',
         '-std=c++0x'
       ],
       'conditions': [
@@ -293,7 +292,7 @@
             '<!@(uname -a | grep "Ubuntu" > /dev/null && echo "__UBUNTU__" || echo "__NOTUBUNTU__")'
           ],
           'cflags': [
-            '<!@(pkg-config --cflags gtk+-2.0)',
+            '<!@(pkg-config --cflags gtk+-2.0 gthread-2.0)',
           ],
           'link_settings': {
               'ldflags': [

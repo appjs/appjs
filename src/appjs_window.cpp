@@ -17,6 +17,7 @@ Persistent<Function> Window::constructor;
 
 void Window::Init() {
   DECLARE_CONSTRUCTOR("NativeWindow");
+  DECLARE_PROTOTYPE_METHOD("openDialog", OpenDialog);
   DECLARE_PROTOTYPE_METHOD("openDevTools", OpenDevTools);
   DECLARE_PROTOTYPE_METHOD("closeDevTools", CloseDevTools);
   DECLARE_PROTOTYPE_METHOD("restore", Restore);
@@ -95,6 +96,18 @@ CREATE_PROTOTYPE_INVOKER(Window, Focus)
 CREATE_PROTOTYPE_INVOKER(Window, Hide)
 CREATE_PROTOTYPE_INVOKER(Window, Destroy)
 
+Handle<Value> Window::OpenDialog(const Arguments& args) {
+  HandleScope scope;
+
+  Persistent<Object> options  = Persistent<Object>::New(args[0]->ToObject());
+  Persistent<Function>    cb  = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  Settings*          settings = new Settings(options);
+
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+  window->OpenDialog(settings,cb);
+
+  return scope.Close(args.This());
+}
 
 Handle<Value> Window::Move(const Arguments& args) {
   HandleScope scope;

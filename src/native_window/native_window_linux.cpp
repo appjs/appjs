@@ -52,11 +52,9 @@ void state_handler( GtkWidget* widget,GdkEventWindowState* event, NativeWindow* 
   }
 }
 
-
 static void destroy_handler(int status = 0) {
   g_handler->Shutdown();
 }
-
 
 void AddWebView(CefWindowHandle& parent, char* url, Settings* settings) {
   CefWindowInfo windowInfo;
@@ -159,7 +157,6 @@ void NativeWindow::Init(char* url, Settings* settings) {
   AddWebView(box,url,settings);
 }
 
-
 long NativeWindow::GetDragHandlerId() {
   return drag_handler_id;
 }
@@ -174,7 +171,6 @@ int NativeWindow::ScreenHeight() {
   return gdk_screen_get_height(screen);
 }
 
-
 NativeWindow* NativeWindow::GetWindow(CefWindowHandle handle){
   return (NativeWindow*)g_object_get_data(G_OBJECT(handle), "nativewindow");
 }
@@ -182,6 +178,115 @@ NativeWindow* NativeWindow::GetWindow(CefWindowHandle handle){
 NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
   return GetWindow(gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()), GTK_TYPE_WINDOW));
 }
+
+void NativeWindow::OpenFileDialog(uv_work_t* req) {
+
+  GtkWidget*           dialog;
+  GtkFileChooserAction actions;
+  AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
+  GtkWindow*           parent   = (GtkWindow*)settings->me->handle_;
+
+  Cef::Pause();
+  gdk_threads_enter();
+  if( settings->type == NW_DIALOGTYPE_FILE_OPEN ) {
+
+    if( settings->dirSelect ) {
+      actions = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
+    } else {
+      actions = GTK_FILE_CHOOSER_ACTION_OPEN;
+    }
+
+    dialog = gtk_file_chooser_dialog_new (settings->title.c_str(),
+                parent,
+                actions,
+                GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                NULL);
+
+    if( settings->multiSelect ) {
+      gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog), true);
+    }
+
+    if( settings->dirSelect ) {
+      gtk_file_chooser_set_create_folders(GTK_FILE_CHOOSER(dialog), true);
+    }
+
+    gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(dialog), true);
+    gtk_file_chooser_select_filename(GTK_FILE_CHOOSER(dialog),settings->initialValue.c_str());
+
+    if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT ) {
+      GSList* filenames = gtk_file_chooser_get_filenames( GTK_FILE_CHOOSER(dialog) );
+      settings->result  = filenames;
+    } else {
+      settings->result = NULL;
+    }
+
+  } else if ( settings->type == NW_DIALOGTYPE_FILE_SAVE ) {
+
+    actions = GTK_FILE_CHOOSER_ACTION_SAVE;
+
+    dialog = gtk_file_chooser_dialog_new (settings->title.c_str(),
+                parent,
+                actions,
+                GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+                NULL);
+
+    gtk_file_chooser_set_create_folders(GTK_FILE_CHOOSER(dialog), true);
+
+    gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(dialog), true);
+    gtk_file_chooser_select_filename(GTK_FILE_CHOOSER(dialog),settings->initialValue.c_str());
+
+    if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT ) {
+      GSList* filenames   = gtk_file_chooser_get_filenames( GTK_FILE_CHOOSER(dialog) );
+      settings->result = filenames;
+    } else {
+      settings->result = NULL;
+    }
+
+  }
+
+  gtk_widget_destroy( dialog );
+  gdk_flush();
+  gdk_threads_leave();
+  Cef::Run();
+
+}
+
+void NativeWindow::ProcessFileDialog(uv_work_t* req) {
+
+  AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
+  void*                  result = settings->result;
+  Persistent<Function>       cb = settings->cb;
+
+  if( result != NULL ) {
+    GSList*   filenames = (GSList*)result;
+    int          length = g_slist_length(filenames);
+    Local<Array> newObj = Array::New(length);
+    Handle<Value> error = Undefined();
+    int           index = 0;
+
+    for (GSList* iter = filenames; iter != NULL; iter = g_slist_next(iter)) {
+      newObj->Set( index, String::New( (gchar*)iter->data ) );
+      g_free( iter->data );
+      index++;
+    }
+
+    g_slist_free( filenames );
+
+    const int argc  = 2;
+    Local<Value> argv[argc] = { Local<Value>::New(error), Local<Value>::New(newObj) };
+    cb->Call( settings->me->GetV8Handle(), argc, argv );
+  } else {
+    const int argc  = 1;
+    Local<Value> argv[argc] = { Local<Value>::New(String::New("canceled")) };
+    cb->Call( settings->me->GetV8Handle(), argc, argv );
+  }
+
+  cb.Dispose();
+  NativeWindow::DialogClosed();
+}
+
 
 void NativeWindow::Minimize() {
   gtk_window_iconify((GtkWindow*)handle_);

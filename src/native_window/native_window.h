@@ -30,6 +30,13 @@ enum NW_ICONSIZE {
   NW_ICONSIZE_BIGGER
 };
 
+enum NW_DIALOGTYPE {
+  NW_DIALOGTYPE_FILE_SAVE,
+  NW_DIALOGTYPE_FILE_OPEN,
+  NW_DIALOGTYPE_FONT,
+  NW_DIALOGTYPE_COLOR
+};
+
 class NativeWindow {
 
 public:
@@ -100,6 +107,10 @@ public:
   void SetTitle(const char* title);
   const char* GetTitle();
 
+  void OpenDialog(Settings* settings,v8::Persistent<v8::Function> cb);
+  static void DialogClosed();
+  static void OpenFileDialog(uv_work_t* req);
+  static void ProcessFileDialog(uv_work_t* req);
   void OpenDevTools();
   void CloseDevTools();
   void RunInBrowser(char* script);
@@ -154,6 +165,18 @@ private:
 #endif
 
 };
+
+typedef struct _appjs_dialog_settings {
+  NativeWindow*   me;
+  void*           result;
+  NW_DIALOGTYPE   type;
+  std::string     title;
+  std::string     initialValue;
+  std::string     acceptTypes;
+  bool            multiSelect;
+  bool            dirSelect;
+  v8::Persistent<v8::Function> cb;
+} AppjsDialogSettings;
 
 } /* appjs */
 

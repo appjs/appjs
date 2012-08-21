@@ -6,10 +6,13 @@ extern CefRefPtr<ClientHandler> g_handler;
 
 bool initialized = false;
 
-
 namespace appjs {
 
 using namespace v8;
+
+static uv_work_t dialog_work;
+static AppjsDialogSettings dialog_settings;
+static bool dialog_in_progress = false;
 
 NativeWindow::NativeWindow(Settings* settings){
   is_main_window_ = !initialized;
@@ -40,6 +43,44 @@ NativeWindow::NativeWindow(Settings* settings){
 
 NativeWindow::~NativeWindow(){
   browser_ = NULL;
+}
+
+void NativeWindow::OpenDialog(Settings* settings,Persistent<Function> cb) {
+
+  if( dialog_in_progress ) {
+    return;
+  }
+
+  dialog_settings.me           = this;
+  dialog_settings.cb           = cb;
+  dialog_settings.type         = (NW_DIALOGTYPE) settings->getInteger("type",NW_DIALOGTYPE_FILE_OPEN);
+  dialog_settings.title        = std::string(settings->getString("title",(char*)this->GetTitle()));
+  // initialValue is the filename which the dialog should select by default.
+  // it can be empty.
+  dialog_settings.initialValue = std::string(settings->getString("initialValue",""));
+  // acceptTypes is comma-separated MIME types such as "text/plain,text/html".
+  // defaults to everything
+  dialog_settings.acceptTypes  = std::string(settings->getString("acceptTypes","*.*"));
+  // multiSelect allows multiple item selection in dialog box.
+  dialog_settings.multiSelect  = settings->getBoolean("multiSelect",false);
+  // dirSelect is a boolean indicating directory selectation state.
+  // if set to true, users can select a directory instead of a file.
+  dialog_settings.dirSelect    = settings->getBoolean("dirSelect",false);
+
+  if( dialog_settings.type == NW_DIALOGTYPE_FILE_SAVE || dialog_settings.type == NW_DIALOGTYPE_FILE_OPEN) {
+    dialog_in_progress = true;
+    dialog_work.data = &dialog_settings;
+    uv_queue_work(uv_default_loop(), &dialog_work, OpenFileDialog, ProcessFileDialog);
+  } else if( dialog_settings.type == NW_DIALOGTYPE_FONT ) {
+
+  } else if( dialog_settings.type == NW_DIALOGTYPE_COLOR ) {
+
+  }
+}
+
+void NativeWindow::DialogClosed() {
+  dialog_in_progress = false;
+  dialog_work.data = NULL;
 }
 
 void NativeWindow::OpenDevTools(){
