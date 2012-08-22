@@ -543,4 +543,109 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
   return DefWindowProc(hwnd, message, wParam, lParam);
 }
 
+
+void NativeWindow::OpenFileDialog(uv_work_t* req) {
+  AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
+  std::string       acceptTypes = settings->reserveString1;
+  std::string        initialDir = settings->initialValue;
+  bool              multiSelect = settings->reserveBool1;
+  bool                dirSelect = settings->reserveBool2;
+
+
+  Cef::Pause();
+  //NW_DIALOGTYPE_FILE_SAVE  NW_DIALOGTYPE_FILE_OPEN,
+
+  if (settings->type == NW_DIALOGTYPE_FILE_OPEN) {
+    OPENFILENAMEA ofn = {0};
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = static_cast<HWND>(settings->me->handle_);
+    ofn.lpstrInitialDir = initialDir.c_str();
+    ofn.lpstrTitle = settings->title.c_str();
+    ofn.Flags = OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR | OFN_FORCESHOWHIDDEN | OFN_EXPLORER;
+    ofn.lpstrFilter = acceptTypes.c_str();
+
+    if (multiSelect) {
+      ofn.Flags |= OFN_ALLOWMULTISELECT | OFN_EXPLORER;
+
+      if (!!GetOpenFileName(&ofn)) {
+        std::vector<std::string> files;
+        const char* selection = ofn.lpstrFile;
+        while (*selection) {
+          files.push_back(selection);
+          selection += files.back().length() + 1;
+        }
+
+        if (files.empty()) {
+          settings->result = NULL;
+        } else if (files.size() == 1) {
+          settings->result = &files;
+        } else {
+          std::vector<std::string> paths;
+          std::vector<std::string>::iterator path = files.begin();
+          for (std::vector<std::string>::iterator file = path + 1; file != files.end(); ++file) {
+            paths.push_back((*path).append(*file));
+          }
+          settings->result = &paths;
+        }
+      }
+    } else {
+      char filename[MAX_PATH];
+      ofn.lpstrFile = filename;
+
+      if (!!GetOpenFileName(&ofn)) {
+        std::vector<std::string> file(1);
+        file.push_back(ofn.lpstrFile);
+        settings->result = &file;
+      }
+    }
+  }
+
+
+  Cef::Run();
+}
+
+
+
+void NativeWindow::ProcessFileDialog(uv_work_t* req) {
+  AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
+  void* result = settings->result;
+  Persistent<Function> cb = settings->cb;
+
+  if (result != NULL) {
+    std::vector<std::string> filenames = *(std::vector<std::string>*)result;
+    Local<Array> files = Array::New(filenames.size());
+    Handle<Value> error = Undefined();
+    int index = 0;
+
+    std::vector<std::string>::iterator file = filenames.begin();
+
+    for (; file != filenames.end(); ++file) {
+      files->Set(index, String::New((*file).c_str()));
+      index++;
+    }
+
+    Local<Value> argv[2] = { Local<Value>::New(error), Local<Value>::New(files) };
+    cb->Call(settings->me->GetV8Handle(), 2, argv);
+  } else {
+    Local<Value> argv[1] = { Local<Value>::New(String::New("canceled")) };
+    cb->Call(settings->me->GetV8Handle(), 1, argv);
+  }
+
+  cb.Dispose();
+  NativeWindow::DialogClosed();
+}
+
+void NativeWindow::OpenColorDialog(uv_work_t* req) {
+}
+
+void NativeWindow::ProcessColorDialog(uv_work_t* req) {
+}
+
+void NativeWindow::OpenFontDialog(uv_work_t* req) {
+}
+
+void NativeWindow::ProcessFontDialog(uv_work_t* req) {
+}
+
+
 } /* appjs */

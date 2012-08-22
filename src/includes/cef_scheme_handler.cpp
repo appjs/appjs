@@ -4,6 +4,10 @@
 #include "includes/cef_handler.h"
 #include "includes/util.h"
 
+#ifdef __WIN__
+typedef UINT uint;
+#endif
+
 namespace appjs {
 
 using namespace v8;
