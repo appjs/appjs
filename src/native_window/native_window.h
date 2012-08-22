@@ -111,6 +111,10 @@ public:
   static void DialogClosed();
   static void OpenFileDialog(uv_work_t* req);
   static void ProcessFileDialog(uv_work_t* req);
+  static void OpenColorDialog(uv_work_t* req);
+  static void ProcessColorDialog(uv_work_t* req);
+  static void OpenFontDialog(uv_work_t* req);
+  static void ProcessFontDialog(uv_work_t* req);
   void OpenDevTools();
   void CloseDevTools();
   void RunInBrowser(char* script);
@@ -167,14 +171,15 @@ private:
 };
 
 typedef struct _appjs_dialog_settings {
+  NW_DIALOGTYPE   type;
   NativeWindow*   me;
   void*           result;
-  NW_DIALOGTYPE   type;
   std::string     title;
   std::string     initialValue;
-  std::string     acceptTypes;
-  bool            multiSelect;
-  bool            dirSelect;
+  std::string     reserveString1;
+  int             reserveNumber1;
+  bool            reserveBool1;
+  bool            reserveBool2;
   v8::Persistent<v8::Function> cb;
 } AppjsDialogSettings;
 

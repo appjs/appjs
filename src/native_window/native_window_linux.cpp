@@ -181,16 +181,18 @@ NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
 
 void NativeWindow::OpenFileDialog(uv_work_t* req) {
 
-  GtkWidget*           dialog;
-  GtkFileChooserAction actions;
+  GtkWidget*             dialog;
+  GtkFileChooserAction  actions;
   AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
-  GtkWindow*           parent   = (GtkWindow*)settings->me->handle_;
-
+  GtkWindow*             parent = (GtkWindow*)settings->me->handle_;
+  std::string       acceptTypes = settings->reserveString1;
+  bool              multiSelect = settings->reserveBool1;
+  bool                dirSelect = settings->reserveBool2;
   Cef::Pause();
   gdk_threads_enter();
   if( settings->type == NW_DIALOGTYPE_FILE_OPEN ) {
 
-    if( settings->dirSelect ) {
+    if( dirSelect ) {
       actions = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
     } else {
       actions = GTK_FILE_CHOOSER_ACTION_OPEN;
@@ -203,11 +205,11 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
                 GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
                 NULL);
 
-    if( settings->multiSelect ) {
+    if( multiSelect ) {
       gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog), true);
     }
 
-    if( settings->dirSelect ) {
+    if( dirSelect ) {
       gtk_file_chooser_set_create_folders(GTK_FILE_CHOOSER(dialog), true);
     }
 
@@ -287,6 +289,57 @@ void NativeWindow::ProcessFileDialog(uv_work_t* req) {
   NativeWindow::DialogClosed();
 }
 
+void NativeWindow::OpenColorDialog(uv_work_t* req) {
+
+}
+
+void NativeWindow::ProcessColorDialog(uv_work_t* req) {
+
+}
+
+void NativeWindow::OpenFontDialog(uv_work_t* req) {
+  GtkWidget*             dialog;
+  GtkFileChooserAction  actions;
+  AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
+  GtkWindow*             parent = (GtkWindow*)settings->me->handle_;
+  const int                size = settings->reserveNumber1;
+  const char*        sampleText = settings->reserveString1.c_str();
+  Cef::Pause();
+  gdk_threads_enter();
+
+  dialog = gtk_font_selection_dialog_new( settings->title.c_str() );
+  gtk_font_selection_dialog_set_font_name( GTK_FONT_SELECTION_DIALOG(dialog), settings->initialValue.c_str() );
+  gtk_font_selection_dialog_set_preview_text( GTK_FONT_SELECTION_DIALOG(dialog), sampleText );
+
+  if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT ) {
+    char* selection  = gtk_font_selection_dialog_get_font_name( GTK_FONT_SELECTION_DIALOG(dialog) );
+    settings->result = selection;
+  } else {
+    settings->result = NULL;
+  }
+
+}
+
+void NativeWindow::ProcessFontDialog(uv_work_t* req) {
+  AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
+  void*                  result = settings->result;
+  Persistent<Function>       cb = settings->cb;
+
+  if( result != NULL ) {
+    Handle<Value>   error = Undefined();
+    Handle<Value> fontName = String::New((char*)result);
+    const int argc  = 2;
+    Local<Value> argv[argc] = { Local<Value>::New(error), Local<Value>::New(fontName) };
+    cb->Call( settings->me->GetV8Handle(), argc, argv );
+  } else {
+    const int argc  = 1;
+    Local<Value> argv[argc] = { Local<Value>::New(String::New("canceled")) };
+    cb->Call( settings->me->GetV8Handle(), argc, argv );
+  }
+
+  cb.Dispose();
+  NativeWindow::DialogClosed();
+}
 
 void NativeWindow::Minimize() {
   gtk_window_iconify((GtkWindow*)handle_);
