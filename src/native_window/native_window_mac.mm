@@ -15,6 +15,22 @@ char* mainWndUrl;
 // Memory AutoRelease pool.
 static NSAutoreleasePool* g_autopool = nil;
 
+@interface CocoaMultiThreading : NSObject
++ (void)beginMultiThreading;
+@end
+
+@implementation CocoaMultiThreading
++ (void) dummyThread:(id)unused {
+  (void)unused;
+}
++ (void) beginMultiThreading {
+  [NSThread detachNewThreadSelector:@selector(dummyThread:)
+            toTarget:self
+            withObject:nil
+  ];
+}
+@end
+
 // Provide the CefAppProtocol implementation required by CEF.
 @interface AppjsApplication : NSApplication<CefAppProtocol> {
 @private
@@ -223,8 +239,11 @@ void NativeWindow::Init (char* url, Settings* settings) {
   mainWndUrl = url;
   // if it is the first time NativeWindow is called, create the Application.
   if (is_main_window_) {
+    [CocoaMultiThreading beginMultiThreading];
+
     // Initialize the AutoRelease pool.
     g_autopool = [[NSAutoreleasePool alloc] init];
+
     // Initialize the Application instance.
     [AppjsApplication sharedApplication];
 
@@ -358,15 +377,19 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     [dialog setCanCreateDirectories:dirSelect];
     [dialog setAllowsOtherFileTypes:YES];
     [dialog setAllowsMultipleSelection:multiSelect];
-    //[dialog setParentWindow:parent];
+    
     NSArray* allowedFileTypes = [[NSString stringWithUTF8String:acceptTypes.c_str()] componentsSeparatedByString:@";"];
-    [dialog setAllowedFileTypes:allowedFileTypes];
+   // [dialog setAllowedFileTypes:allowedFileTypes];
     [dialog beginSheetModalForWindow:parent completionHandler:^(NSInteger result){
       if( result == NSFileHandlingPanelOKButton) {
-        fprintf(stderr, "%s\n","ok" );
+        //NSArray* filenames =
+        settings->result =  [dialog URLs];
+        ProcessFileDialog(req);
       }
     }];
-    /*if( [dialog runModal] == NSOKButton ) {
+    /*
+    [dialog setParentWindow:parent];
+    if( [dialog runModal] == NSOKButton ) {
       fprintf(stderr, "%s\n","ok pressed" );
       NSArray* filenames = [dialog URLs];
       settings->result = filenames;
@@ -382,13 +405,12 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     [dialog setAllowsOtherFileTypes:YES];
     [dialog setCanSelectHiddenExtension:YES];
 
-    if( [dialog runModal] == NSOKButton ) {
-      NSURL* filename = [dialog URL];
-      NSArray* filenames = [NSArray arrayWithObject:filename];
-      settings->result = filenames;
-    } else {
-      settings->result = nil;
-    }
+    [dialog beginSheetModalForWindow:parent completionHandler:^(NSInteger result){
+      if( result == NSFileHandlingPanelOKButton) {
+        settings->result   =  [NSArray arrayWithObject: [dialog URL]];
+        ProcessFileDialog(req);
+      }
+    }];
 
   }
 
@@ -406,10 +428,9 @@ void NativeWindow::ProcessFileDialog(uv_work_t* req) {
     uint             length = [filenames count];
     Local<Array>     newObj = Array::New(length);
     v8::Handle<Value> error = Undefined();
-    int               index = 0;
 
     for (NSUInteger i = 0; i < length; i++) {
-       newObj->Set( index, String::New( [[filenames objectAtIndex:i] UTF8String] ) );
+       newObj->Set( i, String::New( [[[filenames objectAtIndex:i] path] UTF8String] ) );
     }
 
     const int argc  = 2;

@@ -72,9 +72,11 @@ void NativeWindow::OpenDialog(Settings* settings,Persistent<Function> cb) {
     // dirSelect is a boolean indicating directory selectation state.
     // if set to true, users can select a directory instead of a file.
     dialog_settings.reserveBool2   = settings->getBoolean("dirSelect",false);
-
+#ifndef __MAC__
     uv_queue_work(uv_default_loop(), &dialog_work, OpenFileDialog, ProcessFileDialog);
-
+#else
+    OpenFileDialog(&dialog_work);
+#endif
   } else if( dialog_settings.type == NW_DIALOGTYPE_FONT ) {
 
     dialog_settings.reserveString1 = std::string(settings->getString("sampleText","Sample"));
