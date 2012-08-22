@@ -338,6 +338,92 @@ NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
   return NativeWindow::GetWindow(browser->GetWindowHandle());
 }
 
+void NativeWindow::OpenFileDialog(uv_work_t* req) {
+  NSSavePanel*           dialog;
+  AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
+  NSWindow*              parent = [settings->me->handle_ window];
+  std::string      initialValue = settings->initialValue;
+  std::string       acceptTypes = settings->reserveString1;
+  bool              multiSelect = settings->reserveBool1;
+  bool                dirSelect = settings->reserveBool2;
+  
+  Cef::Pause();
+  NSLock lock;
+  [lock lock];
+  if( settings.type == NW_DIALOGTYPE_FILE_OPEN ) {
+    dialog = [[NSOpenPanel openPanel] retain];
+    [dialog setCanChooseFiles:!dirSelect];
+    [dialog setCanChooseDirectories:dirSelect];
+    [dialog setCanCreateDirectories:dirSelect];
+    [dialog setAllowsMultipleSelection:multiSelect];
+  } else {
+    dialog = [[NSSavePanel savePanel] retain];
+    [dialog setCanChooseFiles:YES];
+  }
+    
+
+  [dialog setTitle: [NSString stringWithUTF8String:settings.title] ];
+  [dialog setDirectoryURL:[NSURL URLWithString:[NSString stringWithUTF8String:initialValue.c_str()]]];
+  [dialog setAllowsOtherFileTypes:YES];
+
+  if( settings.type == NW_DIALOGTYPE_FILE_SAVE )
+    [dialog setCanSelectHiddenExtension:YES];
+
+  if( [dialog runModal] == NSOKButton ) {
+    NSArray* filenames = [dialog URLs];
+    settings->result = filenames;
+  } else {
+    settings->result = nil;
+  }
+  [lock unlock];
+  Cef::Run();
+}
+
+void NativeWindow::ProcessFileDialog(uv_work_t* req) {
+
+  AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
+  void*                  result = settings->result;
+  Persistent<Function>       cb = settings->cb;
+
+  if( result != NULL ) {
+    NSArray*  filenames = (NSArray*) result;
+    uint         length = [filenames count];
+    Local<Array> newObj = Array::New(length);
+    Handle<Value> error = Undefined();
+    int           index = 0;
+
+    for (NSUInteger i = 0; i < length; i++) {
+       newObj->Set( index, String::New( [[filenames objectAtIndex:i] UTF8String] ) );
+    }
+
+    const int argc  = 2;
+    Local<Value> argv[argc] = { Local<Value>::New(error), Local<Value>::New(newObj) };
+    cb->Call( settings->me->GetV8Handle(), argc, argv );
+  } else {
+    const int argc  = 1;
+    Local<Value> argv[argc] = { Local<Value>::New(String::New("canceled")) };
+    cb->Call( settings->me->GetV8Handle(), argc, argv );
+  }
+
+}
+
+
+void NativeWindow::OpenColorDialog(uv_work_t* req) {
+
+}
+
+void NativeWindow::ProcessColorDialog(uv_work_t* req) {
+
+}
+
+void NativeWindow::OpenFontDialog(uv_work_t* req) {
+
+}
+
+void NativeWindow::ProcessFontDialog(uv_work_t* req) {
+
+}
+
 void NativeWindow::Destroy() {
   [[handle_ window] performSelectorOnMainThread:@selector(performClose:)
                          withObject:nil
