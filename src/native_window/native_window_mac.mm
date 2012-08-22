@@ -339,44 +339,60 @@ NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
 }
 
 void NativeWindow::OpenFileDialog(uv_work_t* req) {
-  NSSavePanel*           dialog;
   AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
   NSWindow*              parent = [settings->me->handle_ window];
   std::string      initialValue = settings->initialValue;
   std::string       acceptTypes = settings->reserveString1;
   bool              multiSelect = settings->reserveBool1;
   bool                dirSelect = settings->reserveBool2;
-  
-  Cef::Pause();
-  NSLock lock;
+
+  NSLock* lock = [NSLock new];
   [lock lock];
-  if( settings.type == NW_DIALOGTYPE_FILE_OPEN ) {
+  if( settings->type == NW_DIALOGTYPE_FILE_OPEN ) {
+    NSOpenPanel* dialog;
     dialog = [[NSOpenPanel openPanel] retain];
+    [dialog setTitle: [NSString stringWithUTF8String:settings->title.c_str()] ];
+    [dialog setDirectoryURL:[NSURL fileURLWithPath:[NSString stringWithUTF8String:initialValue.c_str()]]];
     [dialog setCanChooseFiles:!dirSelect];
     [dialog setCanChooseDirectories:dirSelect];
     [dialog setCanCreateDirectories:dirSelect];
+    [dialog setAllowsOtherFileTypes:YES];
     [dialog setAllowsMultipleSelection:multiSelect];
+    //[dialog setParentWindow:parent];
+    NSArray* allowedFileTypes = [[NSString stringWithUTF8String:acceptTypes.c_str()] componentsSeparatedByString:@";"];
+    [dialog setAllowedFileTypes:allowedFileTypes];
+    [dialog beginSheetModalForWindow:parent completionHandler:^(NSInteger result){
+      if( result == NSFileHandlingPanelOKButton) {
+        fprintf(stderr, "%s\n","ok" );
+      }
+    }];
+    /*if( [dialog runModal] == NSOKButton ) {
+      fprintf(stderr, "%s\n","ok pressed" );
+      NSArray* filenames = [dialog URLs];
+      settings->result = filenames;
+    } else {
+      fprintf(stderr, "%s\n","canceled" );
+      settings->result = nil;
+    }*/
+
   } else {
+    NSSavePanel* dialog;
     dialog = [[NSSavePanel savePanel] retain];
-    [dialog setCanChooseFiles:YES];
-  }
-    
-
-  [dialog setTitle: [NSString stringWithUTF8String:settings.title] ];
-  [dialog setDirectoryURL:[NSURL URLWithString:[NSString stringWithUTF8String:initialValue.c_str()]]];
-  [dialog setAllowsOtherFileTypes:YES];
-
-  if( settings.type == NW_DIALOGTYPE_FILE_SAVE )
+    [dialog setTitle: [NSString stringWithUTF8String:settings->title.c_str()] ];
+    [dialog setAllowsOtherFileTypes:YES];
     [dialog setCanSelectHiddenExtension:YES];
 
-  if( [dialog runModal] == NSOKButton ) {
-    NSArray* filenames = [dialog URLs];
-    settings->result = filenames;
-  } else {
-    settings->result = nil;
+    if( [dialog runModal] == NSOKButton ) {
+      NSURL* filename = [dialog URL];
+      NSArray* filenames = [NSArray arrayWithObject:filename];
+      settings->result = filenames;
+    } else {
+      settings->result = nil;
+    }
+
   }
+
   [lock unlock];
-  Cef::Run();
 }
 
 void NativeWindow::ProcessFileDialog(uv_work_t* req) {
@@ -386,11 +402,11 @@ void NativeWindow::ProcessFileDialog(uv_work_t* req) {
   Persistent<Function>       cb = settings->cb;
 
   if( result != NULL ) {
-    NSArray*  filenames = (NSArray*) result;
-    uint         length = [filenames count];
-    Local<Array> newObj = Array::New(length);
-    Handle<Value> error = Undefined();
-    int           index = 0;
+    NSArray*      filenames = (NSArray*) result;
+    uint             length = [filenames count];
+    Local<Array>     newObj = Array::New(length);
+    v8::Handle<Value> error = Undefined();
+    int               index = 0;
 
     for (NSUInteger i = 0; i < length; i++) {
        newObj->Set( index, String::New( [[filenames objectAtIndex:i] UTF8String] ) );
