@@ -303,6 +303,10 @@ void NativeWindow::Show() {
   [[handle_ window] makeKeyAndOrderFront: nil];
 }
 
+void NativeWindow::Focus() {
+  [[handle_ window] makeKeyAndOrderFront: nil];
+}
+
 void NativeWindow::Hide() {
   [[handle_ window] orderOut: nil];
 }

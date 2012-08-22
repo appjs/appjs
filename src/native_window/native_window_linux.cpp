@@ -207,6 +207,10 @@ void NativeWindow::Show() {
   gtk_widget_show_all(handle_);
 }
 
+void NativeWindow::Focus() {
+  gtk_window_present((GtkWindow*)handle_);
+}
+
 void NativeWindow::Hide() {
   gtk_widget_hide(handle_);
 }

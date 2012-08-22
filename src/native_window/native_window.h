@@ -61,6 +61,7 @@ public:
   void Maximize();
   void Fullscreen();
   void Show();
+  void Focus();
   void Hide();
   void Destroy();
 
