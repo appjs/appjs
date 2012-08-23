@@ -1,5 +1,8 @@
 #include <node.h>
 #include <gtk/gtk.h>
+#include <vector>
+#include <sstream>
+
 #include "appjs.h"
 #include "native_window/native_window.h"
 #include "includes/cef.h"
@@ -190,6 +193,7 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
   bool                dirSelect = settings->reserveBool2;
   Cef::Pause();
   gdk_threads_enter();
+
   if( settings->type == NW_DIALOGTYPE_FILE_OPEN ) {
 
     if( dirSelect ) {
@@ -216,13 +220,6 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(dialog), true);
     gtk_file_chooser_select_filename(GTK_FILE_CHOOSER(dialog),settings->initialValue.c_str());
 
-    if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT ) {
-      GSList* filenames = gtk_file_chooser_get_filenames( GTK_FILE_CHOOSER(dialog) );
-      settings->result  = filenames;
-    } else {
-      settings->result = NULL;
-    }
-
   } else if ( settings->type == NW_DIALOGTYPE_FILE_SAVE ) {
 
     actions = GTK_FILE_CHOOSER_ACTION_SAVE;
@@ -235,17 +232,47 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
                 NULL);
 
     gtk_file_chooser_set_create_folders(GTK_FILE_CHOOSER(dialog), true);
+    gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), true);
 
     gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(dialog), true);
     gtk_file_chooser_select_filename(GTK_FILE_CHOOSER(dialog),settings->initialValue.c_str());
 
-    if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT ) {
-      GSList* filenames   = gtk_file_chooser_get_filenames( GTK_FILE_CHOOSER(dialog) );
-      settings->result = filenames;
+  }
+
+  std::stringstream ss(acceptTypes);
+  std::string filterStr;
+  while(std::getline(ss, filterStr, ';')) {
+    std::stringstream filterStream(filterStr);
+    std::string filterPatterns;
+    std::vector<std::string> temp;
+    while(std::getline(filterStream,filterPatterns,':')) {
+      temp.push_back(filterPatterns);
+    }
+    GtkFileFilter* filter = gtk_file_filter_new();
+
+    if(temp.size() == 1) {
+      // Filter Pattern has no label
+      // Insert the pattern itself aas the label
+      gtk_file_filter_set_name(filter,temp.back().c_str());
     } else {
-      settings->result = NULL;
+      // Filter Pattern has label
+      gtk_file_filter_set_name(filter,temp.front().c_str());
     }
 
+    std::stringstream filterPatternStream(temp.back());
+    std::string filterPattern;
+    while(std::getline(filterPatternStream,filterPattern,',')) {
+      gtk_file_filter_add_pattern(filter,filterPattern.c_str());
+    }
+
+    gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog),filter);
+  }
+
+  if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT ) {
+    GSList* filenames = gtk_file_chooser_get_filenames( GTK_FILE_CHOOSER(dialog) );
+    settings->result  = filenames;
+  } else {
+    settings->result  = NULL;
   }
 
   gtk_widget_destroy( dialog );
