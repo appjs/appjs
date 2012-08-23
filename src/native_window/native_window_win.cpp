@@ -638,21 +638,13 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
       int length = 0;
       char* offset;
       std::vector<char*> paths;
-
-      paths.push_back(ofn.lpstrFile);
-      offset = ofn.lpstrFile + ofn.nFileOffset;
-
-      if (!multiSelect || ofn.nFileExtension != 0){
-        ofn.lpstrFile[ofn.nFileOffset - 1] = 0;
-      }
+      offset = ofn.lpstrFile;
 
       do {
          paths.push_back(offset);
-         length += strlen(offset) + 1;
          offset += strlen(offset) + 1;
       } while (multiSelect && *offset != '\0');
 
-      (*(offset+1)) = '\0';
       settings->result = &paths;
     }
   }
@@ -667,16 +659,20 @@ void NativeWindow::ProcessFileDialog(uv_work_t* req) {
 
   if (result != NULL) {
     std::vector<char*>* filenames = (std::vector<char*>*)result;
-    Local<Array> files = Array::New(filenames->size() - 1);
-    Handle<Value> error = Undefined();
-    int index = 0;
-
     std::vector<char*>::iterator file = filenames->begin();
-    Handle<String> base = String::Concat(String::New(*file), String::New("\\"));
+    Handle<String> base = String::New(*file);
+    Handle<Value> error = Undefined();
+    Local<Array> files;
 
-    for (file++; file != filenames->end(); ++file) {
-      if (strlen(*file) > 0 && strlen(*file) < MAX_PATH) {
-        files->Set(index, String::Concat(base, String::New(*file)));
+    if (filenames->size() == 1) {
+      files = Array::New(1);
+      files->Set(0, base);
+    } else {
+      files = Array::New(filenames->size() - 1);
+      int index = 0;
+
+      for (file++; file != filenames->end(); ++file) {
+        files->Set(index, String::Concat(String::Concat(base, String::New("\\")), String::New(*file)));
         index++;
       }
     }
