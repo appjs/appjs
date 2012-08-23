@@ -379,32 +379,26 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     [dialog setAllowsMultipleSelection:multiSelect];
     
     NSArray* allowedFileTypes = [[NSString stringWithUTF8String:acceptTypes.c_str()] componentsSeparatedByString:@";"];
-   // [dialog setAllowedFileTypes:allowedFileTypes];
+    [dialog setAllowedFileTypes:allowedFileTypes];
     [dialog beginSheetModalForWindow:parent completionHandler:^(NSInteger result){
       if( result == NSFileHandlingPanelOKButton) {
-        //NSArray* filenames =
         settings->result =  [dialog URLs];
         ProcessFileDialog(req);
       }
     }];
-    /*
-    [dialog setParentWindow:parent];
-    if( [dialog runModal] == NSOKButton ) {
-      fprintf(stderr, "%s\n","ok pressed" );
-      NSArray* filenames = [dialog URLs];
-      settings->result = filenames;
-    } else {
-      fprintf(stderr, "%s\n","canceled" );
-      settings->result = nil;
-    }*/
 
   } else {
     NSSavePanel* dialog;
     dialog = [[NSSavePanel savePanel] retain];
     [dialog setTitle: [NSString stringWithUTF8String:settings->title.c_str()] ];
+    [dialog setDirectoryURL:[NSURL fileURLWithPath:[NSString stringWithUTF8String:initialValue.c_str()]]];
     [dialog setAllowsOtherFileTypes:YES];
+    [dialog setCanCreateDirectories:YES];
     [dialog setCanSelectHiddenExtension:YES];
-
+    
+    // causes confirmation dialog which then throws exception: Invalid Window
+    //NSArray* allowedFileTypes = [[NSString stringWithUTF8String:acceptTypes.c_str()] componentsSeparatedByString:@";"];
+    //[dialog setAllowedFileTypes:allowedFileTypes];
     [dialog beginSheetModalForWindow:parent completionHandler:^(NSInteger result){
       if( result == NSFileHandlingPanelOKButton) {
         settings->result   =  [NSArray arrayWithObject: [dialog URL]];
