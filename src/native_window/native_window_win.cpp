@@ -573,7 +573,7 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
   //Cef::Pause();
 
   settings->result = NULL;
-  char filename[MAX_PATH+1];
+  char filename[MAX_PATH*10];
   strcpy(filename, settings->initialValue.c_str());
   filename[settings->initialValue.size()] = 0;
   filename[MAX_PATH] = 0;
@@ -662,15 +662,18 @@ void NativeWindow::ProcessFileDialog(uv_work_t* req) {
 
   if (result != NULL) {
     std::vector<char*>* filenames = (std::vector<char*>*)result;
-    Local<Array> files = Array::New(filenames->size());
+    Local<Array> files = Array::New(filenames->size() - 1);
     Handle<Value> error = Undefined();
     int index = 0;
 
     std::vector<char*>::iterator file = filenames->begin();
+    files->Set(String::New("base"), String::New(*file));
 
-    for (; file != filenames->end(); ++file) {
-      files->Set(index, String::New(*file));
-      index++;
+    for (file++; file != filenames->end(); ++file) {
+      if (strlen(*file) > 0 && strlen(*file) < MAX_PATH) {
+        files->Set(index, String::New(*file));
+        index++;
+      }
     }
 
     Local<Value> argv[2] = { Local<Value>::New(error), Local<Value>::New(files) };
