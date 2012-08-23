@@ -4,6 +4,7 @@
 #define min(left,right) std::min(left,right)
 #define max(left,right) std::max(left,right)
 #include <gdiplus.h>
+#include <shlobj.h>
 #include "appjs.h"
 #include "includes/cef.h"
 #include "includes/util.h"
@@ -544,83 +545,131 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 }
 
 
+
+int CALLBACK DirectorySelectHook(HWND hwnd, UINT msg, LPARAM lParam, LPARAM data) {
+  switch (msg) {
+    case BFFM_INITIALIZED:
+      HWND parent = GetParent(hwnd);
+      RECT r;
+      GetWindowRect(parent, &r);
+      r.right = r.right - r.left + 200;
+      r.bottom = r.bottom - r.top + 200;
+      r.left = (NativeWindow::ScreenWidth() - r.right) / 2 | 0;
+      r.top = (NativeWindow::ScreenHeight() - r.bottom) / 2 | 0;
+      SetWindowPos(parent, NULL, r.left, r.top, r.right, r.bottom, SWP_NOZORDER);
+      SendMessage(hwnd, BFFM_SETSELECTION, true, data);
+      break;
+  }
+  return 0;
+}
+
 void NativeWindow::OpenFileDialog(uv_work_t* req) {
   AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
   std::string       acceptTypes = settings->reserveString1;
-  std::string        initialDir = settings->initialValue;
   bool              multiSelect = settings->reserveBool1;
   bool                dirSelect = settings->reserveBool2;
 
 
-  Cef::Pause();
-  //NW_DIALOGTYPE_FILE_SAVE  NW_DIALOGTYPE_FILE_OPEN,
+  //Cef::Pause();
 
-  if (settings->type == NW_DIALOGTYPE_FILE_OPEN) {
-    OPENFILENAMEA ofn = {0};
-    ofn.lStructSize = sizeof(ofn);
-    ofn.hwndOwner = static_cast<HWND>(settings->me->handle_);
-    ofn.lpstrInitialDir = initialDir.c_str();
+  settings->result = NULL;
+  char filename[MAX_PATH+1];
+  strcpy(filename, settings->initialValue.c_str());
+  filename[settings->initialValue.size()] = 0;
+  filename[MAX_PATH] = 0;
+
+  if (dirSelect) {
+    LPMALLOC pMalloc = NULL;
+    SHGetMalloc(&pMalloc);
+
+    BROWSEINFO bi;
+    bi.hwndOwner = NULL;
+    bi.pidlRoot = NULL;
+    bi.pszDisplayName = filename;
+    bi.lpszTitle = settings->title.c_str();
+    bi.ulFlags = BIF_USENEWUI | BIF_BROWSEFILEJUNCTIONS | BIF_RETURNONLYFSDIRS | BIF_RETURNFSANCESTORS;
+    bi.lParam = (LPARAM)ToWChar(settings->initialValue);
+    bi.iImage = -1;
+    bi.lpfn = DirectorySelectHook;
+
+    LPITEMIDLIST item;
+    if (item = SHBrowseForFolder(&bi)) {
+      char dir[MAX_PATH];
+      if (SHGetPathFromIDList(item, dir)) {
+        std::vector<char*> paths;
+        paths.push_back(dir);
+        settings->result = &paths;
+        CoTaskMemFree(item);
+      }
+      pMalloc->Free(item);
+    }
+  } else {
+    std::replace(acceptTypes.begin(), acceptTypes.end(), ',', '\0');
+    std::replace(acceptTypes.begin(), acceptTypes.end(), ';', '\0');
+
+    OPENFILENAME ofn = {0};
+    ofn.hwndOwner = NULL;
+    ofn.hInstance = 0;
+    ofn.lStructSize = sizeof(OPENFILENAME);
     ofn.lpstrTitle = settings->title.c_str();
-    ofn.Flags = OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR | OFN_FORCESHOWHIDDEN | OFN_EXPLORER;
+    ofn.Flags = OFN_NOCHANGEDIR | OFN_FORCESHOWHIDDEN;
+    ofn.lpstrFile = filename;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.nFileOffset = settings->initialValue.size();
     ofn.lpstrFilter = acceptTypes.c_str();
+    if (!settings->initialValue.size()) {
+      ofn.lpstrInitialDir = settings->initialValue.c_str();
+    }
 
-    if (multiSelect) {
-      ofn.Flags |= OFN_ALLOWMULTISELECT | OFN_EXPLORER;
-
-      if (!!GetOpenFileName(&ofn)) {
-        std::vector<std::string> files;
-        const char* selection = ofn.lpstrFile;
-        while (*selection) {
-          files.push_back(selection);
-          selection += files.back().length() + 1;
-        }
-
-        if (files.empty()) {
-          settings->result = NULL;
-        } else if (files.size() == 1) {
-          settings->result = &files;
-        } else {
-          std::vector<std::string> paths;
-          std::vector<std::string>::iterator path = files.begin();
-          for (std::vector<std::string>::iterator file = path + 1; file != files.end(); ++file) {
-            paths.push_back((*path).append(*file));
-          }
-          settings->result = &paths;
-        }
+    BOOL result;
+    if (settings->type == NW_DIALOGTYPE_FILE_SAVE) {
+      multiSelect = false;
+      result = GetSaveFileName(&ofn);
+    } else if (settings->type == NW_DIALOGTYPE_FILE_OPEN) {
+      if (multiSelect) {
+        ofn.Flags |= OFN_ALLOWMULTISELECT | OFN_EXPLORER;
       }
-    } else {
-      char filename[MAX_PATH];
-      ofn.lpstrFile = filename;
+      result = GetOpenFileName(&ofn);
+    }
 
-      if (!!GetOpenFileName(&ofn)) {
-        std::vector<std::string> file(1);
-        file.push_back(ofn.lpstrFile);
-        settings->result = &file;
+    if (result) {
+      char* offset;
+      std::vector<char*> paths;
+
+      paths.push_back(ofn.lpstrFile);
+      offset = ofn.lpstrFile + ofn.nFileOffset;
+
+      if (!multiSelect || ofn.nFileExtension != 0){
+        ofn.lpstrFile[ofn.nFileOffset - 1] = 0;
       }
+
+      do {
+         paths.push_back(offset);
+         offset += strlen(offset) + 1;
+      } while (multiSelect && *offset != '\0');
+
+      settings->result = &paths;
     }
   }
 
-
-  Cef::Run();
+  //Cef::Run();
 }
-
-
 
 void NativeWindow::ProcessFileDialog(uv_work_t* req) {
   AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
-  void* result = settings->result;
   Persistent<Function> cb = settings->cb;
+  void* result = settings->result;
 
   if (result != NULL) {
-    std::vector<std::string> filenames = *(std::vector<std::string>*)result;
-    Local<Array> files = Array::New(filenames.size());
+    std::vector<char*>* filenames = (std::vector<char*>*)result;
+    Local<Array> files = Array::New(filenames->size());
     Handle<Value> error = Undefined();
     int index = 0;
 
-    std::vector<std::string>::iterator file = filenames.begin();
+    std::vector<char*>::iterator file = filenames->begin();
 
-    for (; file != filenames.end(); ++file) {
-      files->Set(index, String::New((*file).c_str()));
+    for (; file != filenames->end(); ++file) {
+      files->Set(index, String::New(*file));
       index++;
     }
 
@@ -634,6 +683,9 @@ void NativeWindow::ProcessFileDialog(uv_work_t* req) {
   cb.Dispose();
   NativeWindow::DialogClosed();
 }
+
+
+
 
 void NativeWindow::OpenColorDialog(uv_work_t* req) {
 }
