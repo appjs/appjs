@@ -606,8 +606,7 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
   } else {
     std::replace(acceptTypes.begin(), acceptTypes.end(), ':', '\0');
     std::replace(acceptTypes.begin(), acceptTypes.end(), ',', '\0');
-    (*(acceptTypes.end()++)) = '\0';
-
+    acceptTypes += '\0';
 
     OPENFILENAME ofn;
     ZeroMemory(&ofn, sizeof(ofn));
