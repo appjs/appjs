@@ -573,7 +573,8 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
   //Cef::Pause();
 
   settings->result = NULL;
-  char filename[MAX_PATH*10] = "";
+  char filename[MAX_PATH*10];
+  ZeroMemory(&filename, sizeof(filename));
   //strcpy(filename, settings->initialValue.c_str());
   //filename[settings->initialValue.size()] = 0;
   //filename[MAX_PATH] = 0;
@@ -608,15 +609,14 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     (*(acceptTypes.end()++)) = '\0';
 
 
-    OPENFILENAME ofn = {0};
-    ofn.hwndOwner = NULL;
+    OPENFILENAME ofn;
+    ZeroMemory(&ofn, sizeof(ofn));
     ofn.hInstance = 0;
     ofn.lStructSize = sizeof(OPENFILENAME);
     ofn.lpstrTitle = settings->title.c_str();
     ofn.Flags = OFN_NOCHANGEDIR | OFN_FORCESHOWHIDDEN;
     ofn.lpstrFile = filename;
-    ofn.nMaxFile = MAX_PATH;
-    ofn.nFileOffset = settings->initialValue.size();
+    ofn.nMaxFile = sizeof(filename);
     ofn.lpstrFilter = acceptTypes.c_str();
     if (!settings->initialValue.size()) {
       ofn.lpstrInitialDir = settings->initialValue.c_str();
@@ -635,13 +635,12 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
 
     if (result) {
       std::vector<char*> paths;
-      char* offset;
-      offset = filename;
+      char* offset = filename;
 
       do {
         paths.push_back(offset);
-        offset += lstrlen(offset) + 1;
-      } while (multiSelect && *offset != '\0');
+        offset += strlen(offset) + 1;
+      } while (multiSelect && offset[0] != '\0');
 
       settings->result = &paths;
     }
@@ -656,21 +655,22 @@ void NativeWindow::ProcessFileDialog(uv_work_t* req) {
   void* result = settings->result;
 
   if (result != NULL) {
-    std::vector<char*>* filenames = (std::vector<char*>*)result;
-    std::vector<char*>::iterator file = filenames->begin();
+    std::vector<char*> filenames = *(std::vector<char*>*)result;
+    std::vector<char*>::iterator file = filenames.begin();
     Handle<String> base = String::New(*file);
     Handle<Value> error = Undefined();
     Local<Array> files;
 
-    if (filenames->size() == 1) {
+    if (filenames.size() == 1) {
       files = Array::New(1);
       files->Set(0, base);
     } else {
-      files = Array::New(filenames->size() - 1);
+      files = Array::New(filenames.size() - 1);
+      base = String::Concat(base, String::New("\\"));
       int index = 0;
 
-      for (file++; file != filenames->end(); ++file) {
-        files->Set(index, String::Concat(String::Concat(base, String::New("\\")), String::New(*file)));
+      for (file++; file != filenames.end(); ++file) {
+        files->Set(index, String::Concat(base, String::New(*file)));
         index++;
       }
     }
