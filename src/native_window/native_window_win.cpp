@@ -606,6 +606,8 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
   } else {
     std::replace(acceptTypes.begin(), acceptTypes.end(), ':', '\0');
     std::replace(acceptTypes.begin(), acceptTypes.end(), ',', '\0');
+    (*(acceptTypes.end()++)) = '\0';
+
 
     OPENFILENAME ofn = {0};
     ofn.hwndOwner = NULL;
@@ -633,6 +635,7 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     }
 
     if (result) {
+      int length = 0;
       char* offset;
       std::vector<char*> paths;
 
@@ -645,9 +648,11 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
 
       do {
          paths.push_back(offset);
+         length += strlen(offset) + 1;
          offset += strlen(offset) + 1;
       } while (multiSelect && *offset != '\0');
 
+      (*(offset+1)) = '\0';
       settings->result = &paths;
     }
   }
@@ -667,11 +672,11 @@ void NativeWindow::ProcessFileDialog(uv_work_t* req) {
     int index = 0;
 
     std::vector<char*>::iterator file = filenames->begin();
-    files->Set(String::New("base"), String::New(*file));
+    Handle<String> base = String::Concat(String::New(*file), String::New("\\"));
 
     for (file++; file != filenames->end(); ++file) {
       if (strlen(*file) > 0 && strlen(*file) < MAX_PATH) {
-        files->Set(index, String::New(*file));
+        files->Set(index, String::Concat(base, String::New(*file)));
         index++;
       }
     }
