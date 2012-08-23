@@ -604,8 +604,8 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
       pMalloc->Free(item);
     }
   } else {
+    std::replace(acceptTypes.begin(), acceptTypes.end(), ':', '\0');
     std::replace(acceptTypes.begin(), acceptTypes.end(), ',', '\0');
-    std::replace(acceptTypes.begin(), acceptTypes.end(), ';', '\0');
 
     OPENFILENAME ofn = {0};
     ofn.hwndOwner = NULL;

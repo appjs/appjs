@@ -66,7 +66,7 @@ void NativeWindow::OpenDialog(Settings* settings,Persistent<Function> cb) {
 
     // acceptTypes is comma-separated MIME types such as "text/plain,text/html".
     // defaults to everything
-    dialog_settings.reserveString1 = std::string(settings->getString("acceptTypes","*.*"));
+    dialog_settings.reserveString1 = std::string(settings->getString("acceptTypes","All Files:*.*"));
     // multiSelect allows multiple item selection in dialog box.
     dialog_settings.reserveBool1   = settings->getBoolean("multiSelect",false);
     // dirSelect is a boolean indicating directory selectation state.

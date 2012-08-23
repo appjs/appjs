@@ -241,7 +241,7 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
 
   std::stringstream ss(acceptTypes);
   std::string filterStr;
-  while(std::getline(ss, filterStr, ';')) {
+  while(std::getline(ss, filterStr, ',')) {
     std::stringstream filterStream(filterStr);
     std::string filterPatterns;
     std::vector<std::string> temp;
@@ -261,7 +261,7 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
 
     std::stringstream filterPatternStream(temp.back());
     std::string filterPattern;
-    while(std::getline(filterPatternStream,filterPattern,',')) {
+    while(std::getline(filterPatternStream,filterPattern,';')) {
       gtk_file_filter_add_pattern(filter,filterPattern.c_str());
     }
 
