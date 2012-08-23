@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/appjs/appjs.png)](http://travis-ci.org/appjs/appjs)
 # AppJS
 AppJS is an SDK to develop desktop applications using Node.js melded with Chromium. With AppJS you can develop desktop tools and applications using the same libraries and knowledge used to build websites. You get all the following in one package:
 
