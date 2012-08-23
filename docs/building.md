@@ -28,7 +28,7 @@ The [Chromium Embedded Frame](https://github.com/appjs/appjs/downloads) distribu
     mkdir deps
     cd deps
     wget --no-check-certificate https://github.com/downloads/appjs/appjs/cef_binary_${CEFVERSION}_darwin_ia32.tar.gz
-    tar -xzf https://github.com/downloads/appjs/appjs/cef_binary_${CEFVERSION}_darwin_ia32.tar.gz
+    tar -xzf cef_binary_${CEFVERSION}_darwin_ia32.tar.gz
     ln -s cef_binary_${CEFVERSION}_darwin_ia32 cef
     cd ..
     node-gyp build

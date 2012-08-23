@@ -26,6 +26,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance);
 HICON smallIcon;
 HICON bigIcon;
 Settings* browserSettings;
+HINSTANCE hInstance;
 char* url_;
 bool emitFullscreen = false;
 
@@ -128,6 +129,12 @@ void ForceForegroundWindow(HWND hwnd) {
 }
 
 
+HMODULE GetCurrentModuleHandle() {
+  HMODULE module = NULL;
+  GetModuleHandleExW(6, reinterpret_cast<LPCWSTR>(&GetCurrentModuleHandle), &module);
+  return module;
+}
+
 
 // #####################################
 // ### Static NativeWindow Functions ###
@@ -149,14 +156,21 @@ NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
   return GetWindow(GetParent(browser->GetWindowHandle()));
 }
 
+void AddWebView(CefWindowHandle parent, RECT windowRect, char* url, Settings* settings) {
+  CefWindowInfo windowInfo;
+  windowInfo.SetAsChild(parent, windowRect);
+  windowInfo.SetTransparentPainting(true);
+  g_handler->browserSettings_.web_security_disabled = settings->getBoolean("disableSecurity", false);
+  CefBrowser::CreateBrowser(windowInfo, static_cast<CefRefPtr<CefClient>>(g_handler), url, g_handler->browserSettings_);
+}
+
+
 // ############################
 // ### NativeWindow methods ###
 // ############################
 
 void NativeWindow::Init(char* url, Settings* settings) {
   url_ = url;
-
-  HINSTANCE hInstance = GetModuleHandle(NULL);
 
   if (is_main_window_) {
     dwmapiDLL = LoadLibrary(TEXT("dwmapi.dll"));
@@ -170,8 +184,8 @@ void NativeWindow::Init(char* url, Settings* settings) {
     ULONG_PTR gdiplusToken;
     Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-    WCHAR* wSmallIconPath = icons->getString("small",L"");
-    WCHAR* wBigIconPath = icons->getString("big",L"");
+    WCHAR* wSmallIconPath = icons->getString("small", L"");
+    WCHAR* wBigIconPath = icons->getString("big", L"");
 
     Gdiplus::Bitmap* smallIconBitmap = Gdiplus::Bitmap::FromFile(wSmallIconPath);
     Gdiplus::Bitmap* bigIconBitmap = Gdiplus::Bitmap::FromFile(wBigIconPath);
@@ -188,7 +202,8 @@ void NativeWindow::Init(char* url, Settings* settings) {
       delete bigIconBitmap;
     }
 
-    strcpy(szWindowClass,"AppjsWindow");
+    hInstance = (HINSTANCE)GetCurrentModuleHandle();
+    strcpy(szWindowClass, "AppjsWindow");
     MyRegisterClass(hInstance);
   }
 
@@ -199,7 +214,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
     rect_.top = (GetSystemMetrics(SM_CYSCREEN) - rect_.height) / 2;
   }
   browser_ = NULL;
-  handle_ = CreateWindowEx(NULL, szWindowClass,"", WS_OVERLAPPEDWINDOW,
+  handle_ = CreateWindowEx(NULL, szWindowClass, "", WS_OVERLAPPEDWINDOW,
                            rect_.left, rect_.top, rect_.width, rect_.height,
                            NULL, NULL, hInstance, NULL);
 
@@ -246,6 +261,10 @@ void NativeWindow::Restore() {
 void NativeWindow::Show() {
   ShowWindow(handle_, SW_SHOWNORMAL);
   ForceForegroundWindow(handle_);
+}
+
+void NativeWindow::Focus() {
+  SetActiveWindow(handle_);
 }
 
 void NativeWindow::Hide() {
@@ -443,7 +462,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
     case WM_CREATE: {
       RECT rect;
       GetClientRect(hwnd, &rect);
-      Cef::AddWebView(hwnd, rect, url_, browserSettings);
+      AddWebView(hwnd, rect, url_, browserSettings);
       return 0;
     }
     case WM_PAINT: {

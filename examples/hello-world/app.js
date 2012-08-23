@@ -19,8 +19,12 @@ window.on('ready', function(){
   window.require = require;
   window.process = process;
   window.module = module;
+
+  function F12(e){ return e.keyIdentifier === 'F12' }
+  function Command_Option_J(e){ return e.keyCode === 74 && e.metaKey && e.altKey }
+
   window.addEventListener('keydown', function(e){
-    if (e.keyIdentifier === 'F12') {
+    if (F12(e) || Command_Option_J(e)) {
       window.frame.openDevTools();
     }
   });

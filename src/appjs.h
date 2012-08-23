@@ -65,21 +65,43 @@
   tpl->InstanceTemplate()->SetInternalFieldCount(1)
 
 #define END_CONSTRUCTOR() \
-    constructor = Persistent<Function>::New(tpl->GetFunction())
+  constructor = Persistent<Function>::New(tpl->GetFunction())
 
 
 
 
-#define CREATE_INSTANCE_ACCESSOR(classname, propName, getType, setType) \
-void classname::Set##propName(Local<String> property, Local<Value> value, const AccessorInfo& info) { \
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder()); \
-  window->Set##propName(setType(value)); \
-} \
-Handle<Value> classname::Get##propName(Local<String> property, const AccessorInfo &info) { \
-  HandleScope scope; \
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder()); \
-  return scope.Close(getType::New(window->Get##propName())); \
-}
+#define CREATE_INSTANCE_ACCESSOR(Type, PropertyName, GetterType, SetterType) \
+  void Type::Set##PropertyName(Local<String> property, Local<Value> value, const AccessorInfo& info) { \
+    Native##Type *obj = ObjectWrap::Unwrap<Native##Type>(info.Holder()); \
+    obj->Set##PropertyName(SetterType(value)); \
+  } \
+  \
+  Handle<Value> Type::Get##PropertyName(Local<String> property, const AccessorInfo &info) { \
+    HandleScope scope; \
+    Native##Type *obj = ObjectWrap::Unwrap<Native##Type>(info.Holder()); \
+    return scope.Close(GetterType::New(obj->Get##PropertyName())); \
+  }
+
+
+
+#define CREATE_PROTOTYPE_INVOKER(Type, Method) \
+  Handle<Value> Type::Method(const Arguments& args) { \
+    HandleScope scope; \
+    Native##Type *obj = ObjectWrap::Unwrap<Native##Type>(args.This()); \
+    obj->Method(); \
+    return scope.Close(args.This()); \
+  }
+
+#define STRING_TO_ENUM(str, value) \
+  if (val->Equals(String::New(str))) { \
+    enumVal = value; \
+  }
+
+#define ENUM_TO_STRING(value, str) \
+  case value: \
+    val = String::New(str); \
+    break;
+
 
 
 namespace appjs {

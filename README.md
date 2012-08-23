@@ -24,11 +24,14 @@ __AppJS 0.0.18 Distributables:__
 * [Windows](http://dists.appjs.org/0.0.18/appjs-0.0.18-win32-ia32.zip) -> app.exe
 
 __npm install__
+*OS X install is currently broken*
+
 AppJS can be now be installed via npm.
 
     npm install appjs
 
 __AppJS requires 32bit Node on OS X__. It works on 64bit OS X but __Node must be 32bit__. We're working on solving this, but it's a limitation of Chrome itself so it's a work in progress.
+Help us gain traction by [starring this chromium issue](http://code.google.com/p/chromium/issues/detail?id=18323).
 
 
 (Windows requires [MSVC++ 2010 runtimes](http://www.microsoft.com/en-us/download/details.aspx?id=5555))

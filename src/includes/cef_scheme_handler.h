@@ -33,6 +33,7 @@ public:
 
 protected:
   CefRefPtr<CefRequest> request_;
+  CefRequest::HeaderMap headers_;
   CefRefPtr<CefSchemeHandlerCallback> callback_;
   std::string status_text_;
   std::string mime_type_;

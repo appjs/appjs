@@ -36,8 +36,7 @@ void AppjsSchemeHandler::Execute(CefThreadId threadId) {
   HandleScope scope;
 
   Local<Object>  global = Context::GetCurrent()->Global();
-  Local<Object> process = global->Get(String::NewSymbol("process"))->ToObject();
-  Local<Object> emitter = Local<Object>::Cast(process->Get(String::NewSymbol("AppjsEmitter")));
+  Local<Object> emitter = global->Get(String::NewSymbol("process"))->ToObject();
 
   const int argc = 3;
 
@@ -99,13 +98,12 @@ void AppjsSchemeHandler::Execute(CefThreadId threadId) {
   req->Set(String::NewSymbol("headers"),headers);
   req->Set(String::NewSymbol("files"),files);
 
-  Handle<Value> argv[argc] = {String::New("request"),req,cb};
+  Handle<Value> argv[argc] = {String::New("appjs-request"),req,cb};
   node::MakeCallback(emitter,"emit",argc,argv);
 
 }
 
 Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
-
   HandleScope scope;
 
   AppjsSchemeHandler* me = static_cast<AppjsSchemeHandler *>(UnwrapObject(args.Data()));
@@ -113,10 +111,23 @@ Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
   AutoLock lock_scope(me);
 
   me->status_      = args[0]->NumberValue();
-  me->status_text_ = appjs::V8StringToChar(args[1]->ToString());
-  me->mime_type_   = appjs::V8StringToChar(args[2]->ToString());
-  me->data_        = node::Buffer::Data(args[3]->ToObject());
-  me->data_length_ = node::Buffer::Length(args[3]->ToObject());
+  me->status_text_ = V8StringToChar(args[1]->ToString());
+  me->mime_type_   = V8StringToChar(args[2]->ToString());
+  me->data_        = node::Buffer::Data(args[4]->ToObject());
+  me->data_length_ = node::Buffer::Length(args[4]->ToObject());
+
+  Local<Object> headerSets = args[3]->ToObject();
+  Local<Array> names = Local<Array>::Cast(headerSets->Get(String::NewSymbol("names")));
+  Local<Array> headers = Local<Array>::Cast(headerSets->Get(String::NewSymbol("headers")));
+
+  for(int i = 0; i < names->Length(); i++) {
+    me->headers_.insert(
+      std::pair<CefString,CefString>(
+        V8StringToChar(names->Get(i)),
+        V8StringToChar(headers->Get(i))
+      )
+    );
+  }
 
   me->callback_->HeadersAvailable();
 
@@ -154,6 +165,7 @@ void AppjsSchemeHandler::GetResponseHeaders(CefRefPtr<CefResponse> response,
   response->SetStatus(status_);
   response->SetStatusText(status_text_);
   response->SetMimeType(mime_type_);
+  response->SetHeaderMap(headers_);
 
   // Set the resulting response length
   response_length = data_length_;

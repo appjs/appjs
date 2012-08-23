@@ -10,8 +10,8 @@ namespace appjs {
 
 using namespace v8;
 
-Window::Window() {};
-Window::~Window() {};
+Window::Window(){}
+Window::~Window(){}
 
 Persistent<Function> Window::constructor;
 
@@ -25,6 +25,7 @@ void Window::Init() {
   DECLARE_PROTOTYPE_METHOD("fullscreen", Fullscreen);
   DECLARE_PROTOTYPE_METHOD("drag", Drag);
   DECLARE_PROTOTYPE_METHOD("show", Show);
+  DECLARE_PROTOTYPE_METHOD("focus", Focus);
   DECLARE_PROTOTYPE_METHOD("hide", Hide);
   DECLARE_PROTOTYPE_METHOD("destroy", Destroy);
   DECLARE_PROTOTYPE_METHOD("runInBrowser", RunInBrowser);
@@ -82,6 +83,18 @@ CREATE_INSTANCE_ACCESSOR(Window, Alpha, Boolean, MAKE_BOOLEAN)
 CREATE_INSTANCE_ACCESSOR(Window, Opacity, Number, MAKE_DOUBLE)
 CREATE_INSTANCE_ACCESSOR(Window, AutoResize, Boolean, MAKE_BOOLEAN)
 
+CREATE_PROTOTYPE_INVOKER(Window, OpenDevTools)
+CREATE_PROTOTYPE_INVOKER(Window, CloseDevTools)
+CREATE_PROTOTYPE_INVOKER(Window, Drag)
+CREATE_PROTOTYPE_INVOKER(Window, Restore)
+CREATE_PROTOTYPE_INVOKER(Window, Minimize)
+CREATE_PROTOTYPE_INVOKER(Window, Maximize)
+CREATE_PROTOTYPE_INVOKER(Window, Fullscreen)
+CREATE_PROTOTYPE_INVOKER(Window, Show)
+CREATE_PROTOTYPE_INVOKER(Window, Focus)
+CREATE_PROTOTYPE_INVOKER(Window, Hide)
+CREATE_PROTOTYPE_INVOKER(Window, Destroy)
+
 
 Handle<Value> Window::Move(const Arguments& args) {
   HandleScope scope;
@@ -111,85 +124,7 @@ Handle<Value> Window::Resize(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-Handle<Value> Window::OpenDevTools(const Arguments& args) {
-  HandleScope scope;
 
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
-  window->OpenDevTools();
-
-  return scope.Close(args.This());
-}
-
-Handle<Value> Window::CloseDevTools(const Arguments& args) {
-  HandleScope scope;
-
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
-  window->CloseDevTools();
-
-  return scope.Close(args.This());
-}
-
-Handle<Value> Window::Drag(const Arguments& args) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
-  window->Drag();
-  return scope.Close(args.This());
-}
-
-Handle<Value> Window::Restore(const Arguments& args) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
-  window->Restore();
-  return scope.Close(args.This());
-}
-
-Handle<Value> Window::Minimize(const Arguments& args) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
-  window->Minimize();
-  return scope.Close(args.This());
-}
-
-Handle<Value> Window::Maximize(const Arguments& args) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
-  window->Maximize();
-  return scope.Close(args.This());
-}
-
-Handle<Value> Window::Fullscreen(const Arguments& args) {
-  HandleScope scope;
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
-  window->Fullscreen();
-  return scope.Close(args.This());
-}
-
-Handle<Value> Window::Show(const Arguments& args) {
-  HandleScope scope;
-
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
-  window->Show();
-
-  return scope.Close(args.This());
-}
-
-Handle<Value> Window::Hide(const Arguments& args) {
-  HandleScope scope;
-
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
-  window->Hide();
-
-  return scope.Close(args.This());
-}
-
-Handle<Value> Window::Destroy(const Arguments& args) {
-  HandleScope scope;
-
-  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
-  window->Destroy();
-
-  return scope.Close(args.This());
-}
 
 Handle<Value> Window::RunInBrowser(const Arguments& args) {
   HandleScope scope;
@@ -235,91 +170,58 @@ Handle<Value> Window::SendSync(const Arguments& args) {
     }
   }
   // likely error condition
-  return scope.Close(Undefined());
+  return scope.Close(args.This());
 }
 
 Handle<Value> Window::SetIcon(const Arguments& args) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
-  NW_ICONSIZE size;
+
   Local<String> val = args[0]->ToString();
-  if (STRING_EQ(val, "smaller")) {
-    size = NW_ICONSIZE_SMALLER;
-  } else if (STRING_EQ(val, "small")) {
-    size = NW_ICONSIZE_SMALL;
-  } else if (STRING_EQ(val, "big")) {
-    size = NW_ICONSIZE_BIG;
-  } else if (STRING_EQ(val, "bigger")) {
-    size = NW_ICONSIZE_BIGGER;
-  } else {
-    return scope.Close(args.This());
-  }
-  window->SetIcon(size, V8StringToChar(args[1]->ToString()));
+  NW_ICONSIZE enumVal;
+
+  STRING_TO_ENUM("smaller", NW_ICONSIZE_SMALLER)
+  STRING_TO_ENUM("small", NW_ICONSIZE_SMALL)
+  STRING_TO_ENUM("big", NW_ICONSIZE_BIG)
+  STRING_TO_ENUM("bigger", NW_ICONSIZE_BIGGER)
+
+  window->SetIcon(enumVal, V8StringToChar(args[1]->ToString()));
   return scope.Close(args.This());
 }
-
-
-
-
 
 Handle<Value> Window::GetState(Local<String> property, const AccessorInfo &info) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-  Handle<Value> state = String::New("normal");
+
+  Handle<Value> val;
 
   switch (window->GetState()) {
-    case NW_STATE_NORMAL:
-      state = String::New("normal");
-      break;
-    case NW_STATE_MINIMIZED:
-      state = String::New("minimized");
-      break;
-    case NW_STATE_MAXIMIZED:
-      state = String::New("maximized");
-      break;
-    case NW_STATE_FULLSCREEN:
-      state = String::New("fullscreen");
+    ENUM_TO_STRING(NW_STATE_NORMAL, "normal")
+    ENUM_TO_STRING(NW_STATE_MINIMIZED, "minimized")
+    ENUM_TO_STRING(NW_STATE_MAXIMIZED, "maximized")
+    ENUM_TO_STRING(NW_STATE_FULLSCREEN, "fullscreen")
   }
 
-  return scope.Close(state);
+  return scope.Close(val);
 }
-
-
-
 
 void Window::SetState(Local<String> property, Local<Value> value, const AccessorInfo& info) {
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
   Local<String> val = value->ToString();
-  if (STRING_EQ(val, "normal")) {
-    window->SetState(NW_STATE_NORMAL);
-  } else if (STRING_EQ(val, "minimized")) {
-    window->SetState(NW_STATE_MINIMIZED);
-  } else if (STRING_EQ(val, "maximized")) {
-    window->SetState(NW_STATE_MAXIMIZED);
-  } else if (STRING_EQ(val, "fullscreen")) {
-    window->SetState(NW_STATE_FULLSCREEN);
-  }
+  NW_STATE enumVal;
+
+  STRING_TO_ENUM("normal", NW_STATE_NORMAL)
+  STRING_TO_ENUM("minimized", NW_STATE_MINIMIZED)
+  STRING_TO_ENUM("maximized", NW_STATE_MAXIMIZED)
+  STRING_TO_ENUM("fullscreen", NW_STATE_FULLSCREEN)
+
+  window->SetState(enumVal);
 }
 
 
+
+
 #if defined(__WIN__)
-
-// Handle<Value> Window::SetNonclientWidth(const Arguments& args) {
-//   HandleScope scope;
-//   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
-
-//   if (args.Length() == 4) {
-//     int top = args[0]->Int32Value();
-//     int left = args[1]->Int32Value();
-//     int right = args[2]->Int32Value();
-//     int bottom = args[3]->Int32Value();
-//     window->SetNonclientWidth(top, left, right, bottom);
-//   } else {
-//     window->SetNonclientWidth(args[0]->Int32Value());
-//   }
-
-//   return scope.Close(args.This());
-// }
 
 Handle<Value> Window::Style(const Arguments& args) {
   HandleScope scope;
@@ -340,17 +242,6 @@ Handle<Value> Window::Style(const Arguments& args) {
   }
   return scope.Close(args.This());
 }
-
-// Handle<Value> Window::GetBlur(Local<String> property, const AccessorInfo &info) {
-//   HandleScope scope;
-//   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-//   return scope.Close(Boolean::New(window->GetBlur()));
-// }
-
-// void Window::SetBlur(Local<String> property, Local<Value> value, const AccessorInfo& info) {
-//   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
-//   window->SetBlur(value->BooleanValue());
-// }
 
 #endif
 

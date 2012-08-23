@@ -52,6 +52,24 @@ void state_handler( GtkWidget* widget,GdkEventWindowState* event, NativeWindow* 
   }
 }
 
+
+static void destroy_handler(int status = 0) {
+  g_handler->Shutdown();
+}
+
+
+void AddWebView(CefWindowHandle& parent, char* url, Settings* settings) {
+  CefWindowInfo windowInfo;
+  windowInfo.SetAsChild(parent);
+  g_handler->browserSettings_.web_security_disabled = settings->getBoolean("disableSecurity", false);
+  CefBrowser::CreateBrowser(windowInfo, static_cast<CefRefPtr<CefClient>>(g_handler), url, g_handler->browserSettings_);
+
+  if (!g_handler->HasMainWindow()) {
+    signal(SIGINT, destroy_handler);
+    signal(SIGTERM, destroy_handler);
+  }
+}
+
 void NativeWindow::Init(char* url, Settings* settings) {
   handle_ = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   GtkWindow* window = (GtkWindow*)handle_;
@@ -138,8 +156,9 @@ void NativeWindow::Init(char* url, Settings* settings) {
 
   g_object_set_data(G_OBJECT(handle_),"nativewindow",this);
 
-  Cef::AddWebView(box,url,settings);
+  AddWebView(box,url,settings);
 }
+
 
 long NativeWindow::GetDragHandlerId() {
   return drag_handler_id;
@@ -186,6 +205,10 @@ void NativeWindow::Restore() {
 
 void NativeWindow::Show() {
   gtk_widget_show_all(handle_);
+}
+
+void NativeWindow::Focus() {
+  gtk_window_present((GtkWindow*)handle_);
 }
 
 void NativeWindow::Hide() {
