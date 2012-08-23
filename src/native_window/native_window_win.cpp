@@ -573,10 +573,10 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
   //Cef::Pause();
 
   settings->result = NULL;
-  char filename[MAX_PATH*10];
-  strcpy(filename, settings->initialValue.c_str());
-  filename[settings->initialValue.size()] = 0;
-  filename[MAX_PATH] = 0;
+  char filename[MAX_PATH*10] = "";
+  //strcpy(filename, settings->initialValue.c_str());
+  //filename[settings->initialValue.size()] = 0;
+  //filename[MAX_PATH] = 0;
 
   if (dirSelect) {
     LPMALLOC pMalloc = NULL;
@@ -599,7 +599,6 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
         std::vector<char*> paths;
         paths.push_back(dir);
         settings->result = &paths;
-        CoTaskMemFree(item);
       }
       pMalloc->Free(item);
     }
@@ -635,14 +634,13 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     }
 
     if (result) {
-      int length = 0;
-      char* offset;
       std::vector<char*> paths;
-      offset = ofn.lpstrFile;
+      char* offset;
+      offset = filename;
 
       do {
-         paths.push_back(offset);
-         offset += strlen(offset) + 1;
+        paths.push_back(offset);
+        offset += lstrlen(offset) + 1;
       } while (multiSelect && *offset != '\0');
 
       settings->result = &paths;
