@@ -634,15 +634,7 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     }
 
     if (result) {
-      std::vector<char*> paths;
-      char* offset = filename;
-
-      do {
-        paths.push_back(offset);
-        offset += strlen(offset) + 1;
-      } while (multiSelect && offset[0] != '\0');
-
-      settings->result = &paths;
+      settings->result = filename;
     }
   }
 
@@ -655,7 +647,15 @@ void NativeWindow::ProcessFileDialog(uv_work_t* req) {
   void* result = settings->result;
 
   if (result != NULL) {
-    std::vector<char*> filenames = *(std::vector<char*>*)result;
+
+    std::vector<char*> filenames;
+    char* offset = (char*)result;
+
+    do {
+      filenames.push_back(offset);
+      offset += strlen(offset) + 1;
+    } while (offset[0] != '\0');
+
     std::vector<char*>::iterator file = filenames.begin();
     Handle<String> base = String::New(*file);
     Handle<Value> error = Undefined();
