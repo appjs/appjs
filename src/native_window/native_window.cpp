@@ -23,7 +23,7 @@ NativeWindow::NativeWindow(Settings* settings){
   rect_.height     = settings->getInteger("height", 600);
   rect_.left       = settings->getInteger("left", -1);
   rect_.top        = settings->getInteger("top", -1);
-  opacity_         = settings->getInteger("opacity", 1);
+  opacity_         = settings->getNumber("opacity", 1);
   alpha_           = settings->getBoolean("alpha", false);
   show_chrome_     = settings->getBoolean("showChrome", true);
   auto_resize_     = settings->getBoolean("autoResize", false);
@@ -72,10 +72,10 @@ void NativeWindow::OpenDialog(Settings* settings,Persistent<Function> cb) {
     // dirSelect is a boolean indicating directory selectation state.
     // if set to true, users can select a directory instead of a file.
     dialog_settings.reserveBool2   = settings->getBoolean("dirSelect",false);
-#ifndef __MAC__
-    uv_queue_work(uv_default_loop(), &dialog_work, OpenFileDialog, ProcessFileDialog);
-#else
+#ifndef __WIN__
     OpenFileDialog(&dialog_work);
+#else
+    uv_queue_work(uv_default_loop(), &dialog_work, OpenFileDialog, ProcessFileDialog);
 #endif
   } else if( dialog_settings.type == NW_DIALOGTYPE_FONT ) {
 

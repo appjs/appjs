@@ -15,12 +15,33 @@ namespace appjs {
 
 using namespace v8;
 
-void drag_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {
+static void dialog_response_handler( GtkDialog *dialog, gint response_id, gpointer data ) {
+
+  uv_work_t* req = (uv_work_t*) data;
+  AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
+
+  if( response_id == GTK_RESPONSE_ACCEPT ) {
+    GSList* filenames = gtk_file_chooser_get_filenames( GTK_FILE_CHOOSER(dialog) );
+    settings->result  = filenames;
+  } else {
+    settings->result = NULL;
+  }
+
+  g_object_unref (dialog);
+  gtk_widget_destroy(GTK_WIDGET(dialog));
+}
+
+static void dialog_destroy_handler( GtkDialog *dialog, gpointer data ) {
+  uv_work_t* req = (uv_work_t*) data;
+  NativeWindow::ProcessFileDialog(req);
+}
+
+static void drag_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {
   gtk_window_begin_move_drag(GTK_WINDOW(widget), event->type, event->button.x_root,event->button.y_root,event->button.time);
   g_signal_handler_disconnect(G_OBJECT(widget), window->GetDragHandlerId());
 }
 
-void configure_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {
+static void configure_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {
   int x = event->configure.x;
   int y = event->configure.y;
   int width = event->configure.width;
@@ -40,7 +61,7 @@ void configure_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window
   window->UpdatePosition(rect);
 }
 
-void state_handler( GtkWidget* widget,GdkEventWindowState* event, NativeWindow* window ) {
+static void state_handler( GtkWidget* widget,GdkEventWindowState* event, NativeWindow* window ) {
   if( event->new_window_state & GDK_WINDOW_STATE_ICONIFIED ) {
     window->Emit("minimize");
   } else if ( event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED ) {
@@ -191,8 +212,6 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
   std::string       acceptTypes = settings->reserveString1;
   bool              multiSelect = settings->reserveBool1;
   bool                dirSelect = settings->reserveBool2;
-  Cef::Pause();
-  gdk_threads_enter();
 
   if( settings->type == NW_DIALOGTYPE_FILE_OPEN ) {
 
@@ -268,17 +287,14 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog),filter);
   }
 
-  if( gtk_dialog_run( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT ) {
-    GSList* filenames = gtk_file_chooser_get_filenames( GTK_FILE_CHOOSER(dialog) );
-    settings->result  = filenames;
-  } else {
-    settings->result  = NULL;
-  }
+  g_object_ref (dialog);
 
-  gtk_widget_destroy( dialog );
-  gdk_flush();
-  gdk_threads_leave();
-  Cef::Run();
+  g_signal_connect( dialog,"response",G_CALLBACK (dialog_response_handler),req );
+  g_signal_connect( dialog,"destroy",G_CALLBACK (dialog_destroy_handler),req );
+
+  gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
+
+  gtk_widget_show (GTK_WIDGET (dialog));
 
 }
 
