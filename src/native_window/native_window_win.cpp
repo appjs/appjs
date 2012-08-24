@@ -273,7 +273,7 @@ void NativeWindow::Hide() {
 }
 
 void NativeWindow::Destroy() {
-  CloseWindow(handle_);
+  DestroyWindow(handle_);
 }
 
 void NativeWindow::Drag() {
