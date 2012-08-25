@@ -9,10 +9,10 @@ if (platform == "linux") {
   dependency += '-' + arch;
 }
 
-console.log('Installing '+dependency+' pacakge...');
+console.log('Installing '+dependency+' package...');
 
 exec('npm install '+dependency,{cwd:path.resolve(__dirname,'../../../')},function(err,stdout,stderr){
-  
+
   if(err) {
     console.log('Error installing '+dependency);
     console.log('Please use `npm install '+dependency+' and install the package manually');
