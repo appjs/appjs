@@ -1,4 +1,4 @@
-var app = module.exports = require('appjs').createApp({CachePath: '/Users/dbartlett/.cache1'});
+var app = module.exports = require('appjs').createApp();
 
 app.serveFilesFrom(__dirname + '/content');
 
