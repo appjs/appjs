@@ -16,7 +16,6 @@ window.on('create', function(){
 
 window.on('ready', function(){
   console.log("Window Ready");
-  window.require = require;
   window.process = process;
   window.module = module;
 
