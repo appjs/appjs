@@ -1,4 +1,4 @@
-var app = require('appjs').init(),
+var app = require('appjs'),
     github = new (require('github'))({ version: '3.0.0' }),
     KEY_F12 = process.platform === 'darwin' ? 63247 : 123;
 

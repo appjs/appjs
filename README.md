@@ -38,7 +38,7 @@ Help us gain traction by [starring this chromium issue](http://code.google.com/p
 
 ## One Minute Usage Overview
 ```javascript
-var app = module.exports = require('appjs').init();
+var app = module.exports = require('appjs');
 
 app.serveFilesFrom(__dirname + '/content');
 
