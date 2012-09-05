@@ -1,0 +1,8 @@
+/app/
+/build/
+/data/
+/deps/
+/examples/
+/node_modules/
+/src/
+/*.DS_Store
