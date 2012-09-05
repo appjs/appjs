@@ -1,4 +1,4 @@
-var app = module.exports = require('appjs');
+var app = module.exports = require('appjs').init();
 
 app.serveFilesFrom(__dirname + '/content');
 
