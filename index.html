@@ -4,16 +4,10 @@
     <meta charset="utf-8">
     <title>AppJS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
 
     <!-- Le styles -->
     <link href="css/bootstrap.css" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-bottom: 40px;
-      }
-    </style>
+    <style> body { padding-bottom: 40px; } </style>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -43,9 +37,9 @@
           <div class="nav-collapse pull-right">
             <ul class="nav">
               <li><a href="#why">Why AppJS?</a></li>
-              <li><a href="#guide">Guide</a></li>
+              <li><a href="#download">30 Second Quickstart</a></li>
+              <li><a href="#guide">One Minute Usage Overview</a></li>
               <li><a href="#contribute">Contribute</a></li>
-              <li><a href="#download">Download</a></li>
               <li><a href="https://twitter.com/appjs" target="_blank">Twitter</a></li>
             </ul>
           </div>
@@ -60,9 +54,8 @@
         <p>for Linux, Windows and Mac using HTML, CSS and Javascript</p>
         <p>
           <a href="#download" class="btn btn-warning btn-large">Download AppJS (v0.0.19)</a>
-          <a class="btn btn-large disabled">Read Documentation</a>
+          <a href="https://github.com/appjs/appjs/wiki" class="btn btn-large btn-info">Read Documentation</a>
         </p>
-        <p style="font-size:20px;"><strong>Mac port only works with 32bit node (i386). We are working on releasing AppJS for x86_64.</strong></p>
       </div>
     </header>
 
@@ -93,65 +86,77 @@
         </div>
       </section>
 
-      <section id="guide">
+      <section id="download">
         <div class="page-header">
-          <h1>Getting Started Guide</h1>
+          <h1>30 Second Quickstart</h1>
         </div>
         <div class="page-body">
-          <p>Make sure you have <strong>node v0.8.x</strong> installed. See more information <a href="https://github.com/joyent/node/wiki/Installation">here</a>.</p>
-          <p>Before you continue, install node-gyp using npm (node's package manager).</p>
-          <pre>$ sudo npm install node-gyp -g</pre>
-          <p>Again use npm to install AppJS or download ready to use packages <a href="http://dists.appjs.org">here</a>.</p>
-          <pre>$ npm install appjs</pre>
-          <p>AppJS tries to install dependencies based on the platform you are working with.</p>
-          <p>Now you are ready to develop your first desktop application with HTML/CSS/JS! Create a file named app.js. Open it with your favorite editor and start coding:</p>
+          <p>The below packages include everything needed to get started with AppJS, including Node.js, all dependencies, binaries, and a launcher ready to go out of the box. 1.) Extract to a folder. 2.) Double click on launch. 3.) Hello World.</p>
+          <h2>AppJS 0.0.19 Distributables:</h2>
+          <ul>
+            <li><a href="http://dists.appjs.org/0.0.19/appjs-0.0.19-win32-ia32.zip">Windows</a></li>
+            <li>Linux <a href="http://dists.appjs.org/0.0.19/appjs-0.0.19-linux-ia32.tar.gz">32 bit</a> / <a href="http://dists.appjs.org/0.0.19/appjs-0.0.19-linux-x64.tar.gz">64 bit</a></li>
+            <li><a href="http://dists.appjs.org/0.0.19/appjs-0.0.19-darwin-ia32.zip">Mac OS X</a></li>
+          </ul>
+        </div>
+
+        <p>For Node.js users, AppJS can be also be installed via npm.</p>
+        <pre>npm install appjs</pre>
+        <p>AppJS requires 32bit Node on OS X. <strong>It works on 64bit OS X but Node must be 32bit</strong>. We're working on solving this, but it's a limitation of Chrome itself so it's a work in progress. Help us gain traction by starring this chromium issue.</p>
+
+      </section>
+
+      <section id="guide">
+        <div class="page-header">
+          <h1>One Minute Usage Overview</h1>
+        </div>
+        <div class="page-body">
           <pre>
-/**
- * Begin by requiring appjs.
- **/
-var app = require('appjs');
+// load appjs
 
-// serve files to browser requests to "http://appjs/*"
-app.serveFilesFrom(path.resolve(__dirname, 'public'));
+var appjs = require('appjs');
 
+// serve static files from a directory
+appjs.serveFilesFrom(__dirname + '/content');
 
-/**
- * There are other routing functions that you can use like `post`, `get` or `all`.
- **/
-app.post('/',function(req,res,next){
-  res.send('Hey! How are you '+req.post('firstname'));
+// handle requests from the browser
+appjs.post('/', function(request, response, next){
+  response.send('Hey! How are you ' + request.post('firstname'));
 })
 
-/**
- * Create a window and point it to http://appjs/. This url is a special url. 
- * It is not a http request. AppJS manages these requests manually using routers you define.
- **/
-var window = app.createWindow('http://appjs/', {
-  width           : 640,
-  height          : 460,
-  left            : -1,    // optional, -1 centers
-  top             : -1,    // optional, -1 centers
-  autoResize      : false, // resizes in response to html content
-  resizable       : true, // controls whether window is resizable by user
-  showChrome      : true,  // show border and title bar
-  opacity         : 1,     // opacity from 0 to 1 (Linux)
-  alpha           : false, // alpha composited background (Windows & Mac)
-  fullscreen      : false, // covers whole screen and has no border
-  disableSecurity : true   // allow cross origin requests
+// create a window
+var window = appjs.createWindow({
+  width: 640,
+  height: 460,
+  alpha: false,
 });
 
-/**
- * This event is fired when window is ready and loading the first page is finished.
- **/
-window.on("ready",function(){
-  console.log("Event Ready called");
-
-  this.frame.show();
-
+// prepare the window when first created
+window.on('create', function(){
+  console.log("Window Created");
+  // window.frame controls the desktop window
+  window.frame.show().center();
 });
 
-          </pre>
-          <p>Create a folder named <code>public</code>. You can add icons if you like. Create a html file named <code>index.html</code> inside it. Open <code>index.html</code> in the editor. We want to create a form to submit first name and last name.</p>
+// the window is ready when the DOM is loaded
+window.on('ready', function(){
+  console.log("Window Ready");
+  // directly interact with the DOM
+  window.process = process;
+  window.module = module;
+
+  window.addEventListener('keydown', function(e){
+    // show chrome devtools on f12 or commmand+option+j
+    if (e.keyIdentifier === 'F12' || e.keyCode === 74 && e.metaKey && e.altKey) {
+      window.frame.openDevTools();
+    }
+  });
+});
+
+// cleanup code when window is closed
+window.on('close', function(){
+  console.log("Window Closed");
+});</pre>
           <pre>&lt;!doctype html&gt;
 &lt;html&gt;
   &lt;head&gt;
@@ -165,12 +170,6 @@ window.on("ready",function(){
     &lt;/form&gt;
   &lt;/body&gt;
 &lt;/html&gt;</pre>
-          <p>Open terminal and navigate to your project directory. If you used npm run application like this:</p>
-          <pre>$ node --harmony app.js</pre>
-          <p>If you used ready to use packages, there is launcher for you, simply run:</p>
-          <pre>$ ./launch.sh # launch.bat if you are on Windows</pre>
-          <p>You will see a window that asks you for firstname and lastname! Fill the form and click submit. AppJS routes the request to post router at line 46 of <code>app.js</code>. We process the request and send response.</p>
-          <p>It was a simple application to show how AppJS works. For more detailed information read the documentation <href="/docs" title="Documentation">here</a>.</p>
         </div>
       </section>
 
@@ -182,51 +181,11 @@ window.on("ready",function(){
           <p>AppJS is a work in progress and needs a lot of improvement. There are unimplemented stuff waiting for your help! You can find them at github <a href="https://github.com/appjs/appjs/issues">issue tracker</a> or <a href="https://github.com/appjs/appjs">read the code</a> and find <span class="label">@TODO</span> tags! You can also subscribe to <a href="https://groups.google.com/d/forum/appjs-dev" title="AppJS Mailing list" target="_blank">the development mailing list</a> where we talk about AppJS features.</p>
           <p>There are two areas you can help. If you code in C++ try to implement features that are only supported in one platform or two. We need all three major platforms to work (Mac, Linux and Windows). If you are professional in Javascript and Node.js then you can help us by implementing JS wrappers for C++ APIs.</p>
           <p>To start contributing, fork git repository from github, clone the forked repository and make your changes according to instructions below. Then send a pull request. We discuss changes you have made. After that you can see your changes merged in the main repository!</p>
-          <h2>Contribution guideline</h2>
-          <p>Please follow the guidelines below before making any change to source code. Otherwise we can not merge your pull request.</p>
-          <h3>Git</h3>
-          <ul>
-            <li>Use topic branches to add features. This way you can keep master branch up-to-date and reduce merge conflicts.</li>
-            <li>Use present tense commit messages. Always describe what you did in this commit. Example:
-              <pre>Fixes #111
-
-Describe what changed in this commit here.</pre>
-            </li>
-          </ul>
-          <h3>Code</h3>
-          <ul>
-            <li>Remove trailing whitespaces.</li>
-            <li>Use two-space tab indention.</li>
-            <li>Use 80 characters line length.</li>
-            <li>Use single quotes in JS.</li>
-            <li>Use same line braces.</li>
-            <li>Use camelCase variables in JS, underline variables in C++.</li>
-          </ul>
         </div>
       </section>
-
-      <section id="download">
-        <div class="page-header">
-          <h1>Download</h1>
-        </div>
-        <div class="page-body">
-          <p>You can use node package manager (npm) to download appjs.</p>
-          <pre>$ npm install appjs</pre>
-          <p>Or you can download tarball archives based on your platform.</p>
-          <ul>
-            <li><a href="http://dists.appjs.org/0.0.19/appjs-0.0.19-win32-ia32.zip">Windows</a></li>
-            <li><a href="http://dists.appjs.org/0.0.19/appjs-0.0.19-linux-x64.tar.gz">Linux</a></li>
-            <li><a href="http://dists.appjs.org/0.0.19/appjs-0.0.19-darwin-ia32.zip">Mac OS X</a></li>
-          </ul>
-        </div>
-      </section>
-
-      <hr>
-
       <footer>
-        <p>&copy; Morteza Milani 2012</p>
+        <p>&copy; Morteza Milani and Brandon Benvie 2012</p>
       </footer>
-
     </div>
 
     <script src="js/jquery.min.js"></script>
