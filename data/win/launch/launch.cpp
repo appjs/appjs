@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <string>
 #include <resource.h>
+#include <direct.h>
 
 using namespace std;
 
@@ -217,6 +218,9 @@ wstring GetString(int id){
 }
 
 int WINAPI WinMain(HINSTANCE hinst, HINSTANCE, LPTSTR args, int nCmdShow){
+  wstring workingdirectory= ExecutablePath().substr(0, ExecutablePath().find_last_of(L"\\") );
+  _wchdir(workingdirectory.c_str());	
+	
   wstring path = ExecutablePath();
   path.resize(path.length() - 4);
   path.erase(0, path.find_last_of(L"\\") + 1);
