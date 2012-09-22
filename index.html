@@ -120,7 +120,7 @@ var appjs = require('appjs');
 appjs.serveFilesFrom(__dirname + '/content');
 
 // handle requests from the browser
-appjs.post('/', function(request, response, next){
+appjs.router.post('/', function(request, response, next){
   response.send('Hey! How are you ' + request.post('firstname'));
 })
 
@@ -165,7 +165,7 @@ window.on('close', function(){
   &lt;body&gt;
     &lt;form action=&quot;/&quot; method=&quot;POST&quot;&gt;
       &lt;input name=&quot;firstname&quot; type=&quot;text&quot; placeholder=&quot;Firstname&quot;/&gt;
-      &lt;input name=&quot;lastname&quot; type=&quot;text&quot; placeholder=&quot;Firstname&quot;/&gt;
+      &lt;input name=&quot;lastname&quot; type=&quot;text&quot; placeholder=&quot;Lastname&quot;/&gt;
       &lt;input type=&quot;submit&quot;/&gt;
     &lt;/form&gt;
   &lt;/body&gt;
