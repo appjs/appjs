@@ -154,6 +154,8 @@ private:
   bool resizable_;
   bool show_resize_grip;
   bool fullscreen_;
+  bool disable_taskbar_;
+  bool disable_pager_;
   bool topmost_;
   Settings* icons;
   bool alpha_;
