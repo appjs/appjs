@@ -31,6 +31,7 @@ NativeWindow::NativeWindow(Settings* settings){
   show_resize_grip = settings->getBoolean("showResizeGrip", false);
   fullscreen_      = settings->getBoolean("fullscreen", false);
   disable_taskbar_ = settings->getBoolean("disableTaskbar", false);
+  disable_pager_   = settings->getBoolean("disablePager", false);
   icons            = new Settings(settings->getObject("icons"));
 
   Init(settings->getString("url", (char *)""), settings);

@@ -140,6 +140,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
   gtk_window_set_opacity(window, opacity_);
   gtk_window_set_decorated(window, show_chrome_);
   gtk_window_set_skip_taskbar_hint(window, disable_taskbar_);
+  gtk_window_set_skip_pager_hint(window, disable_pager_);
 
   #if defined(__UBUNTU__) && !GTK_CHECK_VERSION(2, 24, 10)
     if(gtk_check_version(2, 24, 10))
