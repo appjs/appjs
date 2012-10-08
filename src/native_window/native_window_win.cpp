@@ -221,6 +221,15 @@ void NativeWindow::Init(char* url, Settings* settings) {
 
   SetWindowLongPtr(handle_, GWLP_USERDATA, (LONG)this);
 
+  if (!show_on_taskbar_) {
+    long style= GetWindowLong(handle_, GWL_EXSTYLE);
+    style |= WS_EX_TOOLWINDOW;
+    style &= ~(WS_EX_APPWINDOW);
+    ShowWindow(handle_, SW_HIDE); 
+    SetWindowLongPtr(handle_, GWL_EXSTYLE, style);  
+    ShowWindow(handle_, SW_HIDE);
+  }
+
   if (alpha_) {
     SetAlpha(true);
   }
