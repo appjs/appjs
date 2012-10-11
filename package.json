@@ -30,7 +30,8 @@
     "node": ">=0.8"
   },
   "dependencies": {
-    "mime": ">=1.2.5"
+    "mime": ">=1.2.5",
+    "just-logger": "1.0.0"
   },
   "scripts": {
     "postinstall": "node cli/postinstall.js"
