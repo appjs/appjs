@@ -5,6 +5,7 @@
 #define max(left,right) std::max(left,right)
 #include <gdiplus.h>
 #include <shlobj.h>
+#include <shlwapi.h>
 #include "appjs.h"
 #include "includes/cef.h"
 #include "includes/util.h"
@@ -578,15 +579,9 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
   bool              multiSelect = settings->reserveBool1;
   bool                dirSelect = settings->reserveBool2;
 
-
-  //Cef::Pause();
-
   settings->result = NULL;
   char filename[MAX_PATH*10];
   ZeroMemory(&filename, sizeof(filename));
-  //strcpy(filename, settings->initialValue.c_str());
-  //filename[settings->initialValue.size()] = 0;
-  //filename[MAX_PATH] = 0;
 
   if (dirSelect) {
     LPMALLOC pMalloc = NULL;
@@ -623,11 +618,14 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     ofn.lStructSize = sizeof(OPENFILENAME);
     ofn.lpstrTitle = settings->title.c_str();
     ofn.Flags = OFN_NOCHANGEDIR | OFN_FORCESHOWHIDDEN;
-    ofn.lpstrFile = filename;
-    ofn.nMaxFile = sizeof(filename);
     ofn.lpstrFilter = acceptTypes.c_str();
-    if (!settings->initialValue.size()) {
+    ofn.nMaxFile = MAX_PATH;
+    if (PathIsDirectory(settings->initialValue.c_str())) {
       ofn.lpstrInitialDir = settings->initialValue.c_str();
+      ofn.lpstrFile = filename;
+    } else {
+      strcpy(filename, settings->initialValue.c_str());
+      ofn.lpstrFile = filename;
     }
 
     BOOL result;
@@ -646,7 +644,6 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     }
   }
 
-  //Cef::Run();
 }
 
 void NativeWindow::ProcessFileDialog(uv_work_t* req) {
