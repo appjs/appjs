@@ -198,7 +198,12 @@ Handle<Value> Window::SetIcon(const Arguments& args) {
   STRING_TO_ENUM("big", NW_ICONSIZE_BIG)
   STRING_TO_ENUM("bigger", NW_ICONSIZE_BIGGER)
 
+#if defined(__WIN__)
+  window->SetIcon(enumVal, V8StringToWCHAR(args[1]->ToString()));
+#else
   window->SetIcon(enumVal, V8StringToChar(args[1]->ToString()));
+#endif
+
   return scope.Close(args.This());
 }
 

@@ -85,19 +85,20 @@ void BlurBehind(HWND hwnd, bool enable){
   }
 }
 
-void MakeIcon(HICON icon, char* path) {
-  Gdiplus::Bitmap* bitmap = Gdiplus::Bitmap::FromFile(ToWChar(path));
+void MakeIcon(HICON* icon, WCHAR* path) {
+  Gdiplus::Bitmap* bitmap = Gdiplus::Bitmap::FromFile(path);
   if (bitmap->GetWidth()) {
-    bitmap->GetHICON(&icon);
+    bitmap->GetHICON(icon);
     delete bitmap;
   }
 }
 
-HICON MakeIcon(char* path) {
+HICON MakeIcon(WCHAR* path) {
   HICON icon;
-  MakeIcon(icon, path);
+  MakeIcon(&icon, path);
   return icon;
 }
+
 
 void SetNCWidth(HWND hwnd, int left, int right, int top, int bottom){
   if (DwmExtendFrameIntoClientArea != NULL) {
@@ -189,20 +190,11 @@ void NativeWindow::Init(char* url, Settings* settings) {
     WCHAR* wSmallIconPath = icons->getString("small", L"");
     WCHAR* wBigIconPath = icons->getString("big", L"");
 
-    Gdiplus::Bitmap* smallIconBitmap = Gdiplus::Bitmap::FromFile(wSmallIconPath);
-    Gdiplus::Bitmap* bigIconBitmap = Gdiplus::Bitmap::FromFile(wBigIconPath);
+    smallIcon = MakeIcon(wSmallIconPath);
+    bigIcon = MakeIcon(wSmallIconPath);
 
-    if (smallIconBitmap->GetWidth()) {
-      smallIconBitmap->GetHICON(&smallIcon);
-      delete[] wSmallIconPath;
-      delete smallIconBitmap;
-    }
-
-    if (bigIconBitmap->GetWidth()) {
-      bigIconBitmap->GetHICON(&bigIcon);
-      delete[] wBigIconPath;
-      delete bigIconBitmap;
-    }
+    delete[] wSmallIconPath;
+    delete[] wBigIconPath;
 
     hInstance = (HINSTANCE)GetCurrentModuleHandle();
     strcpy(szWindowClass, "AppjsWindow");
@@ -324,7 +316,7 @@ void NativeWindow::Fullscreen(){
 // }
 
 
-void NativeWindow::SetIcon(NW_ICONSIZE size, char* path) {
+void NativeWindow::SetIcon(NW_ICONSIZE size, WCHAR* path) {
   int flag;
   switch (size) {
     case NW_ICONSIZE_SMALLER: flag = ICON_SMALL; break;
