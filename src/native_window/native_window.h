@@ -2,6 +2,7 @@
 #define APPJS_BASE_NATIVE_WINDOW_H
 #pragma once
 
+#include "appjs.h"
 #include "include/cef_browser.h"
 #include "includes/util.h"
 #include <node.h>
@@ -50,12 +51,7 @@ public:
   static NativeWindow* GetWindow(CefWindowHandle handle);
   static NativeWindow* GetWindow(CefRefPtr<CefBrowser> browser);
 
-#if defined(__WIN__)
-  void SetIcon(NW_ICONSIZE size, WCHAR* path);
-#else
-  void SetIcon(NW_ICONSIZE size, char* path);
-#endif
-
+  void SetIcon(NW_ICONSIZE size, TCHAR* path);
   void Emit(v8::Handle<v8::Value>* args);
   void Emit(const char* event);
   void Emit(const char* event, v8::Handle<v8::Value> arg);
@@ -109,8 +105,8 @@ public:
   int GetWidth();
   int GetHeight();
 
-  void SetTitle(const char* title);
-  const char* GetTitle();
+  void SetTitle(const TCHAR* title);
+  const TCHAR* GetTitle();
 
   void OpenDialog(Settings* settings,v8::Persistent<v8::Function> cb);
   static void DialogClosed();
@@ -181,9 +177,9 @@ typedef struct _appjs_dialog_settings {
   NW_DIALOGTYPE   type;
   NativeWindow*   me;
   void*           result;
-  std::string     title;
-  std::string     initialValue;
-  std::string     reserveString1;
+  tstring         title;
+  tstring         initialValue;
+  tstring         reserveString1;
   int             reserveNumber1;
   bool            reserveBool1;
   bool            reserveBool2;

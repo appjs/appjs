@@ -117,7 +117,7 @@ void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser, CefRefPt
 void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) {
   REQUIRE_UI_THREAD();
   if (!browser->IsPopup()) {
-    std::string titleStr(title);
+    tstring titleStr(title);
     NativeWindow::GetWindow(browser)->SetTitle(titleStr.c_str());
   }
 }

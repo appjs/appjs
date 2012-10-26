@@ -80,8 +80,8 @@ char* Settings::getString(const char* property, char* defaultValue = "") {
   return (tmp->IsString())? V8StringToChar(get(property)->ToString()) : defaultValue;
 }
 
-#if defined(__WIN__)
-WCHAR* Settings::getString(const char* property, WCHAR* defaultValue = L"") {
+#ifdef __WIN__
+TCHAR* Settings::getString(const char* property, TCHAR* defaultValue = L"") {
   Local<Value> tmp = get(property);
   return (tmp->IsString())? V8StringToWCHAR(get(property)->ToString()) : defaultValue;
 }

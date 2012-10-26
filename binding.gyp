@@ -334,7 +334,9 @@
           ],
           'defines': [
             '__WIN__',
-            '_WINSOCKAPI_'
+            '_WINSOCKAPI_',
+            '_UNICODE',
+            'UNICODE'
           ],
           'link_settings': {
             'libraries': [

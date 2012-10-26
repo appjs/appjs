@@ -56,10 +56,10 @@ void NativeWindow::OpenDialog(Settings* settings,Persistent<Function> cb) {
   dialog_settings.me           = this;
   dialog_settings.cb           = cb;
   dialog_settings.type         = (NW_DIALOGTYPE) settings->getInteger("type",NW_DIALOGTYPE_FILE_OPEN);
-  dialog_settings.title        = std::string(settings->getString("title",(char*)this->GetTitle()));
+  dialog_settings.title        = tstring(settings->getString("title",(TCHAR*)this->GetTitle()));
   // initialValue is the filename which the dialog should select by default.
   // it can be empty.
-  dialog_settings.initialValue = std::string(settings->getString("initialValue",""));
+  dialog_settings.initialValue = tstring(settings->getString("initialValue",TEXT("")));
 
   dialog_in_progress = true;
   dialog_work.data = &dialog_settings;
@@ -68,7 +68,7 @@ void NativeWindow::OpenDialog(Settings* settings,Persistent<Function> cb) {
 
     // acceptTypes is comma-separated MIME types such as "text/plain,text/html".
     // defaults to everything
-    dialog_settings.reserveString1 = std::string(settings->getString("acceptTypes","All Files:*.*"));
+    dialog_settings.reserveString1 = tstring(settings->getString("acceptTypes",TEXT("All Files:*.*")));
     // multiSelect allows multiple item selection in dialog box.
     dialog_settings.reserveBool1   = settings->getBoolean("multiSelect",false);
     // dirSelect is a boolean indicating directory selectation state.
@@ -81,12 +81,12 @@ void NativeWindow::OpenDialog(Settings* settings,Persistent<Function> cb) {
 #endif
   } else if( dialog_settings.type == NW_DIALOGTYPE_FONT ) {
 
-    dialog_settings.reserveString1 = std::string(settings->getString("sampleText","Sample"));
+    dialog_settings.reserveString1 = tstring(settings->getString("sampleText",TEXT("Sample")));
     uv_queue_work(uv_default_loop(), &dialog_work, OpenFontDialog, ProcessFontDialog);
 
   } else if( dialog_settings.type == NW_DIALOGTYPE_COLOR ) {
 
-    dialog_settings.reserveString1 = std::string(settings->getString("previousColor",""));
+    dialog_settings.reserveString1 = tstring(settings->getString("previousColor",TEXT("")));
     dialog_settings.reserveBool1   = settings->getBoolean("opacity",false);
     uv_queue_work(uv_default_loop(), &dialog_work, OpenColorDialog, ProcessColorDialog);
 

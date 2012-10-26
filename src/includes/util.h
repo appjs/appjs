@@ -34,8 +34,8 @@ public:
   bool getBoolean(const char*,bool);
   char* getString(const char*, char*);
 
-  #if defined(__WIN__)
-  WCHAR* getString(const char*,WCHAR*);
+  #ifdef __WIN__
+  TCHAR* getString(const char*,TCHAR*);
   #endif
 
   v8::Local<v8::Object> getObject(const char*,v8::Local<v8::Object>);
