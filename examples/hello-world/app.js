@@ -2,7 +2,22 @@ var app = module.exports = require('appjs');
 
 app.serveFilesFrom(__dirname + '/content');
 
-var window = app.createWindow({
+
+// Logger is enabled by default and it logs to process.stdout
+
+// Uncomment this line to write the log in the given file
+// app.logger.setFile( "./appjs.log");
+
+// Set the loglevel to debug
+app.logger.level = 'debug';
+
+// This sets the format of the output string
+app.logger.format = function(level, date, message){
+  return "level: " + level + "\ndate: " + date + "\nmessage: " + message + "\n====";
+};
+
+
+var window = app.createWindow(null, {
   width  : 640,
   height : 460,
   icons  : __dirname + '/content/icons'
@@ -32,3 +47,10 @@ window.on('ready', function(){
 window.on('close', function(){
   console.log("Window Closed");
 });
+
+
+app.logger.info("This is the info message");
+
+app.logger = false;
+
+app.logger.info( "This message will not appear" );
