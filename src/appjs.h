@@ -13,6 +13,13 @@ typedef char TCHAR;
 
 typedef std::basic_string<TCHAR> tstring;
 
+#ifndef NDEBUG
+#define ASSERT(condition) if (!(condition)) { assert(false); }
+#else
+#define ASSERT(condition) ((void)0)
+#endif
+
+
 #define APPJS_PSYMBOL(s) v8::Persistent<v8::String>::New(v8::String::NewSymbol(s))
 #define MAKE_BOOLEAN(v) (v)->BooleanValue()
 #define MAKE_INT32(v) (v)->Int32Value()

@@ -1,4 +1,5 @@
 #include "include/cef_app.h"
+#include "includes/client_app.h"
 #include "includes/cef_scheme_handler.h"
 #include "includes/cef_handler.h"
 #include "includes/cef.h"
@@ -16,11 +17,11 @@ bool Cef::initialized_;
 
 void Cef::Init(Settings* initOptions) {
   if (!Cef::initialized_) {
+    CefRefPtr<ClientApp> app(new ClientApp);
     CefLoop::Init();
-    CefRefPtr<CefApp> app;
     CefSettings o;
 
-    CefString(&o.pack_file_path)   = O_STRING(ChromePakPath);
+    CefString(&o.resources_dir_path)   = O_STRING(ChromePakPath);
     CefString(&o.locales_dir_path) = O_STRING(LocalesPakPath);
     CefString(&o.log_file)         = O_STRING(LogFilePath);
     CefString(&o.cache_path)       = O_STRING(CachePath);
@@ -29,9 +30,10 @@ void Cef::Init(Settings* initOptions) {
     CefString(&o.product_version)  = O_STRING(ProductVersion);
     CefString(&o.locale)           = O_STRING(Locale);
 
-    o.pack_loading_disabled        = O_ENABLE(PakLoading);
+    o.pack_loading_disabled        = true;//O_ENABLE(PakLoading);
     o.multi_threaded_message_loop  = false;
-    o.log_severity = (cef_log_severity_t)initOptions->getInteger("LogLevel", LOGSEVERITY_DISABLE);
+    o.single_process = true;
+    o.log_severity = (cef_log_severity_t)initOptions->getInteger("LogLevel", LOGSEVERITY_VERBOSE);
 
     //extra_plugin_paths
     //local_storage_quota
@@ -57,7 +59,7 @@ void Cef::Init(Settings* initOptions) {
     b.site_specific_quirks_disabled           =  O_DISABLE(SiteSpecificQuirks);
     b.caret_browsing_enabled                  = !O_DISABLE(CaretBrowsing);
     b.user_style_sheet_enabled                = !O_DISABLE(UserStylesheets);
-    b.accelerated_compositing_enabled         = !O_DISABLE(AcceleratedCompositing);
+    b.accelerated_compositing_disabled        = O_DISABLE(AcceleratedCompositing);
 
     b.xss_auditor_enabled                     = !O_ENABLE(XSSAuditer);
     b.hyperlink_auditing_disabled             =  O_ENABLE(HyperlinkAuditing);
@@ -74,9 +76,9 @@ void Cef::Init(Settings* initOptions) {
     b.shrink_standalone_images_to_fit         = !O_ENABLE(FitStandaloneImages);
 
     b.accelerated_2d_canvas_disabled          =  O_ENABLE(Accelerated2dCanvas);
-    b.accelerated_filters_disabled            =  O_ENABLE(AcceleratedFilters);
+    b.accelerated_filters_enabled             =  !O_ENABLE(AcceleratedFilters);
     b.accelerated_layers_disabled             =  O_ENABLE(AcceleratedLayers);
-    b.accelerated_painting_disabled           =  O_ENABLE(AcceleratedPainting);
+    b.accelerated_painting_enabled            =  !O_ENABLE(AcceleratedPainting);
     b.accelerated_plugins_disabled            =  O_ENABLE(AcceleratedPlugins);
     b.accelerated_video_disabled              =  O_ENABLE(AcceleratedVideo);
 
@@ -88,20 +90,25 @@ void Cef::Init(Settings* initOptions) {
     b.file_access_from_file_urls_allowed      = !O_ENABLE(FileAccessFromFileURLs);
     b.universal_access_from_file_urls_allowed = !O_ENABLE(UniversalFileURLAccess);
     b.author_and_user_styles_disabled         =  O_ENABLE(UserStyles);
-    b.history_disabled                        =  O_ENABLE(HistoryAPI);
+    //b.history_disabled                        =  O_ENABLE(HistoryAPI);
     b.application_cache_disabled              =  O_ENABLE(AppCacheAPI);
     b.databases_disabled                      =  O_ENABLE(DatabaseAPI);
     b.dom_paste_disabled                      =  O_ENABLE(DOMPasteAPI);
-    b.drag_drop_disabled                      =  O_ENABLE(DragAndDropAPI);
-    b.load_drops_disabled                     =  O_ENABLE(LoadDrops);
+    //b.drag_drop_disabled                      =  O_ENABLE(DragAndDropAPI);
+    //b.load_drops_disabled                     =  O_ENABLE(LoadDrops);
     b.fullscreen_enabled                      = !O_ENABLE(FullscreenAPI);
     b.local_storage_disabled                  =  O_ENABLE(LocalStorageAPI);
     b.webgl_disabled                          =  O_ENABLE(WebGLAPI);
 
+    char** argv = new char*[2];
+    argv[0] = "/data/work/develop/experiments/appjs-2/app/data/bin/node";
+    argv[1] = "/data/work/develop/experiments/appjs-2/app/data/app.js";
+
+    CefMainArgs main_args(0,NULL);
+    int exit_code = CefExecuteProcess(main_args, app.get());
+    CefInitialize(main_args, o, app.get());
 
     g_handler = new ClientHandler(b);
-    CefInitialize(o, app);
-
     // http://code.google.com/p/chromiumembedded/issues/detail?id=404
     CefRegisterSchemeHandlerFactory("http", "appjs", new AppjsSchemeHandlerFactory());
 

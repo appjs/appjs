@@ -10,7 +10,7 @@ namespace appjs {
 
 class AppjsSyncHandler : public CefV8Handler {
   public:
-    AppjsSyncHandler(CefRefPtr<CefBrowser> browser) : browser_(browser) {}
+    AppjsSyncHandler(CefRefPtr<CefBrowserHost> browser) : browser_(browser) {}
     virtual ~AppjsSyncHandler(){}
 
     virtual bool Execute(const CefString& name,
@@ -21,7 +21,7 @@ class AppjsSyncHandler : public CefV8Handler {
 
 
   protected:
-    CefRefPtr<CefBrowser> browser_;
+    CefRefPtr<CefBrowserHost> browser_;
     IMPLEMENT_REFCOUNTING(AppjsSyncHandler);
 };
 

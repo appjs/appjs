@@ -58,7 +58,6 @@ Handle<Value> Window::New(const Arguments& args) {
   Persistent<Object> options = Persistent<Object>::New(args[0]->ToObject());
   Settings* settings = new Settings(options);
   NativeWindow* window = new NativeWindow(settings);
-
   Persistent<Object> self = Persistent<Object>::New(args.This());
   window->SetV8Handle(self);
   self->SetPointerInInternalField(0, window);
@@ -163,7 +162,7 @@ Handle<Value> Window::SendSync(const Arguments& args) {
 
   if (!window->IsClosed()) {
     // find browser's v8 context
-    CefRefPtr<CefV8Context> context = window->GetBrowser()->GetMainFrame()->GetV8Context();
+    CefRefPtr<CefV8Context> context = window->GetBrowser()->GetBrowser()->GetMainFrame()->GetV8Context();
 
     // ensure it's usable and enter
     if (context.get() && context->Enter()) {

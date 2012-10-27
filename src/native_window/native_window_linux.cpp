@@ -84,11 +84,11 @@ void AddWebView(CefWindowHandle& parent, char* url, Settings* settings) {
   CefWindowInfo windowInfo;
   windowInfo.SetAsChild(parent);
   g_handler->browserSettings_.web_security_disabled = settings->getBoolean("disableSecurity", false);
-  CefBrowser::CreateBrowser(windowInfo, static_cast<CefRefPtr<CefClient>>(g_handler), url, g_handler->browserSettings_);
+  CefBrowserHost::CreateBrowser(windowInfo, static_cast<CefRefPtr<CefClient>>(g_handler), url, g_handler->browserSettings_);
 
   if (!g_handler->HasMainWindow()) {
-    signal(SIGINT, destroy_handler);
-    signal(SIGTERM, destroy_handler);
+    //signal(SIGINT, destroy_handler);
+    //signal(SIGTERM, destroy_handler);
   }
 }
 
@@ -201,7 +201,7 @@ NativeWindow* NativeWindow::GetWindow(CefWindowHandle handle){
   return (NativeWindow*)g_object_get_data(G_OBJECT(handle), "nativewindow");
 }
 
-NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
+NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowserHost> browser){
   return GetWindow(gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()), GTK_TYPE_WINDOW));
 }
 

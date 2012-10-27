@@ -24,17 +24,16 @@ ClientHandler::~ClientHandler() {
 }
 
 
-void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
+void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser>  browser) {
   REQUIRE_UI_THREAD();
   AutoLock lock_scope(this);
-
   if (!browser->IsPopup()) {
     if (!mainBrowserHandle.get()) {
-      mainBrowserHandle = browser;
+      mainBrowserHandle = browser->GetHost();
     }
     windowCount++;
-    NativeWindow* window = NativeWindow::GetWindow(browser);
-    window->SetBrowser(browser);
+    NativeWindow* window = NativeWindow::GetWindow(mainBrowserHandle);
+    window->SetBrowser(mainBrowserHandle);
     window->Emit("create");
   }
 }
@@ -49,8 +48,9 @@ void ClientHandler::Shutdown() {
   }
 }
 
-void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
-  REQUIRE_UI_THREAD();
+void ClientHandler::OnContextCreated(CefRefPtr<CefBrowserHost>  browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
+  fprintf(stderr, "%s\n", "here");
+  /*REQUIRE_UI_THREAD();
   if (!browser->IsPopup() && frame->IsMain()) {
     context->Enter();
     CefRefPtr<CefV8Value> appjsObj = CefV8Value::CreateObject(NULL);
@@ -59,17 +59,17 @@ void ClientHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
     appjsObj->SetValue("send", func, V8_PROPERTY_ATTRIBUTE_NONE);
     context->Exit();
     NativeWindow::GetWindow(browser)->Emit("context-created");
-  }
+  }*/
 }
 
-void ClientHandler::OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
-  REQUIRE_UI_THREAD();
+void ClientHandler::OnContextReleased(CefRefPtr<CefBrowserHost>  browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
+  /*REQUIRE_UI_THREAD();
   if (!browser->IsPopup() && frame->IsMain()) {
     NativeWindow::GetWindow(browser)->Emit("context-released");
-  }
+  }*/
 }
 
-bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
+bool ClientHandler::DoClose(CefRefPtr<CefBrowser>  browser) {
   REQUIRE_UI_THREAD();
   if (!browser->IsPopup() && --windowCount == 0) {
     Local<Object> global = Context::GetCurrent()->Global();
@@ -84,11 +84,11 @@ bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
+void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser>  browser) {
   REQUIRE_UI_THREAD();
 
   if(!browser->IsPopup()) {
-    NativeWindow* window = NativeWindow::GetWindow(browser);
+    NativeWindow* window = NativeWindow::GetWindow(browser->GetHost());
     window->PrepareClose();
     DoClose(browser);
 #ifdef __WIN__
@@ -97,16 +97,16 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode) {
+void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowserHost>  browser, CefRefPtr<CefFrame> frame, int httpStatusCode) {
   REQUIRE_UI_THREAD();
-  if (!browser->IsPopup() && frame->IsMain()) {
+  if (!browser->GetBrowser()->IsPopup() && frame->IsMain()) {
     NativeWindow::GetWindow(browser)->Emit("ready");
   }
 }
 
-void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int width, int height) {
+void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowserHost>  browser, CefRefPtr<CefFrame> frame, int width, int height) {
   REQUIRE_UI_THREAD();
-  if (!browser->IsPopup() && frame->IsMain()) {
+  if (!browser->GetBrowser()->IsPopup() && frame->IsMain()) {
     NativeWindow* window = NativeWindow::GetWindow(browser);
     if (window != NULL && window->GetAutoResize()) {
       window->Resize(width, height);
@@ -114,9 +114,9 @@ void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowser> browser, CefRefPt
   }
 }
 
-void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) {
+void ClientHandler::OnTitleChange(CefRefPtr<CefBrowserHost>  browser, const CefString& title) {
   REQUIRE_UI_THREAD();
-  if (!browser->IsPopup()) {
+  if (!browser->GetBrowser()->IsPopup()) {
     tstring titleStr(title);
     NativeWindow::GetWindow(browser)->SetTitle(titleStr.c_str());
   }

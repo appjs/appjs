@@ -22,7 +22,7 @@ void CefLoop::Init() {
 void CefLoop::Run() {
 
   if( !CefLoop::initialized_ || CefLoop::running_ ) return;
-
+fprintf(stderr, "%s\n", "running message loop");
 #if NODE_VERSION_AT_LEAST(0, 7, 9)
   uv_ref((uv_handle_t *)&g_async);
 #else
@@ -30,7 +30,7 @@ void CefLoop::Run() {
 #endif
 
   uv_timer_start(&timer,RunLoop,1,1);
-  
+
   CefLoop::running_ = true;
 }
 

@@ -133,13 +133,13 @@ Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
     );
   }
 
-  me->callback_->HeadersAvailable();
+  me->callback_->Continue();
 
   return args.This();
 }
 
 bool AppjsSchemeHandler::ProcessRequest(CefRefPtr<CefRequest> request,
-                              CefRefPtr<CefSchemeHandlerCallback> callback)
+                              CefRefPtr<CefCallback> callback)
 {
 
   REQUIRE_IO_THREAD();
@@ -182,7 +182,7 @@ void AppjsSchemeHandler::Cancel() {
 bool AppjsSchemeHandler::ReadResponse(void* data_out,
                             int bytes_to_read,
                             int& bytes_read,
-                            CefRefPtr<CefSchemeHandlerCallback> callback)
+                            CefRefPtr<CefCallback> callback)
 {
 
   REQUIRE_IO_THREAD();
@@ -207,7 +207,8 @@ bool AppjsSchemeHandler::ReadResponse(void* data_out,
 
 // Implementation of the factory for for creating schema handlers.
 // Return a new scheme handler instance to handle the request.
-CefRefPtr<CefSchemeHandler> AppjsSchemeHandlerFactory::Create(CefRefPtr<CefBrowser> browser,
+CefRefPtr<CefResourceHandler> AppjsSchemeHandlerFactory::Create(CefRefPtr<CefBrowser> browser,
+                                             CefRefPtr<CefFrame> frame,
                                              const CefString& scheme_name,
                                              CefRefPtr<CefRequest> request)
 {

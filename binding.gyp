@@ -147,14 +147,14 @@
             {
               'destination': '<(module_root_dir)/app/data/node_modules/appjs-linux-<(target_arch)/data/',
               'files': [
-                '<(module_root_dir)/deps/cef/Release/chrome.pak',
+                '<(module_root_dir)/deps/cef/Release/cef.pak',
                 '<(module_root_dir)/deps/cef/Release/locales/'
               ]
             },
             {
               'destination': '<(module_root_dir)/data/pak',
               'files': [
-                '<(module_root_dir)/deps/cef/Release/chrome.pak',
+                '<(module_root_dir)/deps/cef/Release/cef.pak',
                 '<(module_root_dir)/deps/cef/Release/locales/'
               ]
             }
@@ -249,6 +249,9 @@
         'src/includes/cef_scheme_handler.cpp',
         'src/includes/cef_sync_handler.cpp',
         'src/includes/util.cpp',
+        'src/includes/client_app.cpp',
+        'src/includes/client_renderer.cpp',
+        'src/includes/client_app_delegates.cpp'
       ],
       'dependencies': [
         '<(module_root_dir)/deps/cef/dll_wrapper.gyp:libcef_dll_wrapper'

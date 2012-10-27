@@ -49,7 +49,7 @@ public:
   static int ScreenHeight();
   //static void SetAppIcon(NW_ICONSIZE size, char* path);
   static NativeWindow* GetWindow(CefWindowHandle handle);
-  static NativeWindow* GetWindow(CefRefPtr<CefBrowser> browser);
+  static NativeWindow* GetWindow(CefRefPtr<CefBrowserHost> browser);
 
   void SetIcon(NW_ICONSIZE size, TCHAR* path);
   void Emit(v8::Handle<v8::Value>* args);
@@ -123,9 +123,9 @@ public:
 
   appjs_rect GetRect();
 
-  void SetBrowser(CefRefPtr<CefBrowser> browser);
+  void SetBrowser(CefRefPtr<CefBrowserHost> browser);
   void SetV8Handle(v8::Handle<v8::Object> v8handle);
-  CefRefPtr<CefBrowser> GetBrowser();
+  CefRefPtr<CefBrowserHost> GetBrowser();
   v8::Handle<v8::Object> GetV8Handle();
 
 
@@ -146,7 +146,7 @@ public:
 
 private:
   v8::Handle<v8::Object> v8handle_;
-  CefRefPtr<CefBrowser> browser_;
+  CefRefPtr<CefBrowserHost> browser_;
 
   bool closed_;
   bool is_main_window_;

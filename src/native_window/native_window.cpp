@@ -100,19 +100,19 @@ void NativeWindow::DialogClosed() {
 
 void NativeWindow::OpenDevTools(){
   if (browser_) {
-    browser_->ShowDevTools();
+    //browser_->ShowDevTools();
   }
 }
 
 void NativeWindow::CloseDevTools(){
   if (browser_) {
-    browser_->CloseDevTools();
+    //browser_->CloseDevTools();
   }
 }
 
 void NativeWindow::RunInBrowser(char* script){
   if (browser_) {
-    browser_->GetMainFrame()->ExecuteJavaScript(script, "", 0);
+    browser_->GetBrowser()->GetMainFrame()->ExecuteJavaScript(script, "", 0);
   }
 }
 
@@ -130,7 +130,7 @@ bool NativeWindow::IsMainWindow(){
   return is_main_window_;
 }
 
-void NativeWindow::SetBrowser(CefRefPtr<CefBrowser> browser) {
+void NativeWindow::SetBrowser(CefRefPtr<CefBrowserHost> browser) {
   browser_ = browser;
 }
 
@@ -138,7 +138,7 @@ void NativeWindow::SetV8Handle(Handle<Object> v8handle) {
   v8handle_ = v8handle;
 }
 
-CefRefPtr<CefBrowser> NativeWindow::GetBrowser() {
+CefRefPtr<CefBrowserHost> NativeWindow::GetBrowser() {
   return browser_;
 }
 
