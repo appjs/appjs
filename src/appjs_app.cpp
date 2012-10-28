@@ -2,6 +2,7 @@
 #include "appjs.h"
 #include "appjs_app.h"
 #include "appjs_window.h"
+#include "appjs_menu.h"
 #include "includes/cef.h"
 #include "includes/util.h"
 
@@ -18,6 +19,7 @@ Persistent<Function> App::constructor;
 void App::Init() {
   DECLARE_CONSTRUCTOR("App");
   DECLARE_PROTOTYPE_METHOD("createWindow",CreateWindow2);
+  DECLARE_PROTOTYPE_METHOD("createMenu",CreateMenu);
   DECLARE_CLASS_FUNCTION(screenWidth, ScreenWidth);
   DECLARE_CLASS_FUNCTION(screenHeight, ScreenHeight);
   END_CONSTRUCTOR();
@@ -45,6 +47,11 @@ Handle<Value> App::NewInstance(const Arguments& args) {
 Handle<Value> App::CreateWindow2(const Arguments& args) {
   HandleScope scope;
   return scope.Close(Window::NewInstance(args));
+}
+
+Handle<Value> App::CreateMenu(const Arguments& args) {
+  HandleScope scope;
+  return scope.Close(Menu::NewInstance(args));
 }
 
 Handle<Value> App::ScreenWidth(const Arguments& args) {

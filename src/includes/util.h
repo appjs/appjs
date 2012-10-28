@@ -40,9 +40,13 @@ public:
 
   v8::Local<v8::Object> getObject(const char*,v8::Local<v8::Object>);
   v8::Local<v8::Object> getObject(const char*);
+  v8::Local<v8::Object> getObject(const int,v8::Local<v8::Object>);
+  v8::Local<v8::Object> getObject(const int);
+  v8::Persistent<v8::Object> getSettings();
 
 private:
   v8::Persistent<v8::Object> settings_;
+  v8::Local<v8::Value> get(const int);
   v8::Local<v8::Value> get(const char*);
 };
 

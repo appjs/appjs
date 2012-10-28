@@ -17,6 +17,7 @@ Persistent<Function> Window::constructor;
 
 void Window::Init() {
   DECLARE_CONSTRUCTOR("NativeWindow");
+  DECLARE_PROTOTYPE_METHOD("setMenuBar", SetMenuBar);
   DECLARE_PROTOTYPE_METHOD("openDialog", OpenDialog);
   DECLARE_PROTOTYPE_METHOD("openDevTools", OpenDevTools);
   DECLARE_PROTOTYPE_METHOD("closeDevTools", CloseDevTools);
@@ -99,6 +100,18 @@ CREATE_PROTOTYPE_INVOKER(Window, Show)
 CREATE_PROTOTYPE_INVOKER(Window, Focus)
 CREATE_PROTOTYPE_INVOKER(Window, Hide)
 CREATE_PROTOTYPE_INVOKER(Window, Destroy)
+
+
+Handle<Value> Window::SetMenuBar(const Arguments& args) {
+  HandleScope scope;
+
+  NativeMenu     *menu = ObjectWrap::Unwrap<NativeMenu>(args[0]->ToObject());//(NativeMenu*)args[0]->ToObject()->GetPointerFromInternalField(0);
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+
+  window->SetMenuBar(menu);
+
+  return scope.Close(args.This());
+}
 
 Handle<Value> Window::OpenDialog(const Arguments& args) {
   HandleScope scope;

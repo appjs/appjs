@@ -4,6 +4,7 @@
 
 #include "appjs.h"
 #include "appjs_window.h"
+#include "appjs_menu.h"
 
 namespace appjs {
 
@@ -14,6 +15,7 @@ class App : public node::ObjectWrap {
   DEFINE_CLASS_FUNCTION(ScreenWidth);
   DEFINE_CLASS_FUNCTION(ScreenHeight);
   DEFINE_PROTOTYPE_METHOD(CreateWindow2);
+  DEFINE_PROTOTYPE_METHOD(CreateMenu);
 
   static bool initialized_;
 };
