@@ -11,10 +11,44 @@ var window = app.createWindow({
  url:'http://google.com'
 });
 
+var menu = app.createMenu([{
+  label:'_File',
+  submenu:[
+    {
+      label:'E_xit',
+      action: function(){
+        window.close();
+      }
+    }
+  ]
+},{
+  label:'_Edit',
+  submenu:[
+    {
+      label:'Undo'
+    },{
+      label:''//separator
+    },
+    {
+      label:'Copy',
+      action:function(item){
+        console.log("item "+item.label+" clicked");
+      }
+    },
+    {
+      label:'Paste',
+      action:function(item){
+        console.log("item "+item.label+" clicked");
+      }
+    }
+  ]
+}]);
+
 window.on('create', function(){
   console.log("Window Created");
   window.frame.show();
-//  window.frame.center();
+  window.frame.center();
+  window.frame.setMenuBar(menu);
 });
 
 window.on('ready', function(){

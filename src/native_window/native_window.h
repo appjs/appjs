@@ -5,6 +5,7 @@
 #include "appjs.h"
 #include "include/cef_browser.h"
 #include "includes/util.h"
+#include "native_menu/native_menu.h"
 #include <node.h>
 
 
@@ -107,6 +108,8 @@ public:
 
   void SetTitle(const TCHAR* title);
   const TCHAR* GetTitle();
+
+  void SetMenuBar(NativeMenu* menu);
 
   void OpenDialog(Settings* settings,v8::Persistent<v8::Function> cb);
   static void DialogClosed();

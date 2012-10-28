@@ -103,8 +103,26 @@ Local<Object> Settings::getObject(const char* property) {
   return tmp->IsObject() ? tmp->ToObject() : Object::New();
 }
 
+Persistent<Object> Settings::getSettings() {
+  return settings_;
+}
+
 Local<Value> Settings::get(const char* property) {
   return settings_->Get(String::New(property));
+}
+
+Local<Object> Settings::getObject(const int index,Local<Object> defaultValue) {
+  Local<Value> tmp = get(index);
+  return tmp->IsObject() ? tmp->ToObject() : defaultValue;
+}
+
+Local<Object> Settings::getObject(const int index) {
+  Local<Value> tmp = get(index);
+  return tmp->IsObject() ? tmp->ToObject() : Object::New();
+}
+
+Local<Value> Settings::get(const int index) {
+  return settings_->Get(index);
 }
 
 }
