@@ -32,6 +32,10 @@
   "dependencies": {
     "mime": ">=1.2.5"
   },
+  "devDependencies": {
+    "tar": ">=0.1.0",
+    "request": ">=2.0.0"
+  },
   "scripts": {
     "postinstall": "node cli/postinstall.js"
   },
