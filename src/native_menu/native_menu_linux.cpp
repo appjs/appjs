@@ -2,10 +2,10 @@
 #include <gtk/gtk.h>
 
 #include "appjs.h"
-#include "native_menu/native_menu.h"
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
+#include "native_menu/native_menu.h"
 
 extern CefRefPtr<ClientHandler> g_handler;
 
@@ -16,13 +16,21 @@ using namespace v8;
 typedef struct _appjs_action_callback {
   Persistent<Object> action;
   Persistent<Object> item;
+  NativeMenu* menu;
 } appjs_action_callback;
 
-void MenuClicked(GtkWidget* menuItem,appjs_action_callback* actionCallback){
+void menu_active_handler(GtkWidget* menuItem,appjs_action_callback* actionCallback){
   Persistent<Object> action = actionCallback->action;
-  const int argc = 1;
-  Handle<Value> argv[argc] = {actionCallback->item};
-  action->CallAsFunction(action,argc,argv);
+  NativeMenu* menu = actionCallback->menu;
+
+  if(action->IsCallable()) {
+    const int argc = 1;
+    Handle<Value> argv[argc] = {actionCallback->item};
+    action->CallAsFunction(menu->GetV8Handle(),argc,argv);
+  }
+
+  menu->Emit("select",Local<Object>::New(actionCallback->item));
+
 }
 
 void NativeMenu::Init(Settings* settings) {
@@ -48,15 +56,17 @@ int NativeMenu::AddSubMenu(GtkWidget* menu,Settings* settings){
   GtkWidget* menuItem;
   char* label;
   char* icon;
-  appjs_action_callback* actionCb = new appjs_action_callback();
+  appjs_action_callback* actionCb;
 
   for( int i = 0; i < length; i++ ) {
 
     item = new Settings( settings->getObject( i ) );
     label  = item->getString("label","");
     icon   = item->getString("icon","");
+    actionCb = new appjs_action_callback();
     actionCb->action = Persistent<Object>::New( item->getObject("action") );
     actionCb->item = Persistent<Object>::New( settings->getObject( i ) );
+    actionCb->menu = this;
 
     if( strlen( label ) == 0 ) {
       menuItem = gtk_separator_menu_item_new();
@@ -75,7 +85,7 @@ int NativeMenu::AddSubMenu(GtkWidget* menu,Settings* settings){
     if(AddSubMenu(submenu,subsettings)){
       gtk_menu_item_set_submenu(GTK_MENU_ITEM(menuItem),submenu);
     } else {
-      g_signal_connect(G_OBJECT(menuItem), "activate",G_CALLBACK(MenuClicked),actionCb);
+      g_signal_connect(G_OBJECT(menuItem), "activate",G_CALLBACK(menu_active_handler),actionCb);
     }
 
     gtk_menu_shell_append( GTK_MENU_SHELL( menu ), menuItem );
