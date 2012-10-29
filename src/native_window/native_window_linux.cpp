@@ -217,6 +217,7 @@ void NativeWindow::SetMenuBar(NativeMenu* nativeMenu) {
   gtk_box_pack_start(GTK_BOX (gtk_bin_get_child(GTK_BIN(handle_))), menu_bar, FALSE, FALSE, 0);
   gtk_box_reorder_child(GTK_BOX (gtk_bin_get_child(GTK_BIN(handle_))),menu_bar,0);
   gtk_widget_show (menu_bar);
+
 }
 
 void NativeWindow::OpenFileDialog(uv_work_t* req) {
