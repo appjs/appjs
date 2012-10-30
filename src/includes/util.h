@@ -27,12 +27,12 @@ public:
   Settings(v8::Local<v8::Object>);
   ~Settings(){settings_.Dispose();}
 
-  bool isNull(const char*);
-  bool has(const char*);
+  bool   isNull(const char*);
+  bool   has(const char*);
   double getNumber(const char*, double);
-  int getInteger(const char*, int);
-  bool getBoolean(const char*,bool);
-  char* getString(const char*, char*);
+  int    getInteger(const char*, int);
+  bool   getBoolean(const char*,bool);
+  char*  getString(const char*, char*);
 
   #ifdef __WIN__
   TCHAR* getString(const char*,TCHAR*);

@@ -96,4 +96,21 @@ int NativeMenu::AddSubMenu(GtkWidget* menu,Settings* settings){
 
 }
 
+bool NativeMenu::Attach(GtkMenuShell* menuBar) {
+  if(!attached_) {
+    menu_ = menuBar;
+
+    for(std::vector<GtkWidget*>::iterator it = menuItems_.begin(); it != menuItems_.end(); ++it) {
+      gtk_menu_shell_append(menuBar,(*it));
+    }
+
+    this->Emit("attached");
+
+    return true;
+  } else {
+    // already attached
+    return false;
+  }
+}
+
 } /* appjs */

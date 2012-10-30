@@ -15,11 +15,13 @@ void Init(Handle<v8::Object> target) {
   App::Init();
   Window::Init();
   Menu::Init();
+  StatusIcon::Init();
 
   target->Set(String::NewSymbol("init"), FunctionTemplate::New(InitApp)->GetFunction());
   target->Set(String::NewSymbol("App"), App::constructor);
   target->Set(String::NewSymbol("NativeWindow"), Window::constructor);
   target->Set(String::NewSymbol("NativeMenu"), Menu::constructor);
+  target->Set(String::NewSymbol("NativeStatusIcon"), StatusIcon::constructor);
 }
 
 } /* appjs */
