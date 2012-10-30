@@ -243,8 +243,10 @@
         'src/appjs_app.cpp',
         'src/appjs_window.cpp',
         'src/appjs_menu.cpp',
+        'src/appjs_status_icon.cpp',
         'src/native_window/native_window.cpp',
         'src/native_menu/native_menu.cpp',
+        'src/native_status_icon/native_status_icon.cpp',
         'src/includes/cef_handler.cpp',
         'src/includes/cef.cpp',
         'src/includes/cef_loop.cpp',
@@ -288,7 +290,8 @@
         ['OS=="linux"', {
           'sources': [
             'src/native_window/native_window_linux.cpp',
-            'src/native_menu/native_menu_linux.cpp'
+            'src/native_menu/native_menu_linux.cpp',
+            'src/native_status_icon/native_status_icon_linux.cpp'
           ],
           'defines': [
             '__LINUX__',

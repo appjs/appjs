@@ -207,16 +207,12 @@ NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
 
 void NativeWindow::SetMenuBar(NativeMenu* nativeMenu) {
 
-  std::vector<GtkWidget*> menuItems = nativeMenu->GetMenu();
-
   GtkWidget* menu_bar = gtk_menu_bar_new ();
-  for(std::vector<GtkWidget*>::iterator it = menuItems.begin(); it != menuItems.end(); ++it) {
-    gtk_menu_bar_append(GTK_MENU_SHELL(menu_bar),(*it));
-  }
+  nativeMenu->Attach(GTK_MENU_SHELL(menu_bar));
 
   gtk_box_pack_start(GTK_BOX (gtk_bin_get_child(GTK_BIN(handle_))), menu_bar, FALSE, FALSE, 0);
   gtk_box_reorder_child(GTK_BOX (gtk_bin_get_child(GTK_BIN(handle_))),menu_bar,0);
-  gtk_widget_show (menu_bar);
+  gtk_widget_show(menu_bar);
 
 }
 
