@@ -277,13 +277,15 @@
           'cflags': [ '-m32' ],
           'ldflags': [ '-m32' ],
           'xcode_settings': {
+            'OTHER_CFLAGS': ['-ObjC++']
             'OTHER_LDFLAGS':['-Xlinker -rpath -Xlinker @loader_path/../../../../appjs-darwin/libs/'],
             'ARCHS': [ 'i386' ]
           },
           'link_settings': {
             'libraries': [
                '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
-               '<(module_root_dir)/build/Release/cef_dll_wrapper.node'
+               '<(module_root_dir)/build/Release/cef_dll_wrapper.node',
+               '-lobjc'
              ]
           }
         }],
