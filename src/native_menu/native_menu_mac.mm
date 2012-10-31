@@ -88,6 +88,7 @@ int NativeMenu::AddSubMenu(NSMenu* menu,Settings* settings){
       menuItem = [[NSMenuItem alloc] initWithTitle:label action:NULL keyEquivalent:@""];
     } else {
       menuItem = [[NSMenuItem alloc] initWithTitle:label action:NULL keyEquivalent:@""];
+      [menuItem setImage:[[NSImage alloc] initByReferencingFile:icon]];
     }
     [menuItem setEnabled:YES];
 
