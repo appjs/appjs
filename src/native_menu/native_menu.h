@@ -31,7 +31,8 @@ public:
   int AddSubMenu(GtkWidget*,Settings*);
   bool Attach(GtkMenuShell*);
 #elif defined(__MAC__)
-  //int AddSubMenu(Settings*);
+  int AddSubMenu(NSMenu*,Settings*);
+  bool Attach(NSMenu*);
 #endif
 
 private:
@@ -47,6 +48,12 @@ private:
 #endif
 
 };
+
+typedef struct _appjs_action_callback {
+  v8::Persistent<v8::Object> action;
+  v8::Persistent<v8::Object> item;
+  NativeMenu* menu;
+} appjs_action_callback;
 
 } /* appjs */
 

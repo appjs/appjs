@@ -13,12 +13,6 @@ namespace appjs {
 
 using namespace v8;
 
-typedef struct _appjs_action_callback {
-  Persistent<Object> action;
-  Persistent<Object> item;
-  NativeMenu* menu;
-} appjs_action_callback;
-
 void menu_active_handler(GtkWidget* menuItem,appjs_action_callback* actionCallback){
   Persistent<Object> action = actionCallback->action;
   NativeMenu* menu = actionCallback->menu;
