@@ -2,6 +2,10 @@
 #define APPJS_BASE_NATIVE_STATUS_ICON_H
 #pragma once
 
+#ifdef __MAC__
+#import <Cocoa/Cocoa.h>
+#endif
+
 #include "appjs.h"
 #include "include/cef_browser.h"
 #include "includes/util.h"
@@ -32,7 +36,9 @@ private:
 #ifdef __LINUX__
   GtkStatusIcon* statusIconHandle_;
 #endif
-
+#ifdef __MAC__
+  NSStatusItem* statusIconHandle_;
+#endif
 };
 
 } /* appjs */
