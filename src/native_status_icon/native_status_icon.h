@@ -28,7 +28,11 @@ public:
 
 private:
   v8::Handle<v8::Object> v8handle_;
+
+#ifdef __LINUX__
   GtkStatusIcon* statusIconHandle_;
+#endif
+
 };
 
 } /* appjs */

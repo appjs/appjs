@@ -74,7 +74,7 @@ bool ClientHandler::DoClose(CefRefPtr<CefBrowser>  browser) {
   if (!browser->IsPopup() && --windowCount == 0) {
     Local<Object> global = Context::GetCurrent()->Global();
     Local<Object> emitter = global->Get(String::NewSymbol("process"))->ToObject();
-    Handle<Value> exitArgv[1] = {String::New("appjs-exit")};
+    v8::Handle<Value> exitArgv[1] = {String::New("appjs-exit")};
     node::MakeCallback(emitter,"emit",1,exitArgv);
     Cef::Shutdown();
     mainBrowserHandle = NULL;

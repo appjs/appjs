@@ -357,6 +357,10 @@ NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
   return NativeWindow::GetWindow(browser->GetWindowHandle());
 }
 
+void NativeWindow::SetMenuBar(NativeMenu* nativeMenu) {
+
+}
+
 void NativeWindow::OpenFileDialog(uv_work_t* req) {
   AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
   NSWindow*              parent = [settings->me->handle_ window];

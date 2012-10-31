@@ -5,13 +5,13 @@ namespace appjs {
 
 using namespace v8;
 
-Handle<Value> InitApp(const Arguments& args) {
+v8::Handle<Value> InitApp(const Arguments& args) {
 
   HandleScope scope;
   return scope.Close(App::NewInstance(args));
 }
 
-void Init(Handle<v8::Object> target) {
+void Init(v8::Handle<v8::Object> target) {
   App::Init();
   Window::Init();
   Menu::Init();

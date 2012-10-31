@@ -17,18 +17,18 @@ NativeMenu::~NativeMenu(){
   // destroy all v8 persistent objects
 }
 
-void NativeMenu::Emit(Handle<Value>* args,int length){
+void NativeMenu::Emit(v8::Handle<Value>* args,int length){
   node::MakeCallback(v8handle_, "emit", length, args);
 }
 
 void NativeMenu::Emit(const char* event){
-  Handle<Value> args[1] = { String::New(event) };
+  v8::Handle<Value> args[1] = { String::New(event) };
   Emit(args,1);
 }
 
-void NativeMenu::Emit(const char* event, Handle<Value> arg){
+void NativeMenu::Emit(const char* event, v8::Handle<Value> arg){
 
-  Handle<Value> args[2] = {
+  v8::Handle<Value> args[2] = {
     String::New(event),
     arg
   };
