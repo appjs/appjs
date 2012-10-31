@@ -15,18 +15,18 @@ NativeStatusIcon::NativeStatusIcon(Settings* settings){
 NativeStatusIcon::~NativeStatusIcon(){
 }
 
-void NativeStatusIcon::Emit(Handle<Value>* args,int length){
+void NativeStatusIcon::Emit(v8::Handle<Value>* args,int length){
   node::MakeCallback(v8handle_, "emit", length, args);
 }
 
 void NativeStatusIcon::Emit(const char* event){
-  Handle<Value> args[1] = { String::New(event) };
+  v8::Handle<Value> args[1] = { String::New(event) };
   Emit(args,1);
 }
 
-void NativeStatusIcon::Emit(const char* event, Handle<Value> arg){
+void NativeStatusIcon::Emit(const char* event, v8::Handle<Value> arg){
 
-  Handle<Value> args[2] = {
+  v8::Handle<Value> args[2] = {
     String::New(event),
     arg
   };

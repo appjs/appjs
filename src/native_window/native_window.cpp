@@ -134,7 +134,7 @@ void NativeWindow::SetBrowser(CefRefPtr<CefBrowser> browser) {
   browser_ = browser;
 }
 
-void NativeWindow::SetV8Handle(Handle<Object> v8handle) {
+void NativeWindow::SetV8Handle(v8::Handle<Object> v8handle) {
   v8handle_ = v8handle;
 }
 
@@ -142,7 +142,7 @@ CefRefPtr<CefBrowser> NativeWindow::GetBrowser() {
   return browser_;
 }
 
-Handle<Object> NativeWindow::GetV8Handle() {
+v8::Handle<Object> NativeWindow::GetV8Handle() {
   return v8handle_;
 }
 
@@ -235,27 +235,27 @@ appjs_rect NativeWindow::GetRect() {
   return rect_;
 }
 
-void NativeWindow::Emit(Handle<Value>* args){
+void NativeWindow::Emit(v8::Handle<Value>* args){
   if (!closed_) {
     node::MakeCallback(v8handle_, "emit", ARRAY_SIZE(args), args);
   }
 }
 
 void NativeWindow::Emit(const char* event){
-  Handle<Value> args[1] = { String::New(event) };
+  v8::Handle<Value> args[1] = { String::New(event) };
   Emit(args);
 }
 
-void NativeWindow::Emit(const char* event, Handle<Value> arg){
-  Handle<Value> args[2] = {
+void NativeWindow::Emit(const char* event, v8::Handle<Value> arg){
+  v8::Handle<Value> args[2] = {
     String::New(event),
     arg
   };
   Emit(args);
 }
 
-void NativeWindow::Emit(const char* event, Handle<Value> arg1, Handle<Value> arg2){
-  Handle<Value> args[3] = {
+void NativeWindow::Emit(const char* event, v8::Handle<Value> arg1, v8::Handle<Value> arg2){
+  v8::Handle<Value> args[3] = {
     String::New(event),
     arg1,
     arg2
@@ -264,7 +264,7 @@ void NativeWindow::Emit(const char* event, Handle<Value> arg1, Handle<Value> arg
 }
 
 void NativeWindow::Emit(const char* event, int arg1, int arg2){
-  Handle<Value> args[3] = {
+  v8::Handle<Value> args[3] = {
     String::New(event),
     Integer::New(arg1),
     Integer::New(arg2)
@@ -273,7 +273,7 @@ void NativeWindow::Emit(const char* event, int arg1, int arg2){
 }
 
 void NativeWindow::Emit(const char* event, const int arg1, const int arg2, const int arg3){
-  Handle<Value> args[4] = {
+  v8::Handle<Value> args[4] = {
     String::New(event),
     Integer::New(arg1),
     Integer::New(arg2),

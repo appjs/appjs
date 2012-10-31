@@ -82,10 +82,10 @@ typedef std::basic_string<TCHAR> tstring;
     obj->Set##PropertyName(SetterType(value)); \
   } \
   \
-  Handle<Value> Type::Get##PropertyName(Local<String> property, const AccessorInfo &info) { \
+  v8::Handle<Value> Type::Get##PropertyName(Local<String> property, const AccessorInfo &info) { \
     HandleScope scope; \
     Native##Type *obj = ObjectWrap::Unwrap<Native##Type>(info.Holder()); \
-    return scope.Close(GetterType::New(obj->Get##PropertyName())); \
+    return scope.Close(v8::GetterType::New(obj->Get##PropertyName())); \
   }
 
 
@@ -95,7 +95,7 @@ typedef std::basic_string<TCHAR> tstring;
     obj->Set##PropertyName(SetterType(value->ToString())); \
   } \
   \
-  Handle<Value> Type::Get##PropertyName(Local<String> property, const AccessorInfo &info) { \
+  v8::Handle<Value> Type::Get##PropertyName(Local<String> property, const AccessorInfo &info) { \
     HandleScope scope; \
     Native##Type *obj = ObjectWrap::Unwrap<Native##Type>(info.Holder()); \
     return scope.Close(GetterType::New((uint16_t*)obj->Get##PropertyName())); \
@@ -103,7 +103,7 @@ typedef std::basic_string<TCHAR> tstring;
 
 
 #define CREATE_PROTOTYPE_INVOKER(Type, Method) \
-  Handle<Value> Type::Method(const Arguments& args) { \
+  v8::Handle<Value> Type::Method(const Arguments& args) { \
     HandleScope scope; \
     Native##Type *obj = ObjectWrap::Unwrap<Native##Type>(args.This()); \
     obj->Method(); \

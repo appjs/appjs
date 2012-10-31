@@ -20,7 +20,7 @@ void Menu::Init() {
   END_CONSTRUCTOR();
 }
 
-Handle<Value> Menu::New(const Arguments& args) {
+v8::Handle<Value> Menu::New(const Arguments& args) {
   HandleScope scope;
 
   Persistent<Object> options = Persistent<Object>::New(args[0]->ToObject());
@@ -34,9 +34,9 @@ Handle<Value> Menu::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-Handle<Value> Menu::NewInstance(const Arguments& args) {
+v8::Handle<Value> Menu::NewInstance(const Arguments& args) {
   HandleScope scope;
-  Handle<Value> argv[1] = { args[0] };
+  v8::Handle<Value> argv[1] = { args[0] };
   return scope.Close(constructor->NewInstance(1, argv));
 }
 

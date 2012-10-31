@@ -12,22 +12,22 @@ namespace appjs {
 
 using namespace v8;
 
-Handle<Value> WrapObject(void* obj) {
+v8::Handle<Value> WrapObject(void* obj) {
 
   HandleScope scope;
 
   Persistent<ObjectTemplate> obj_template = Persistent<ObjectTemplate>::New(ObjectTemplate::New());
   obj_template->SetInternalFieldCount(1);
 
-  Handle<Object> self = obj_template->NewInstance();
+  v8::Handle<Object> self = obj_template->NewInstance();
 
   self->SetPointerInInternalField(0, obj);
 
   return scope.Close(self);
 }
 
-void *UnwrapObject(Handle<Value> data) {
-  Handle<Object> obj = data->ToObject();
+void *UnwrapObject(v8::Handle<Value> data) {
+  v8::Handle<Object> obj = data->ToObject();
 
   return obj->GetPointerFromInternalField(0);
 }
@@ -44,7 +44,7 @@ void AppjsSchemeHandler::Execute(CefThreadId threadId) {
 
   const int argc = 3;
 
-  Handle<Value>    self = WrapObject(this);
+  v8::Handle<Value>    self = WrapObject(this);
   Local<Function>    cb = FunctionTemplate::New(NodeCallback,self)->GetFunction();
   Local<Object>     req = Object::New();
   Local<String>    post = String::New("");
@@ -93,8 +93,8 @@ void AppjsSchemeHandler::Execute(CefThreadId threadId) {
     }
   }
 
-  Handle<Value> method = String::New((uint16_t*)request_->GetMethod().c_str());
-  Handle<Value> url = String::New((uint16_t*)request_->GetURL().c_str());
+  v8::Handle<Value> method = String::New((uint16_t*)request_->GetMethod().c_str());
+  v8::Handle<Value> url = String::New((uint16_t*)request_->GetURL().c_str());
 
   req->Set(String::NewSymbol("method"),method);
   req->Set(String::NewSymbol("url"),url);
@@ -102,12 +102,12 @@ void AppjsSchemeHandler::Execute(CefThreadId threadId) {
   req->Set(String::NewSymbol("headers"),headers);
   req->Set(String::NewSymbol("files"),files);
 
-  Handle<Value> argv[argc] = {String::New("appjs-request"),req,cb};
+  v8::Handle<Value> argv[argc] = {String::New("appjs-request"),req,cb};
   node::MakeCallback(emitter,"emit",argc,argv);
 
 }
 
-Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
+v8::Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
   HandleScope scope;
 
   AppjsSchemeHandler* me = static_cast<AppjsSchemeHandler *>(UnwrapObject(args.Data()));

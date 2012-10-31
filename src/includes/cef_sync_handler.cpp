@@ -17,7 +17,7 @@ bool AppjsSyncHandler::Execute(const CefString& name,
   if (browser_.get()) {
     HandleScope scope;
     Local<Value> argv[1] = { CefStringToV8(arguments[0]->GetStringValue()) };
-    Handle<Object> window = NativeWindow::GetWindow(browser_)->GetV8Handle();;
+    v8::Handle<Object> window = NativeWindow::GetWindow(browser_)->GetV8Handle();;
     Local<Function> handler = Local<Function>::Cast(window->Get(String::NewSymbol("onmessage")));
     Local<Value> result = handler->Call(window, 1, argv);
     if (result->IsString()) {

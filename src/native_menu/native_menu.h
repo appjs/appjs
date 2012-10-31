@@ -2,6 +2,10 @@
 #define APPJS_BASE_NATIVE_MENU_H
 #pragma once
 
+#ifdef __MAC__
+#import <Cocoa/Cocoa.h>
+#endif
+
 #include "appjs.h"
 #include "include/cef_browser.h"
 #include "includes/util.h"
@@ -26,6 +30,8 @@ public:
 #ifdef __LINUX__
   int AddSubMenu(GtkWidget*,Settings*);
   bool Attach(GtkMenuShell*);
+#elif defined(__MAC__)
+  //int AddSubMenu(Settings*);
 #endif
 
 private:
@@ -36,6 +42,8 @@ private:
   //GtkWidget* menu_;
   std::vector<GtkWidget*> menuItems_;
   GtkMenuShell* menu_;
+#elif defined(__MAC__)
+  NSArray* menuItems_;
 #endif
 
 };

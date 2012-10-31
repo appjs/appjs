@@ -12,5 +12,11 @@ extern CefRefPtr<ClientHandler> g_handler;
 
 namespace appjs {
 
+void NativeMenu::Init(Settings* settings) {
+}
+
+//int NativeMenu::AddSubMenu(GtkWidget* menu,Settings* settings){
+//}
+
 } /* appjs */
 

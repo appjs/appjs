@@ -269,7 +269,8 @@
       'conditions': [
         ['OS=="mac"', {
           'sources': [
-            'src/native_window/native_window_mac.mm'
+            'src/native_window/native_window_mac.mm',
+            'src/native_menu/native_menu_mac.mm'
           ],
           'defines': [
             '__MAC__',
@@ -277,7 +278,7 @@
           'cflags': [ '-m32' ],
           'ldflags': [ '-m32' ],
           'xcode_settings': {
-            'OTHER_CFLAGS': ['-ObjC++']
+            'OTHER_CFLAGS': ['-ObjC++'],
             'OTHER_LDFLAGS':['-Xlinker -rpath -Xlinker @loader_path/../../../../appjs-darwin/libs/'],
             'ARCHS': [ 'i386' ]
           },
