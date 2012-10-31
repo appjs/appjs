@@ -273,7 +273,8 @@
         ['OS=="mac"', {
           'sources': [
             'src/native_window/native_window_mac.mm',
-            'src/native_menu/native_menu_mac.mm'
+            'src/native_menu/native_menu_mac.mm',
+            'src/native_status_icon/native_status_icon_mac.mm'
           ],
           'defines': [
             '__MAC__',
