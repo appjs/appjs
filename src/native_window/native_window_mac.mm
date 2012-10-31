@@ -358,7 +358,10 @@ NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
 }
 
 void NativeWindow::SetMenuBar(NativeMenu* nativeMenu) {
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@"AppJS Menu"];
 
+  nativeMenu->Attach(menu);
+  [NSApp setMainMenu:menu];
 }
 
 void NativeWindow::OpenFileDialog(uv_work_t* req) {
