@@ -20,7 +20,7 @@ Persistent<Function> App::constructor;
 void App::Init() {
   DECLARE_CONSTRUCTOR("App");
   DECLARE_PROTOTYPE_METHOD("createWindow",CreateWindow2);
-  DECLARE_PROTOTYPE_METHOD("createMenu",CreateMenu);
+  DECLARE_PROTOTYPE_METHOD("createMenu",CreateMenu2);
   DECLARE_PROTOTYPE_METHOD("createStatusIcon",CreateStatusIcon);
   DECLARE_CLASS_FUNCTION(screenWidth, ScreenWidth);
   DECLARE_CLASS_FUNCTION(screenHeight, ScreenHeight);
@@ -51,7 +51,7 @@ v8::Handle<Value> App::CreateWindow2(const Arguments& args) {
   return scope.Close(Window::NewInstance(args));
 }
 
-v8::Handle<Value> App::CreateMenu(const Arguments& args) {
+v8::Handle<Value> App::CreateMenu2(const Arguments& args) {
   v8::HandleScope scope;
   return scope.Close(Menu::NewInstance(args));
 }

@@ -475,6 +475,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
       EndPaint(hwnd, &ps);
       return 0;
     }
+    case WM_MENUCOMMAND: {
+      HMENU menu = (HMENU)lParam;
+      MENUITEMINFO menuItem;
+      menuItem.cbSize = sizeof(MENUITEMINFO);
+      menuItem.fMask = MIIM_DATA;
+      int idx = wParam;
+      GetMenuItemInfo(menu,idx,TRUE,&menuItem);
+      appjs_action_callback* actionCallback = (appjs_action_callback*) menuItem.dwItemData;
+      Persistent<Object> action = actionCallback->action;
+      NativeMenu* nativeMenu = actionCallback->menu;
+
+      if(action->IsCallable()) {
+        const int argc = 1;
+        Handle<Value> argv[argc] = {actionCallback->item};
+        action->CallAsFunction(nativeMenu->GetV8Handle(),argc,argv);
+      }
+
+      nativeMenu->Emit("select",Local<Object>::New(actionCallback->item));
+      return 0;
+    }
     case WM_SETFOCUS:
       if (browser.get()) {
         PostMessage(browser->GetWindowHandle(), WM_SETFOCUS, wParam, NULL);
@@ -566,7 +586,9 @@ int CALLBACK DirectorySelectHook(HWND hwnd, UINT msg, LPARAM lParam, LPARAM data
 }
 
 void NativeWindow::SetMenuBar(NativeMenu* nativeMenu) {
-
+  HMENU menu;
+  nativeMenu->Attach(menu);
+  SetMenu(handle_,menu);
 }
 
 void NativeWindow::OpenFileDialog(uv_work_t* req) {

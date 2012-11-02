@@ -23,4 +23,12 @@ void NativeStatusIcon::Init(Settings* settings) {
 
 }
 
+void NativeStatusIcon::Show(){
+  this->Emit("show");
+}
+
+void NativeStatusIcon::Hide(){
+  this->Emit("hide");
+}
+
 } /* appjs */

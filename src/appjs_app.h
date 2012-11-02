@@ -16,7 +16,7 @@ class App : public node::ObjectWrap {
   DEFINE_CLASS_FUNCTION(ScreenWidth);
   DEFINE_CLASS_FUNCTION(ScreenHeight);
   DEFINE_PROTOTYPE_METHOD(CreateWindow2);
-  DEFINE_PROTOTYPE_METHOD(CreateMenu);
+  DEFINE_PROTOTYPE_METHOD(CreateMenu2);
   DEFINE_PROTOTYPE_METHOD(CreateStatusIcon);
 
   static bool initialized_;

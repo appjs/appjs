@@ -341,6 +341,8 @@
           'sources': [
             'src/includes/util_win.cpp',
             'src/native_window/native_window_win.cpp',
+            'src/native_menu/native_menu_win.cpp',
+            'src/native_status_icon/native_status_icon_win.cpp'
           ],
           'defines': [
             '__WIN__',
