@@ -36,7 +36,7 @@
 }
 
 - (void)emitPopup:(id)sender {
-  self.me->Emit("popup");
+  self.me->Emit("rightclick");
 }
 @end
 

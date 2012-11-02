@@ -15,12 +15,173 @@
 
 extern CefRefPtr<ClientHandler> g_handler;
 
+
+namespace status_icon {
+
+#define MAX_LOADSTRING 100
+#define SWP_STATECHANGED 0x8000
+
+TCHAR szWindowClass[MAX_LOADSTRING];
+LRESULT CALLBACK StatusIconProc(HWND, UINT, WPARAM, LPARAM);
+ATOM MyRegisterClass(HINSTANCE hInstance);
+HINSTANCE hInstance;
+HWND hWnd;
+
+LRESULT CALLBACK StatusIconProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+  switch(message) {
+    case WM_USER:
+      switch(lParam) {
+        case WM_LBUTTONDBLCLK: {
+          appjs::NativeStatusIcon* nativeStatusIcon = (appjs::NativeStatusIcon*) GetWindowLongPtr(hWnd, GWLP_USERDATA);
+          nativeStatusIcon->Emit("dblclick");
+          return true;
+        }
+        case WM_COMMAND: {
+          fprintf(stderr, "%s\n", "clicked2");
+          return 0;
+        }
+        case WM_MENUCOMMAND: {
+          fprintf(stderr, "%s\n", "clicked");
+          return 0;
+        }
+        case WM_RBUTTONUP: {
+
+          HMENU   hPop;
+          int     i = 0;
+          WORD    cmd;
+          POINT   pt;
+          POINT*  curpos;
+
+          appjs::NativeStatusIcon* nativeStatusIcon = (appjs::NativeStatusIcon*) GetWindowLongPtr(hWnd, GWLP_USERDATA);
+          appjs::NativeMenu* nativeMenu = nativeStatusIcon->GetMenu();
+          nativeMenu->Attach(hPop);
+
+          HMENU popup = CreatePopupMenu();
+          int loop = GetMenuItemCount(hPop);
+          for(int i = 0; i < loop; i++) {
+            TCHAR* menuTitle = new TCHAR[1000];
+            GetMenuString(hPop,i,menuTitle,1000,MF_BYPOSITION);
+            AppendMenu(popup,MF_POPUP, (UINT)GetSubMenu(hPop,i), menuTitle);
+//          AppendMenu(popup,MF_POPUP, (UINT)GetMenuItemID(hPop,i), menuTitle);
+          }
+
+          MENUINFO menuInfo;
+          memset(&menuInfo, 0, sizeof(menuInfo));
+          menuInfo.cbSize = sizeof(menuInfo);
+          menuInfo.fMask = MIM_STYLE;
+          menuInfo.dwStyle = MNS_NOTIFYBYPOS | MNS_AUTODISMISS;
+          SetMenuInfo(popup,&menuInfo);
+
+          GetCursorPos( &pt );
+          curpos = &pt;
+
+          SendMessage( hWnd, WM_INITMENUPOPUP, (WPARAM)popup, 0 );
+
+          cmd = TrackPopupMenu( popup, TPM_LEFTALIGN | TPM_RIGHTBUTTON 
+                                | TPM_RETURNCMD | TPM_NONOTIFY,
+                                curpos->x, curpos->y, 0, hWnd, NULL );
+
+          SendMessage( hWnd, WM_COMMAND, cmd, 0 );
+          PostMessage(hWnd, WM_USER,0,0);
+
+          nativeStatusIcon->Emit("rightclick");
+          return true;
+        }
+        case WM_LBUTTONUP: {
+          appjs::NativeStatusIcon* nativeStatusIcon = (appjs::NativeStatusIcon*) GetWindowLongPtr(hWnd, GWLP_USERDATA);
+          nativeStatusIcon->Emit("click");
+          return true;
+        }
+      }
+    break;
+  }
+  return DefWindowProc(hwnd, message, wParam, lParam);
+}
+
+HMODULE GetCurrentModuleHandle() {
+  HMODULE module = NULL;
+  GetModuleHandleExW(6, reinterpret_cast<LPCWSTR>(&GetCurrentModuleHandle), &module);
+  return module;
+}
+
+ATOM MyRegisterClass(HINSTANCE hInst) {
+  WNDCLASSEX wcex = {0};
+  wcex.cbSize        = sizeof(WNDCLASSEX);
+  wcex.style         = CS_HREDRAW | CS_VREDRAW;
+  wcex.lpfnWndProc   = StatusIconProc;
+  wcex.cbClsExtra    = 0;
+  wcex.cbWndExtra    = 0;
+  wcex.hInstance     = hInst;
+  wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
+  wcex.lpszMenuName  = NULL;
+  wcex.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+  wcex.lpszClassName = szWindowClass;
+  return RegisterClassEx(&wcex);
+}
+
+}
+
 namespace appjs {
 
 using namespace v8;
+using namespace status_icon;
 
 void NativeStatusIcon::Init(Settings* settings) {
+  TCHAR* iconFile = settings->getString("icon",TEXT(""));
+  TCHAR* tooltip  = settings->getString("tooltip",TEXT(""));
+  bool   visible  = settings->getBoolean("visible",true);
 
+  hInstance = (HINSTANCE)GetCurrentModuleHandle();
+  wcscpy(szWindowClass, TEXT("AppjsNotifyWindow"));
+  MyRegisterClass(hInstance);
+
+  hWnd = CreateWindowEx(NULL, szWindowClass, TEXT(""), WS_OVERLAPPEDWINDOW,
+                           0, 0, 0, 0,
+                           NULL, NULL, hInstance, NULL);
+  SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG)this);
+
+  // TODO local or persistent?
+  Local<Object> menu = settings->getObject("menu");
+  NativeMenu* nativeMenu;
+  NOTIFYICONDATA statusIcon;
+  statusIcon.cbSize = sizeof(statusIcon);
+  statusIcon.hWnd = hWnd;
+  statusIcon.uID = 0;
+  statusIcon.uFlags = NIF_MESSAGE;
+  statusIcon.uVersion = NOTIFYICON_VERSION;
+  statusIcon.uCallbackMessage = WM_USER;
+
+  if( !visible ) {
+    statusIcon.uFlags |= NIF_STATE;
+    statusIcon.dwState = NIS_HIDDEN;
+  }
+
+  if( settings->has("icon") ) {
+    HICON icon;
+    Gdiplus::Bitmap* bitmap = Gdiplus::Bitmap::FromFile(iconFile);
+    if (bitmap->GetWidth()) {
+      bitmap->GetHICON(&icon);
+      delete bitmap;
+    }
+    statusIcon.uFlags |= NIF_ICON;
+    statusIcon.hIcon = icon;
+  } else {
+    // Use predefined system icons
+    statusIcon.hIcon = LoadIcon(hInstance,IDC_NO);
+  }
+
+  if( settings->has("tooltip") ) {
+    statusIcon.uFlags |=  NIF_TIP;
+    wcscpy(statusIcon.szTip,tooltip);
+  }
+
+  if( settings->has("menu") ) {
+    menu_ = (NativeMenu*)menu->GetPointerFromInternalField(0);
+  }
+
+  statusIconHandle_ = statusIcon;
+
+  Shell_NotifyIcon(NIM_ADD, &statusIcon);
 }
 
 void NativeStatusIcon::Show(){
