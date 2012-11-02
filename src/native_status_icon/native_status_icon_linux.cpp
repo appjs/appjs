@@ -23,7 +23,7 @@ void status_icon_click(GtkWidget* statusIcon,NativeStatusIcon* me) {
 }
 
 void status_icon_popup(GtkWidget* statusIcon,guint button, guint32 activate_time,NativeStatusIcon* me) {
-  me->Emit("popup");
+  me->Emit("rightclick");
 }
 
 void NativeStatusIcon::Init(Settings* settings) {

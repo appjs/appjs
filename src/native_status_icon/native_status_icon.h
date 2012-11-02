@@ -9,6 +9,7 @@
 #include "appjs.h"
 #include "include/cef_browser.h"
 #include "includes/util.h"
+#include "native_menu/native_menu.h"
 #include "native_status_icon/native_status_icon.h"
 #include <node.h>
 
@@ -29,6 +30,7 @@ public:
 
   void SetV8Handle(v8::Handle<v8::Object> v8handle) {v8handle_ = v8handle;};
   v8::Handle<v8::Object> GetV8Handle() {return v8handle_;};
+  NativeMenu* GetMenu() { return menu_;};
 
 private:
   v8::Handle<v8::Object> v8handle_;
@@ -40,6 +42,8 @@ private:
   NSStatusItem* statusIconHandle_;
 #endif
 #ifdef __WIN__
+  NOTIFYICONDATA statusIconHandle_;
+  NativeMenu* menu_;
 #endif
 };
 
