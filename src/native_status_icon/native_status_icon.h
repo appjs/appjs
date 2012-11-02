@@ -39,6 +39,8 @@ private:
 #ifdef __MAC__
   NSStatusItem* statusIconHandle_;
 #endif
+#ifdef __WIN__
+#endif
 };
 
 } /* appjs */

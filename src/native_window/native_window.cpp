@@ -235,15 +235,15 @@ appjs_rect NativeWindow::GetRect() {
   return rect_;
 }
 
-void NativeWindow::Emit(v8::Handle<Value>* args){
+void NativeWindow::Emit(v8::Handle<Value>* args,int length = 1){
   if (!closed_) {
-    node::MakeCallback(v8handle_, "emit", ARRAY_SIZE(args), args);
+    node::MakeCallback(v8handle_, "emit", length, args);
   }
 }
 
 void NativeWindow::Emit(const char* event){
   v8::Handle<Value> args[1] = { String::New(event) };
-  Emit(args);
+  Emit(args,1);
 }
 
 void NativeWindow::Emit(const char* event, v8::Handle<Value> arg){
@@ -251,7 +251,7 @@ void NativeWindow::Emit(const char* event, v8::Handle<Value> arg){
     String::New(event),
     arg
   };
-  Emit(args);
+  Emit(args,2);
 }
 
 void NativeWindow::Emit(const char* event, v8::Handle<Value> arg1, v8::Handle<Value> arg2){
@@ -260,7 +260,7 @@ void NativeWindow::Emit(const char* event, v8::Handle<Value> arg1, v8::Handle<Va
     arg1,
     arg2
   };
-  Emit(args);
+  Emit(args,3);
 }
 
 void NativeWindow::Emit(const char* event, int arg1, int arg2){
@@ -269,7 +269,7 @@ void NativeWindow::Emit(const char* event, int arg1, int arg2){
     Integer::New(arg1),
     Integer::New(arg2)
   };
-  Emit(args);
+  Emit(args,3);
 }
 
 void NativeWindow::Emit(const char* event, const int arg1, const int arg2, const int arg3){

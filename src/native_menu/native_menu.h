@@ -33,6 +33,9 @@ public:
 #elif defined(__MAC__)
   int AddSubMenu(NSMenu*,Settings*);
   bool Attach(NSMenu*);
+#elif defined(__WIN__)
+  int AddSubMenu(HMENU&,Settings*);
+  bool Attach(HMENU&);
 #endif
 
 private:
@@ -45,6 +48,9 @@ private:
   GtkMenuShell* menu_;
 #elif defined(__MAC__)
   NSArray* menuItems_;
+#endif
+#ifdef __WIN__
+  HMENU menu_;
 #endif
 
 };
