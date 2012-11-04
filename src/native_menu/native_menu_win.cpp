@@ -98,4 +98,16 @@ bool NativeMenu::Attach(HMENU& menuBar) {
   }
 }
 
+
+bool NativeMenu::Detach(HMENU& menuBar) {
+  if(attached_) {
+    attached_ = false;
+    this->Emit("detached");
+    return true;
+  } else {
+    // already detached
+    return false;
+  }
+}
+
 } /* appjs */
