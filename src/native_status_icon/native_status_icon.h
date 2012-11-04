@@ -30,8 +30,10 @@ public:
 
   void SetV8Handle(v8::Handle<v8::Object> v8handle) {v8handle_ = v8handle;};
   v8::Handle<v8::Object> GetV8Handle() {return v8handle_;};
-  NativeMenu* GetMenu() { return menu_;};
 
+#ifdef __WIN__
+  NativeMenu* GetMenu() { return menu_;};
+#endif
 private:
   v8::Handle<v8::Object> v8handle_;
 
