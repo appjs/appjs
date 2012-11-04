@@ -13,6 +13,9 @@ NativeStatusIcon::NativeStatusIcon(Settings* settings){
 }
 
 NativeStatusIcon::~NativeStatusIcon(){
+#ifdef __WIN__
+  Shell_NotifyIcon(NIM_DELETE, &statusIconHandle_);
+#endif
 }
 
 void NativeStatusIcon::Emit(v8::Handle<Value>* args,int length){

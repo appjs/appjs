@@ -12,6 +12,7 @@
 #include "includes/util_win.h"
 #include "includes/cef_handler.h"
 #include "native_status_icon/native_status_icon.h"
+#include "native_menu/native_menu.h"
 
 extern CefRefPtr<ClientHandler> g_handler;
 
@@ -29,20 +30,32 @@ HWND hWnd;
 
 LRESULT CALLBACK StatusIconProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
   switch(message) {
+    case WM_MENUCOMMAND: {
+      HMENU menu = (HMENU)lParam;
+      MENUITEMINFO menuItem;
+      menuItem.cbSize = sizeof(MENUITEMINFO);
+      menuItem.fMask = MIIM_DATA;
+      int idx = wParam;
+      GetMenuItemInfo(menu,idx,TRUE,&menuItem);
+      appjs::appjs_action_callback* actionCallback = (appjs::appjs_action_callback*) menuItem.dwItemData;
+      v8::Persistent<v8::Object> action = actionCallback->action;
+      appjs::NativeMenu* nativeMenu = actionCallback->menu;
+
+      if(action->IsCallable()) {
+        const int argc = 1;
+        v8::Handle<v8::Value> argv[argc] = {actionCallback->item};
+        action->CallAsFunction(nativeMenu->GetV8Handle(),argc,argv);
+      }
+
+      nativeMenu->Emit("select",v8::Local<v8::Object>::New(actionCallback->item));
+      return 0;
+    }
     case WM_USER:
       switch(lParam) {
         case WM_LBUTTONDBLCLK: {
           appjs::NativeStatusIcon* nativeStatusIcon = (appjs::NativeStatusIcon*) GetWindowLongPtr(hWnd, GWLP_USERDATA);
           nativeStatusIcon->Emit("dblclick");
           return true;
-        }
-        case WM_COMMAND: {
-          fprintf(stderr, "%s\n", "clicked2");
-          return 0;
-        }
-        case WM_MENUCOMMAND: {
-          fprintf(stderr, "%s\n", "clicked");
-          return 0;
         }
         case WM_RBUTTONUP: {
 
@@ -77,12 +90,11 @@ LRESULT CALLBACK StatusIconProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 
           SendMessage( hWnd, WM_INITMENUPOPUP, (WPARAM)popup, 0 );
 
-          cmd = TrackPopupMenu( popup, TPM_LEFTALIGN | TPM_RIGHTBUTTON 
-                                | TPM_RETURNCMD | TPM_NONOTIFY,
+          TrackPopupMenu( popup, TPM_LEFTALIGN | TPM_RIGHTBUTTON,
                                 curpos->x, curpos->y, 0, hWnd, NULL );
 
-          SendMessage( hWnd, WM_COMMAND, cmd, 0 );
-          PostMessage(hWnd, WM_USER,0,0);
+          nativeMenu->Detach(hPop);
+//          SendMessage( hWnd, WM_MENUCOMMAND, cmd, (UINT)popup );
 
           nativeStatusIcon->Emit("rightclick");
           return true;
@@ -185,10 +197,12 @@ void NativeStatusIcon::Init(Settings* settings) {
 }
 
 void NativeStatusIcon::Show(){
+  Shell_NotifyIcon(NIM_ADD, &statusIconHandle_);
   this->Emit("show");
 }
 
 void NativeStatusIcon::Hide(){
+  Shell_NotifyIcon(NIM_DELETE, &statusIconHandle_);
   this->Emit("hide");
 }
 

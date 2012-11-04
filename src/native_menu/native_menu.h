@@ -36,6 +36,7 @@ public:
 #elif defined(__WIN__)
   int AddSubMenu(HMENU&,Settings*);
   bool Attach(HMENU&);
+  bool Detach(HMENU&);
 #endif
 
 private:
