@@ -17,11 +17,11 @@ AppJS is an SDK to develop desktop applications using Node.js melded with Chromi
 ## 30 Second Quickstart
 The below packages include everything needed to get started with AppJS, including Node.js, all dependencies, binaries, and a launcher ready to go out of the box. 1.) Extract to a folder. 2.) Double click on launch. 3.) Hello World.
 
-__AppJS 0.0.19 Distributables:__
+__AppJS 0.0.20 Distributables:__
 
-* Linux [32 bit](http://dists.appjs.org/0.0.19/appjs-0.0.19-linux-ia32.tar.gz) / [64 bit](http://dists.appjs.org/0.0.19/appjs-0.0.19-linux-x64.tar.gz) -> app.sh
-* [Mac](http://dists.appjs.org/0.0.19/appjs-0.0.19-darwin-ia32.zip) -> app.sh
-* [Windows](http://dists.appjs.org/0.0.19/appjs-0.0.19-win32-ia32.zip) -> app.exe
+* Linux [32 bit](http://dists.appjs.org/0.0.20/appjs-0.0.20-linux-ia32.tar.gz) / [64 bit](http://dists.appjs.org/0.0.20/appjs-0.0.20-linux-x64.tar.gz) -> app.sh
+* [Mac](http://dists.appjs.org/0.0.20/appjs-0.0.20-darwin-ia32.zip) -> app.sh
+* [Windows](http://dists.appjs.org/0.0.20/appjs-0.0.20-win32-ia32.zip) -> app.exe
 
 __npm install__
 *OS X install is currently broken*
