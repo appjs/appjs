@@ -32,34 +32,6 @@ HINSTANCE hInstance;
 char* url_;
 bool emitFullscreen = false;
 
-
-// ###################################################
-// ### DWM functions that don't exist in WindowsXP ###
-// ###################################################
-
-typedef struct _BLURBEHIND {
-  DWORD dwFlags;
-  BOOL  fEnable;
-  HRGN  hRgnBlur;
-  BOOL  fTransitionOnMaximized;
-} BLURBEHIND, *PBLURBEHIND;
-
-typedef struct _MARGINS {
-  int cxLeftWidth;
-  int cxRightWidth;
-  int cyTopHeight;
-  int cyBottomHeight;
-} MARGINS, *PMARGINS;
-
-typedef HRESULT (WINAPI *DWMEFICA)(HWND, MARGINS*);
-typedef HRESULT (WINAPI *DWMEBBW)(HWND, BLURBEHIND*);
-typedef BOOL (WINAPI *DWMWP)(HWND, UINT, WPARAM, LPARAM, LRESULT*);
-
-static DWMEFICA DwmExtendFrameIntoClientArea = NULL;
-static DWMEBBW DwmEnableBlurBehindWindow = NULL;
-static DWMWP DwmDefWindowProc = NULL;
-static HMODULE dwmapiDLL = NULL;
-
 // #################################
 // ### Windows Utility Functions ###
 // #################################
@@ -176,16 +148,6 @@ void NativeWindow::Init(char* url, Settings* settings) {
   url_ = url;
 
   if (is_main_window_) {
-    dwmapiDLL = LoadLibrary(TEXT("dwmapi.dll"));
-    if (dwmapiDLL != NULL) {
-      DwmExtendFrameIntoClientArea = (DWMEFICA)GetProcAddress(dwmapiDLL, "DwmExtendFrameIntoClientArea");
-      DwmEnableBlurBehindWindow = (DWMEBBW)GetProcAddress(dwmapiDLL, "DwmEnableBlurBehindWindow");
-      DwmDefWindowProc = (DWMWP)GetProcAddress(dwmapiDLL, "DwmDefWindowProc");
-    }
-
-    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-    ULONG_PTR gdiplusToken;
-    Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
     TCHAR* wSmallIconPath = icons->getString("small", TEXT(""));
     TCHAR* wBigIconPath = icons->getString("big", TEXT(""));
