@@ -91,6 +91,7 @@ int NativeMenu::AddSubMenu(NSMenu* menu,Settings* settings){
       [menuItem setImage:[[NSImage alloc] initByReferencingFile:icon]];
     }
     [menuItem setEnabled:YES];
+    [menuItem setTitleWithMnemonic:label];
 
     Settings* subsettings = new Settings(item->getObject("submenu"));
     NSMenu* submenu = [[NSMenu alloc] initWithTitle:label];
