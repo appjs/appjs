@@ -1,0 +1,8 @@
+{
+    "name": "appjs-runtime",
+    "version": 0.1,
+    "moduleUrl": "http://appjs.delightfulsoftware.com/node_modules/",
+    "appUpdateUrl": "http://platform-example.com/new-example/latest.txt",
+    "appdeps": {
+    }
+}
