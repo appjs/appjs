@@ -64,9 +64,10 @@ int NativeMenu::AddSubMenu(HMENU& menu,Settings* settings){
       menuItemInfo.fMask = MIIM_DATA;
       menuItemInfo.dwTypeData = label;
       menuItemInfo.dwItemData =(ULONG_PTR) actionCb;
+      menuItemInfo.cch = wcslen(label);
 
       if( wcslen(label) == 0 ) {
-        menuItemInfo.fType = MIIM_TYPE;
+        menuItemInfo.fMask |= MIIM_TYPE;
         menuItemInfo.fType = MF_SEPARATOR;
       } else {
         menuItemInfo.fMask |= MIIM_STRING;

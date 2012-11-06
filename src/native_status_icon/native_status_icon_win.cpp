@@ -37,9 +37,15 @@ LRESULT CALLBACK StatusIconProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
       menuItem.fMask = MIIM_DATA;
       int idx = wParam;
       GetMenuItemInfo(menu,idx,TRUE,&menuItem);
+
       appjs::appjs_action_callback* actionCallback = (appjs::appjs_action_callback*) menuItem.dwItemData;
-      v8::Persistent<v8::Object> action = actionCallback->action;
       appjs::NativeMenu* nativeMenu = actionCallback->menu;
+
+      if( actionCallback == NULL) {
+        return 0;
+      }
+
+      v8::Persistent<v8::Object> action = actionCallback->action;
 
       if(action->IsCallable()) {
         const int argc = 1;
@@ -72,10 +78,20 @@ LRESULT CALLBACK StatusIconProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
           HMENU popup = CreatePopupMenu();
           int loop = GetMenuItemCount(hPop);
           for(int i = 0; i < loop; i++) {
-            TCHAR* menuTitle = new TCHAR[1000];
-            GetMenuString(hPop,i,menuTitle,1000,MF_BYPOSITION);
-            AppendMenu(popup,MF_POPUP, (UINT)GetSubMenu(hPop,i), menuTitle);
-//          AppendMenu(popup,MF_POPUP, (UINT)GetMenuItemID(hPop,i), menuTitle);
+            TCHAR* menuTitle = new TCHAR[256];
+            GetMenuString(hPop,i,menuTitle,256,MF_BYPOSITION);
+            if(IsMenu(GetSubMenu(hPop,i))) {
+              AppendMenu(popup,MF_POPUP, (UINT)GetSubMenu(hPop,i), menuTitle); 
+            } else {
+              MENUITEMINFO menuItem;
+              menuItem.cbSize = sizeof(MENUITEMINFO) - 4;
+              menuItem.fMask = MIIM_DATA | MIIM_STRING;
+              menuItem.dwItemData = NULL;
+              menuItem.dwTypeData = NULL;
+              GetMenuItemInfo(hPop,i,TRUE,&menuItem);
+              menuItem.dwTypeData = menuTitle;
+              InsertMenuItem(popup,i,TRUE,&menuItem);
+            }
           }
 
           MENUINFO menuInfo;
