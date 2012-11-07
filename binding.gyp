@@ -32,12 +32,19 @@
           'files': [
             '<(module_root_dir)/node_modules/mime/',
           ]
+        },{
+          'destination': '<(module_root_dir)/app/data/node_modules/',
+          'files': [
+            '<(module_root_dir)/node_modules/appjs-package/',
+          ]
         },
         {
           'destination': '<(module_root_dir)/app/data/',
           'files': [
             '<(module_root_dir)/examples/hello-world/content/',
-            '<(module_root_dir)/examples/hello-world/app.js'
+            '<(module_root_dir)/examples/hello-world/app.js',
+'<(module_root_dir)/examples/hello-world/package.json'
+			
           ]
         }
       ],
