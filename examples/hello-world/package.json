@@ -4,13 +4,6 @@
     "moduleUrl": "http://appjs.delightfulsoftware.com/node_modules/",
     "appUpdateUrl": "http://appjs.delightfulsoftware.com/example-apps/helloWorld.appjs",
     "appdeps": {
-        "iconv": {
-            "name": "iconv",
-            "version": "1.2.3",
-            "platforms": {
-                "win32": "win32"
-            }
-        },
         "mime": {
             "name": "mime",
             "version": "1.2.5",
@@ -20,21 +13,20 @@
         },
         "appjs-win32": {
             "name": "appjs-win32",
-            "version": "0.0.19",
-            "platforms": {
-                "win32": "win32"
-            }
-        },
-        "adm-zip": {
-            "name": "adm-zip",
-            "version": "0.1.5",
+            "version": "0.0.20",
             "platforms": {
                 "win32": "win32"
             }
         },
         "appjs": {
             "name": "appjs",
-            "version": "0.0.19",
+            "version": "0.0.20",
+            "platforms": {
+                "win32": "win32"
+            }
+        },"appjs-package": {
+            "name": "appjs-package",
+            "version": "0.1.14",
             "platforms": {
                 "win32": "win32"
             }
