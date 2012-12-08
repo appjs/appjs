@@ -286,7 +286,7 @@
           'link_settings': {
             'libraries': [
                '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
-               '<(module_root_dir)/build/Release/cef_dll_wrapper.node',
+               '<(module_root_dir)/build/Release/cef_dll_wrapper.a',
                '-lobjc'
              ]
           }
