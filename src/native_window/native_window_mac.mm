@@ -7,6 +7,13 @@
 #include "includes/cef_handler.h"
 #include "native_window/native_window.h"
 
+#define MAC_OS_X_VERSION MAC_OS_X_VERSION_MAX_ALLOWED
+
+// Make sure the version number defines exist; when compiling on 10.6, NSAppKitVersionNumber10_6 isn't defined
+#ifndef NSAppKitVersionNumber10_6
+#define NSAppKitVersionNumber10_6 1038
+#endif
+
 // The global ClientHandler reference.
 extern CefRefPtr<ClientHandler> g_handler;
 
@@ -495,11 +502,7 @@ void NativeWindow::Restore() {
 
   if ( fullscreen_ ) {
 
-//#ifdef NSAppKitVersionNumber10_6
-    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6) {
-      [win toggleFullScreen: nil];
-    } else {
-//#endif
+    if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_6) {
       NSUInteger styles = NSTitledWindowMask |
                           NSClosableWindowMask |
                           NSMiniaturizableWindowMask;
@@ -508,11 +511,13 @@ void NativeWindow::Restore() {
       NSRect window_rect = { {rect_.left, rect_.top} , {rect_.width, rect_.height} };
       [win setFrame:[win frameRectForContentRect: window_rect] display:YES];
       this->Emit("restore");
-//#ifdef NSAppKitVersionNumber10_6
+    } else {
+#if MAC_OS_X_VERSION >= 1070 // Allows you to build on 10.6
+      [win toggleFullScreen: nil];
+#endif
     }
-//#endif
-    fullscreen_ = false;
 
+    fullscreen_ = false;
   }
 
   if( [win isMiniaturized]) {
@@ -531,23 +536,20 @@ void NativeWindow::Fullscreen(){
   fullscreen_ = true;
   NSWindow* win = [handle_ window];
 
-//#ifdef NSAppKitVersionNumber10_6
-  if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6) {
-    [win setCollectionBehavior: NSWindowCollectionBehaviorFullScreenPrimary];
-    [win toggleFullScreen: nil];
-  } else {
-//#endif
-
+  if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_6) {
     NSUInteger styles = NSBorderlessWindowMask;
     [win setStyleMask:(styles)];
     [[NSApplication sharedApplication] setPresentationOptions: NSApplicationPresentationAutoHideDock | NSApplicationPresentationAutoHideMenuBar];
 
     if(this->GetBrowser().get())
       this->Emit("fullscreen");
-
-//#ifdef NSAppKitVersionNumber10_6
+  } else {
+#if MAC_OS_X_VERSION >= 1070 // Allows you to build on 10.6
+    [win setCollectionBehavior: NSWindowCollectionBehaviorFullScreenPrimary];
+    [win toggleFullScreen: nil];
+#endif
   }
-//#endif
+
   [win setFrame:[win frameRectForContentRect:[[NSScreen mainScreen] frame]] display:YES];
 }
 
