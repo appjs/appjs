@@ -5,6 +5,7 @@
 #define max(left,right) std::max(left,right)
 #include <gdiplus.h>
 #include <shlobj.h>
+#include <shlwapi.h>
 #include "appjs.h"
 #include "includes/cef.h"
 #include "includes/util.h"
@@ -31,34 +32,6 @@ HINSTANCE hInstance;
 char* url_;
 bool emitFullscreen = false;
 
-
-// ###################################################
-// ### DWM functions that don't exist in WindowsXP ###
-// ###################################################
-
-typedef struct _BLURBEHIND {
-  DWORD dwFlags;
-  BOOL  fEnable;
-  HRGN  hRgnBlur;
-  BOOL  fTransitionOnMaximized;
-} BLURBEHIND, *PBLURBEHIND;
-
-typedef struct _MARGINS {
-  int cxLeftWidth;
-  int cxRightWidth;
-  int cyTopHeight;
-  int cyBottomHeight;
-} MARGINS, *PMARGINS;
-
-typedef HRESULT (WINAPI *DWMEFICA)(HWND, MARGINS*);
-typedef HRESULT (WINAPI *DWMEBBW)(HWND, BLURBEHIND*);
-typedef BOOL (WINAPI *DWMWP)(HWND, UINT, WPARAM, LPARAM, LRESULT*);
-
-static DWMEFICA DwmExtendFrameIntoClientArea = NULL;
-static DWMEBBW DwmEnableBlurBehindWindow = NULL;
-static DWMWP DwmDefWindowProc = NULL;
-static HMODULE dwmapiDLL = NULL;
-
 // #################################
 // ### Windows Utility Functions ###
 // #################################
@@ -84,19 +57,20 @@ void BlurBehind(HWND hwnd, bool enable){
   }
 }
 
-void MakeIcon(HICON icon, char* path) {
-  Gdiplus::Bitmap* bitmap = Gdiplus::Bitmap::FromFile(ToWChar(path));
+void MakeIcon(HICON* icon, TCHAR* path) {
+  Gdiplus::Bitmap* bitmap = Gdiplus::Bitmap::FromFile(path);
   if (bitmap->GetWidth()) {
-    bitmap->GetHICON(&icon);
+    bitmap->GetHICON(icon);
     delete bitmap;
   }
 }
 
-HICON MakeIcon(char* path) {
+HICON MakeIcon(TCHAR* path) {
   HICON icon;
-  MakeIcon(icon, path);
+  MakeIcon(&icon, path);
   return icon;
 }
+
 
 void SetNCWidth(HWND hwnd, int left, int right, int top, int bottom){
   if (DwmExtendFrameIntoClientArea != NULL) {
@@ -174,37 +148,18 @@ void NativeWindow::Init(char* url, Settings* settings) {
   url_ = url;
 
   if (is_main_window_) {
-    dwmapiDLL = LoadLibrary(TEXT("dwmapi.dll"));
-    if (dwmapiDLL != NULL) {
-      DwmExtendFrameIntoClientArea = (DWMEFICA)GetProcAddress(dwmapiDLL, "DwmExtendFrameIntoClientArea");
-      DwmEnableBlurBehindWindow = (DWMEBBW)GetProcAddress(dwmapiDLL, "DwmEnableBlurBehindWindow");
-      DwmDefWindowProc = (DWMWP)GetProcAddress(dwmapiDLL, "DwmDefWindowProc");
-    }
 
-    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-    ULONG_PTR gdiplusToken;
-    Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+    TCHAR* wSmallIconPath = icons->getString("small", TEXT(""));
+    TCHAR* wBigIconPath = icons->getString("big", TEXT(""));
 
-    WCHAR* wSmallIconPath = icons->getString("small", L"");
-    WCHAR* wBigIconPath = icons->getString("big", L"");
+    smallIcon = MakeIcon(wSmallIconPath);
+    bigIcon = MakeIcon(wSmallIconPath);
 
-    Gdiplus::Bitmap* smallIconBitmap = Gdiplus::Bitmap::FromFile(wSmallIconPath);
-    Gdiplus::Bitmap* bigIconBitmap = Gdiplus::Bitmap::FromFile(wBigIconPath);
-
-    if (smallIconBitmap->GetWidth()) {
-      smallIconBitmap->GetHICON(&smallIcon);
-      delete[] wSmallIconPath;
-      delete smallIconBitmap;
-    }
-
-    if (bigIconBitmap->GetWidth()) {
-      bigIconBitmap->GetHICON(&bigIcon);
-      delete[] wBigIconPath;
-      delete bigIconBitmap;
-    }
+    delete[] wSmallIconPath;
+    delete[] wBigIconPath;
 
     hInstance = (HINSTANCE)GetCurrentModuleHandle();
-    strcpy(szWindowClass, "AppjsWindow");
+    wcscpy(szWindowClass, TEXT("AppjsWindow"));
     MyRegisterClass(hInstance);
   }
 
@@ -215,7 +170,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
     rect_.top = (GetSystemMetrics(SM_CYSCREEN) - rect_.height) / 2;
   }
   browser_ = NULL;
-  handle_ = CreateWindowEx(NULL, szWindowClass, "", WS_OVERLAPPEDWINDOW,
+  handle_ = CreateWindowEx(NULL, szWindowClass, TEXT(""), WS_OVERLAPPEDWINDOW,
                            rect_.left, rect_.top, rect_.width, rect_.height,
                            NULL, NULL, hInstance, NULL);
 
@@ -323,7 +278,7 @@ void NativeWindow::Fullscreen(){
 // }
 
 
-void NativeWindow::SetIcon(NW_ICONSIZE size, char* path) {
+void NativeWindow::SetIcon(NW_ICONSIZE size, TCHAR* path) {
   int flag;
   switch (size) {
     case NW_ICONSIZE_SMALLER: flag = ICON_SMALL; break;
@@ -334,13 +289,13 @@ void NativeWindow::SetIcon(NW_ICONSIZE size, char* path) {
   SendMessage(handle_, WM_SETICON, flag, (LPARAM)MakeIcon(path));
 }
 
-const char* NativeWindow::GetTitle() {
+const TCHAR* NativeWindow::GetTitle() {
   TCHAR title[80];
   GetWindowText(handle_, title, 80);
   return title;
 }
 
-void NativeWindow::SetTitle(const char* title) {
+void NativeWindow::SetTitle(const TCHAR* title) {
   SetWindowText(handle_, title);
 }
 
@@ -482,6 +437,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
       EndPaint(hwnd, &ps);
       return 0;
     }
+    case WM_MENUCOMMAND: {
+      HMENU menu = (HMENU)lParam;
+      MENUITEMINFO menuItem;
+      menuItem.cbSize = sizeof(MENUITEMINFO);
+      menuItem.fMask = MIIM_DATA;
+      int idx = wParam;
+      GetMenuItemInfo(menu,idx,TRUE,&menuItem);
+      appjs_action_callback* actionCallback = (appjs_action_callback*) menuItem.dwItemData;
+      Persistent<Object> action = actionCallback->action;
+      NativeMenu* nativeMenu = actionCallback->menu;
+
+      if(action->IsCallable()) {
+        const int argc = 1;
+        Handle<Value> argv[argc] = {actionCallback->item};
+        action->CallAsFunction(nativeMenu->GetV8Handle(),argc,argv);
+      }
+
+      nativeMenu->Emit("select",Local<Object>::New(actionCallback->item));
+      return 0;
+    }
     case WM_SETFOCUS:
       if (browser.get()) {
         PostMessage(browser->GetWindowHandle(), WM_SETFOCUS, wParam, NULL);
@@ -572,21 +547,21 @@ int CALLBACK DirectorySelectHook(HWND hwnd, UINT msg, LPARAM lParam, LPARAM data
   return 0;
 }
 
+void NativeWindow::SetMenuBar(NativeMenu* nativeMenu) {
+  HMENU menu;
+  nativeMenu->Attach(menu);
+  SetMenu(handle_,menu);
+}
+
 void NativeWindow::OpenFileDialog(uv_work_t* req) {
   AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
-  std::string       acceptTypes = settings->reserveString1;
+  tstring           acceptTypes = settings->reserveString1;
   bool              multiSelect = settings->reserveBool1;
   bool                dirSelect = settings->reserveBool2;
 
-
-  //Cef::Pause();
-
   settings->result = NULL;
-  char filename[MAX_PATH*10];
+  TCHAR filename[MAX_PATH*10];
   ZeroMemory(&filename, sizeof(filename));
-  //strcpy(filename, settings->initialValue.c_str());
-  //filename[settings->initialValue.size()] = 0;
-  //filename[MAX_PATH] = 0;
 
   if (dirSelect) {
     LPMALLOC pMalloc = NULL;
@@ -598,15 +573,15 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     bi.pszDisplayName = filename;
     bi.lpszTitle = settings->title.c_str();
     bi.ulFlags = BIF_USENEWUI | BIF_BROWSEFILEJUNCTIONS | BIF_RETURNONLYFSDIRS | BIF_RETURNFSANCESTORS;
-    bi.lParam = (LPARAM)ToWChar(settings->initialValue);
+    bi.lParam = (LPARAM)settings->initialValue.c_str();
     bi.iImage = -1;
     bi.lpfn = DirectorySelectHook;
 
     LPITEMIDLIST item;
     if (item = SHBrowseForFolder(&bi)) {
-      char dir[MAX_PATH];
+      TCHAR dir[MAX_PATH];
       if (SHGetPathFromIDList(item, dir)) {
-        std::vector<char*> paths;
+        std::vector<TCHAR*> paths;
         paths.push_back(dir);
         settings->result = &paths;
       }
@@ -615,7 +590,7 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
   } else {
     std::replace(acceptTypes.begin(), acceptTypes.end(), ':', '\0');
     std::replace(acceptTypes.begin(), acceptTypes.end(), ',', '\0');
-    acceptTypes += '\0';
+    acceptTypes += L'\0';
 
     OPENFILENAME ofn;
     ZeroMemory(&ofn, sizeof(ofn));
@@ -623,11 +598,14 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     ofn.lStructSize = sizeof(OPENFILENAME);
     ofn.lpstrTitle = settings->title.c_str();
     ofn.Flags = OFN_NOCHANGEDIR | OFN_FORCESHOWHIDDEN;
-    ofn.lpstrFile = filename;
-    ofn.nMaxFile = sizeof(filename);
     ofn.lpstrFilter = acceptTypes.c_str();
-    if (!settings->initialValue.size()) {
+    ofn.nMaxFile = MAX_PATH;
+    if (PathIsDirectory(settings->initialValue.c_str())) {
       ofn.lpstrInitialDir = settings->initialValue.c_str();
+      ofn.lpstrFile = filename;
+    } else {
+      wcscpy(filename, settings->initialValue.c_str());
+      ofn.lpstrFile = filename;
     }
 
     BOOL result;
@@ -646,7 +624,6 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     }
   }
 
-  //Cef::Run();
 }
 
 void NativeWindow::ProcessFileDialog(uv_work_t* req) {
@@ -656,16 +633,16 @@ void NativeWindow::ProcessFileDialog(uv_work_t* req) {
 
   if (result != NULL) {
 
-    std::vector<char*> filenames;
-    char* offset = (char*)result;
+    std::vector<TCHAR*> filenames;
+    TCHAR* offset = (TCHAR*)result;
 
     do {
       filenames.push_back(offset);
-      offset += strlen(offset) + 1;
+      offset += wcslen(offset) + 1;
     } while (offset[0] != '\0');
 
-    std::vector<char*>::iterator file = filenames.begin();
-    Handle<String> base = String::New(*file);
+    std::vector<TCHAR*>::iterator file = filenames.begin();
+    Handle<String> base = String::New((uint16_t*)*file);
     Handle<Value> error = Undefined();
     Local<Array> files;
 
@@ -678,7 +655,7 @@ void NativeWindow::ProcessFileDialog(uv_work_t* req) {
       int index = 0;
 
       for (file++; file != filenames.end(); ++file) {
-        files->Set(index, String::Concat(base, String::New(*file)));
+        files->Set(index, String::Concat(base, String::New((uint16_t*)*file)));
         index++;
       }
     }

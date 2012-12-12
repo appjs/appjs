@@ -17,6 +17,7 @@ Persistent<Function> Window::constructor;
 
 void Window::Init() {
   DECLARE_CONSTRUCTOR("NativeWindow");
+  DECLARE_PROTOTYPE_METHOD("setMenuBar", SetMenuBar);
   DECLARE_PROTOTYPE_METHOD("openDialog", OpenDialog);
   DECLARE_PROTOTYPE_METHOD("openDevTools", OpenDevTools);
   DECLARE_PROTOTYPE_METHOD("closeDevTools", CloseDevTools);
@@ -52,7 +53,7 @@ void Window::Init() {
   END_CONSTRUCTOR();
 }
 
-Handle<Value> Window::New(const Arguments& args) {
+v8::Handle<Value> Window::New(const Arguments& args) {
   HandleScope scope;
 
   Persistent<Object> options = Persistent<Object>::New(args[0]->ToObject());
@@ -66,9 +67,9 @@ Handle<Value> Window::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-Handle<Value> Window::NewInstance(const Arguments& args) {
+v8::Handle<Value> Window::NewInstance(const Arguments& args) {
   HandleScope scope;
-  Handle<Value> argv[1] = { args[0] };
+  v8::Handle<Value> argv[1] = { args[0] };
   return scope.Close(constructor->NewInstance(1, argv));
 }
 
@@ -76,13 +77,17 @@ CREATE_INSTANCE_ACCESSOR(Window, Left, Integer, MAKE_INT32)
 CREATE_INSTANCE_ACCESSOR(Window, Top, Integer, MAKE_INT32)
 CREATE_INSTANCE_ACCESSOR(Window, Width, Integer, MAKE_INT32)
 CREATE_INSTANCE_ACCESSOR(Window, Height, Integer, MAKE_INT32)
-CREATE_INSTANCE_ACCESSOR(Window, Title, String, V8StringToChar)
 CREATE_INSTANCE_ACCESSOR(Window, Topmost, Boolean, MAKE_BOOLEAN)
 CREATE_INSTANCE_ACCESSOR(Window, Resizable, Boolean, MAKE_BOOLEAN)
 CREATE_INSTANCE_ACCESSOR(Window, ShowChrome, Boolean, MAKE_BOOLEAN)
 CREATE_INSTANCE_ACCESSOR(Window, Alpha, Boolean, MAKE_BOOLEAN)
 CREATE_INSTANCE_ACCESSOR(Window, Opacity, Number, MAKE_DOUBLE)
 CREATE_INSTANCE_ACCESSOR(Window, AutoResize, Boolean, MAKE_BOOLEAN)
+#ifdef __WIN__
+CREATE_STRING_INSTANCE_ACCESSOR(Window, Title, String, V8StringToWCHAR)
+#else
+CREATE_STRING_INSTANCE_ACCESSOR(Window, Title, String, V8StringToChar)
+#endif
 
 CREATE_PROTOTYPE_INVOKER(Window, OpenDevTools)
 CREATE_PROTOTYPE_INVOKER(Window, CloseDevTools)
@@ -96,7 +101,19 @@ CREATE_PROTOTYPE_INVOKER(Window, Focus)
 CREATE_PROTOTYPE_INVOKER(Window, Hide)
 CREATE_PROTOTYPE_INVOKER(Window, Destroy)
 
-Handle<Value> Window::OpenDialog(const Arguments& args) {
+
+v8::Handle<Value> Window::SetMenuBar(const Arguments& args) {
+  HandleScope scope;
+
+  NativeMenu     *menu = ObjectWrap::Unwrap<NativeMenu>(args[0]->ToObject());//(NativeMenu*)args[0]->ToObject()->GetPointerFromInternalField(0);
+  NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
+
+  window->SetMenuBar(menu);
+
+  return scope.Close(args.This());
+}
+
+v8::Handle<Value> Window::OpenDialog(const Arguments& args) {
   HandleScope scope;
 
   Persistent<Object> options  = Persistent<Object>::New(args[0]->ToObject());
@@ -109,7 +126,7 @@ Handle<Value> Window::OpenDialog(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-Handle<Value> Window::Move(const Arguments& args) {
+v8::Handle<Value> Window::Move(const Arguments& args) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
 
@@ -126,7 +143,7 @@ Handle<Value> Window::Move(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-Handle<Value> Window::Resize(const Arguments& args) {
+v8::Handle<Value> Window::Resize(const Arguments& args) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
 
@@ -139,7 +156,7 @@ Handle<Value> Window::Resize(const Arguments& args) {
 
 
 
-Handle<Value> Window::RunInBrowser(const Arguments& args) {
+v8::Handle<Value> Window::RunInBrowser(const Arguments& args) {
   HandleScope scope;
 
   if(!args[0]->IsFunction())
@@ -152,7 +169,7 @@ Handle<Value> Window::RunInBrowser(const Arguments& args) {
 }
 
 // synchronously send a string from Node to browser, then return string result from browser to Node
-Handle<Value> Window::SendSync(const Arguments& args) {
+v8::Handle<Value> Window::SendSync(const Arguments& args) {
   HandleScope scope;
 
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow> (args.This());
@@ -174,7 +191,7 @@ Handle<Value> Window::SendSync(const Arguments& args) {
 
         // execute window.appjs fuction, passing in the string,
         // then convert the return value from a CefValue to a Node V8 string
-        Handle<String> ret = CefStringToV8(callback->ExecuteFunction(appjsObject, argsOut)->GetStringValue());
+        v8::Handle<String> ret = CefStringToV8(callback->ExecuteFunction(appjsObject, argsOut)->GetStringValue());
 
         // exit browser v8 context, return string result to Node caller
         context->Exit();
@@ -186,7 +203,7 @@ Handle<Value> Window::SendSync(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-Handle<Value> Window::SetIcon(const Arguments& args) {
+v8::Handle<Value> Window::SetIcon(const Arguments& args) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
 
@@ -198,15 +215,20 @@ Handle<Value> Window::SetIcon(const Arguments& args) {
   STRING_TO_ENUM("big", NW_ICONSIZE_BIG)
   STRING_TO_ENUM("bigger", NW_ICONSIZE_BIGGER)
 
+#if defined(__WIN__)
+  window->SetIcon(enumVal, V8StringToWCHAR(args[1]->ToString()));
+#else
   window->SetIcon(enumVal, V8StringToChar(args[1]->ToString()));
+#endif
+
   return scope.Close(args.This());
 }
 
-Handle<Value> Window::GetState(Local<String> property, const AccessorInfo &info) {
+v8::Handle<Value> Window::GetState(Local<String> property, const AccessorInfo &info) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(info.Holder());
 
-  Handle<Value> val;
+  v8::Handle<Value> val;
 
   switch (window->GetState()) {
     ENUM_TO_STRING(NW_STATE_NORMAL, "normal")
@@ -236,7 +258,7 @@ void Window::SetState(Local<String> property, Local<Value> value, const Accessor
 
 #if defined(__WIN__)
 
-Handle<Value> Window::Style(const Arguments& args) {
+v8::Handle<Value> Window::Style(const Arguments& args) {
   HandleScope scope;
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());
   switch (args.Length()) {

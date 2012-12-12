@@ -56,10 +56,10 @@ void NativeWindow::OpenDialog(Settings* settings,Persistent<Function> cb) {
   dialog_settings.me           = this;
   dialog_settings.cb           = cb;
   dialog_settings.type         = (NW_DIALOGTYPE) settings->getInteger("type",NW_DIALOGTYPE_FILE_OPEN);
-  dialog_settings.title        = std::string(settings->getString("title",(char*)this->GetTitle()));
+  dialog_settings.title        = tstring(settings->getString("title",(TCHAR*)this->GetTitle()));
   // initialValue is the filename which the dialog should select by default.
   // it can be empty.
-  dialog_settings.initialValue = std::string(settings->getString("initialValue",""));
+  dialog_settings.initialValue = tstring(settings->getString("initialValue",TEXT("")));
 
   dialog_in_progress = true;
   dialog_work.data = &dialog_settings;
@@ -68,7 +68,7 @@ void NativeWindow::OpenDialog(Settings* settings,Persistent<Function> cb) {
 
     // acceptTypes is comma-separated MIME types such as "text/plain,text/html".
     // defaults to everything
-    dialog_settings.reserveString1 = std::string(settings->getString("acceptTypes","All Files:*.*"));
+    dialog_settings.reserveString1 = tstring(settings->getString("acceptTypes",TEXT("All Files:*.*")));
     // multiSelect allows multiple item selection in dialog box.
     dialog_settings.reserveBool1   = settings->getBoolean("multiSelect",false);
     // dirSelect is a boolean indicating directory selectation state.
@@ -81,12 +81,12 @@ void NativeWindow::OpenDialog(Settings* settings,Persistent<Function> cb) {
 #endif
   } else if( dialog_settings.type == NW_DIALOGTYPE_FONT ) {
 
-    dialog_settings.reserveString1 = std::string(settings->getString("sampleText","Sample"));
+    dialog_settings.reserveString1 = tstring(settings->getString("sampleText",TEXT("Sample")));
     uv_queue_work(uv_default_loop(), &dialog_work, OpenFontDialog, ProcessFontDialog);
 
   } else if( dialog_settings.type == NW_DIALOGTYPE_COLOR ) {
 
-    dialog_settings.reserveString1 = std::string(settings->getString("previousColor",""));
+    dialog_settings.reserveString1 = tstring(settings->getString("previousColor",TEXT("")));
     dialog_settings.reserveBool1   = settings->getBoolean("opacity",false);
     uv_queue_work(uv_default_loop(), &dialog_work, OpenColorDialog, ProcessColorDialog);
 
@@ -134,7 +134,7 @@ void NativeWindow::SetBrowser(CefRefPtr<CefBrowser> browser) {
   browser_ = browser;
 }
 
-void NativeWindow::SetV8Handle(Handle<Object> v8handle) {
+void NativeWindow::SetV8Handle(v8::Handle<Object> v8handle) {
   v8handle_ = v8handle;
 }
 
@@ -142,7 +142,7 @@ CefRefPtr<CefBrowser> NativeWindow::GetBrowser() {
   return browser_;
 }
 
-Handle<Object> NativeWindow::GetV8Handle() {
+v8::Handle<Object> NativeWindow::GetV8Handle() {
   return v8handle_;
 }
 
@@ -235,45 +235,45 @@ appjs_rect NativeWindow::GetRect() {
   return rect_;
 }
 
-void NativeWindow::Emit(Handle<Value>* args){
+void NativeWindow::Emit(v8::Handle<Value>* args,int length = 1){
   if (!closed_) {
-    node::MakeCallback(v8handle_, "emit", ARRAY_SIZE(args), args);
+    node::MakeCallback(v8handle_, "emit", length, args);
   }
 }
 
 void NativeWindow::Emit(const char* event){
-  Handle<Value> args[1] = { String::New(event) };
-  Emit(args);
+  v8::Handle<Value> args[1] = { String::New(event) };
+  Emit(args,1);
 }
 
-void NativeWindow::Emit(const char* event, Handle<Value> arg){
-  Handle<Value> args[2] = {
+void NativeWindow::Emit(const char* event, v8::Handle<Value> arg){
+  v8::Handle<Value> args[2] = {
     String::New(event),
     arg
   };
-  Emit(args);
+  Emit(args,2);
 }
 
-void NativeWindow::Emit(const char* event, Handle<Value> arg1, Handle<Value> arg2){
-  Handle<Value> args[3] = {
+void NativeWindow::Emit(const char* event, v8::Handle<Value> arg1, v8::Handle<Value> arg2){
+  v8::Handle<Value> args[3] = {
     String::New(event),
     arg1,
     arg2
   };
-  Emit(args);
+  Emit(args,3);
 }
 
 void NativeWindow::Emit(const char* event, int arg1, int arg2){
-  Handle<Value> args[3] = {
+  v8::Handle<Value> args[3] = {
     String::New(event),
     Integer::New(arg1),
     Integer::New(arg2)
   };
-  Emit(args);
+  Emit(args,3);
 }
 
 void NativeWindow::Emit(const char* event, const int arg1, const int arg2, const int arg3){
-  Handle<Value> args[4] = {
+  v8::Handle<Value> args[4] = {
     String::New(event),
     Integer::New(arg1),
     Integer::New(arg2),

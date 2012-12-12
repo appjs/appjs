@@ -27,22 +27,26 @@ public:
   Settings(v8::Local<v8::Object>);
   ~Settings(){settings_.Dispose();}
 
-  bool isNull(const char*);
-  bool has(const char*);
+  bool   isNull(const char*);
+  bool   has(const char*);
   double getNumber(const char*, double);
-  int getInteger(const char*, int);
-  bool getBoolean(const char*,bool);
-  char* getString(const char*, char*);
+  int    getInteger(const char*, int);
+  bool   getBoolean(const char*,bool);
+  char*  getString(const char*, char*);
 
-  #if defined(__WIN__)
-  WCHAR* getString(const char*,WCHAR*);
+  #ifdef __WIN__
+  TCHAR* getString(const char*,TCHAR*);
   #endif
 
   v8::Local<v8::Object> getObject(const char*,v8::Local<v8::Object>);
   v8::Local<v8::Object> getObject(const char*);
+  v8::Local<v8::Object> getObject(const int,v8::Local<v8::Object>);
+  v8::Local<v8::Object> getObject(const int);
+  v8::Persistent<v8::Object> getSettings();
 
 private:
   v8::Persistent<v8::Object> settings_;
+  v8::Local<v8::Value> get(const int);
   v8::Local<v8::Value> get(const char*);
 };
 

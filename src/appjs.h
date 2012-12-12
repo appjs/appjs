@@ -4,6 +4,14 @@
 
 #include <node.h>
 #include <node_version.h>
+#include <string>
+
+#ifndef __WIN__
+typedef char TCHAR;
+#define TEXT(t) t
+#endif
+
+typedef std::basic_string<TCHAR> tstring;
 
 #define APPJS_PSYMBOL(s) v8::Persistent<v8::String>::New(v8::String::NewSymbol(s))
 #define MAKE_BOOLEAN(v) (v)->BooleanValue()
@@ -68,24 +76,34 @@
   constructor = Persistent<Function>::New(tpl->GetFunction())
 
 
-
-
 #define CREATE_INSTANCE_ACCESSOR(Type, PropertyName, GetterType, SetterType) \
   void Type::Set##PropertyName(Local<String> property, Local<Value> value, const AccessorInfo& info) { \
     Native##Type *obj = ObjectWrap::Unwrap<Native##Type>(info.Holder()); \
     obj->Set##PropertyName(SetterType(value)); \
   } \
   \
-  Handle<Value> Type::Get##PropertyName(Local<String> property, const AccessorInfo &info) { \
+  v8::Handle<Value> Type::Get##PropertyName(Local<String> property, const AccessorInfo &info) { \
     HandleScope scope; \
     Native##Type *obj = ObjectWrap::Unwrap<Native##Type>(info.Holder()); \
-    return scope.Close(GetterType::New(obj->Get##PropertyName())); \
+    return scope.Close(v8::GetterType::New(obj->Get##PropertyName())); \
   }
 
 
+#define CREATE_STRING_INSTANCE_ACCESSOR(Type, PropertyName, GetterType, SetterType) \
+  void Type::Set##PropertyName(Local<String> property, Local<Value> value, const AccessorInfo& info) { \
+    Native##Type *obj = ObjectWrap::Unwrap<Native##Type>(info.Holder()); \
+    obj->Set##PropertyName(SetterType(value->ToString())); \
+  } \
+  \
+  v8::Handle<Value> Type::Get##PropertyName(Local<String> property, const AccessorInfo &info) { \
+    HandleScope scope; \
+    Native##Type *obj = ObjectWrap::Unwrap<Native##Type>(info.Holder()); \
+    return scope.Close(GetterType::New((uint16_t*)obj->Get##PropertyName())); \
+  }
+
 
 #define CREATE_PROTOTYPE_INVOKER(Type, Method) \
-  Handle<Value> Type::Method(const Arguments& args) { \
+  v8::Handle<Value> Type::Method(const Arguments& args) { \
     HandleScope scope; \
     Native##Type *obj = ObjectWrap::Unwrap<Native##Type>(args.This()); \
     obj->Method(); \

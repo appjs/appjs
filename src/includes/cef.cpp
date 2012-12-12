@@ -111,6 +111,19 @@ void Cef::Init(Settings* initOptions) {
     gtk_init(NULL,NULL);
 #endif
 
+#if defined(__WIN__)
+    dwmapiDLL = LoadLibrary(TEXT("dwmapi.dll"));
+    if (dwmapiDLL != NULL) {
+      DwmExtendFrameIntoClientArea = (DWMEFICA)GetProcAddress(dwmapiDLL, "DwmExtendFrameIntoClientArea");
+      DwmEnableBlurBehindWindow = (DWMEBBW)GetProcAddress(dwmapiDLL, "DwmEnableBlurBehindWindow");
+      DwmDefWindowProc = (DWMWP)GetProcAddress(dwmapiDLL, "DwmDefWindowProc");
+    }
+
+    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+    ULONG_PTR gdiplusToken;
+    Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+#endif
+
     Cef::initialized_ = true;
   }
 }

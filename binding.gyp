@@ -242,7 +242,11 @@
         'src/appjs.cpp',
         'src/appjs_app.cpp',
         'src/appjs_window.cpp',
+        'src/appjs_menu.cpp',
+        'src/appjs_status_icon.cpp',
         'src/native_window/native_window.cpp',
+        'src/native_menu/native_menu.cpp',
+        'src/native_status_icon/native_status_icon.cpp',
         'src/includes/cef_handler.cpp',
         'src/includes/cef.cpp',
         'src/includes/cef_loop.cpp',
@@ -265,7 +269,9 @@
       'conditions': [
         ['OS=="mac"', {
           'sources': [
-            'src/native_window/native_window_mac.mm'
+            'src/native_window/native_window_mac.mm',
+            'src/native_menu/native_menu_mac.mm',
+            'src/native_status_icon/native_status_icon_mac.mm'
           ],
           'defines': [
             '__MAC__',
@@ -273,19 +279,23 @@
           'cflags': [ '-m32' ],
           'ldflags': [ '-m32' ],
           'xcode_settings': {
+            'OTHER_CFLAGS': ['-ObjC++'],
             'OTHER_LDFLAGS':['-Xlinker -rpath -Xlinker @loader_path/../../../../appjs-darwin/libs/'],
             'ARCHS': [ 'i386' ]
           },
           'link_settings': {
             'libraries': [
                '<(module_root_dir)/deps/cef/Release/lib.target/libcef.dylib',
-               '<(module_root_dir)/build/Release/cef_dll_wrapper.node'
+               '<(module_root_dir)/build/Release/cef_dll_wrapper.a',
+               '-lobjc'
              ]
           }
         }],
         ['OS=="linux"', {
           'sources': [
             'src/native_window/native_window_linux.cpp',
+            'src/native_menu/native_menu_linux.cpp',
+            'src/native_status_icon/native_status_icon_linux.cpp'
           ],
           'defines': [
             '__LINUX__',
@@ -331,14 +341,19 @@
           'sources': [
             'src/includes/util_win.cpp',
             'src/native_window/native_window_win.cpp',
+            'src/native_menu/native_menu_win.cpp',
+            'src/native_status_icon/native_status_icon_win.cpp'
           ],
           'defines': [
             '__WIN__',
-            '_WINSOCKAPI_'
+            '_WINSOCKAPI_',
+            '_UNICODE',
+            'UNICODE'
           ],
           'link_settings': {
             'libraries': [
               'GdiPlus.lib',
+              'Shlwapi.lib',
               '<(module_root_dir)/deps/cef/lib/Release/libcef.lib',
               '<(module_root_dir)/build/Release/lib/libcef_dll_wrapper.node'
             ],

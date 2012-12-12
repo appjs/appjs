@@ -205,6 +205,17 @@ NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
   return GetWindow(gtk_widget_get_ancestor(GTK_WIDGET(browser->GetWindowHandle()), GTK_TYPE_WINDOW));
 }
 
+void NativeWindow::SetMenuBar(NativeMenu* nativeMenu) {
+
+  GtkWidget* menu_bar = gtk_menu_bar_new ();
+  nativeMenu->Attach(GTK_MENU_SHELL(menu_bar));
+
+  gtk_box_pack_start(GTK_BOX (gtk_bin_get_child(GTK_BIN(handle_))), menu_bar, FALSE, FALSE, 0);
+  gtk_box_reorder_child(GTK_BOX (gtk_bin_get_child(GTK_BIN(handle_))),menu_bar,0);
+  gtk_widget_show(menu_bar);
+
+}
+
 void NativeWindow::OpenFileDialog(uv_work_t* req) {
 
   GtkWidget*             dialog;

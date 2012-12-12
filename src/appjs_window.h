@@ -11,6 +11,7 @@ using namespace v8;
 
 class Window : public node::ObjectWrap {
   DEFINE_OBJECT_FACTORY(Window);
+  DEFINE_PROTOTYPE_METHOD(SetMenuBar);
   DEFINE_PROTOTYPE_METHOD(OpenDialog);
   DEFINE_PROTOTYPE_METHOD(OpenDevTools);
   DEFINE_PROTOTYPE_METHOD(CloseDevTools);
