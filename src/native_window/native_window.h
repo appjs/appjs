@@ -134,7 +134,7 @@ public:
 
 #if defined(__WIN__)
   void SetStyle(long style, bool extended);
-  long GetStyle(bool extended);
+  long GetStyle(bool extended = false);
 
   //static void SetAppIcon(NW_ICONSIZE size, wchar_t* path);
   //void SetTitle(const wchar_t* title);

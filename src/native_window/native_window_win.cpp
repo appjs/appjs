@@ -16,6 +16,13 @@
 #define MAX_LOADSTRING 100
 #define SWP_STATECHANGED 0x8000
 
+#if defined(__WIN__)
+extern DWMEFICA DwmExtendFrameIntoClientArea;
+extern DWMEBBW DwmEnableBlurBehindWindow;
+extern DWMWP DwmDefWindowProc;
+extern HMODULE dwmapiDLL;
+#endif
+
 extern CefRefPtr<ClientHandler> g_handler;
 
 namespace appjs {
@@ -134,7 +141,9 @@ NativeWindow* NativeWindow::GetWindow(CefRefPtr<CefBrowser> browser){
 void AddWebView(CefWindowHandle parent, RECT windowRect, char* url, Settings* settings) {
   CefWindowInfo windowInfo;
   windowInfo.SetAsChild(parent, windowRect);
-  windowInfo.SetTransparentPainting(true);
+  if(settings->getBoolean("alpha",false)) {
+    windowInfo.SetTransparentPainting(true);
+  }
   g_handler->browserSettings_.web_security_disabled = settings->getBoolean("disableSecurity", false);
   CefBrowser::CreateBrowser(windowInfo, static_cast<CefRefPtr<CefClient>>(g_handler), url, g_handler->browserSettings_);
 }
@@ -181,7 +190,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
     style |= WS_EX_TOOLWINDOW;
     style &= ~(WS_EX_APPWINDOW);
     ShowWindow(handle_, SW_HIDE); 
-    SetWindowLongPtr(handle_, GWL_EXSTYLE, style);  
+    SetWindowLongPtr(handle_, GWL_EXSTYLE, style);
     ShowWindow(handle_, SW_HIDE);
   }
 
@@ -200,7 +209,6 @@ void NativeWindow::Init(char* url, Settings* settings) {
 
   UpdateWindow(handle_);
 
-  Cef::Run();
 };
 
 
@@ -362,17 +370,20 @@ bool NativeWindow::GetResizable() {
 
 void NativeWindow::SetShowChrome(bool showChrome) {
   show_chrome_ = showChrome;
-  long current = GetWindowLongPtr(handle_, GWL_STYLE);
+  long current = GetStyle();
   NewStyle(handle_, GWL_STYLE, showChrome ? current | WS_CAPTION | WS_SIZEBOX : current & ~(WS_CAPTION | WS_SIZEBOX));
 }
 
 bool NativeWindow::GetShowChrome() {
-  long current = GetWindowLongPtr(handle_, GWL_STYLE);
+  long current = GetStyle();
   return (current & WS_CAPTION) || (current & WS_SIZEBOX);
 }
 
 void NativeWindow::SetAlpha(bool alpha) {
   alpha_ = alpha;
+  long current = GetStyle(TRUE);
+  SetStyle( alpha ? current | WS_EX_LAYERED | WS_EX_COMPOSITED : current & ~(WS_EX_LAYERED | WS_EX_COMPOSITED),TRUE);
+  BlurBehind(handle_, alpha);
   SetNCWidth(handle_, alpha ? -1 : 0);
 }
 

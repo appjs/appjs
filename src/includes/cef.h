@@ -34,10 +34,10 @@ typedef HRESULT (WINAPI *DWMEFICA)(HWND, MARGINS*);
 typedef HRESULT (WINAPI *DWMEBBW)(HWND, BLURBEHIND*);
 typedef BOOL (WINAPI *DWMWP)(HWND, UINT, WPARAM, LPARAM, LRESULT*);
 
-static DWMEFICA DwmExtendFrameIntoClientArea = NULL;
-static DWMEBBW DwmEnableBlurBehindWindow = NULL;
-static DWMWP DwmDefWindowProc = NULL;
-static HMODULE dwmapiDLL = NULL;
+extern DWMEFICA DwmExtendFrameIntoClientAreaL;
+extern DWMEBBW DwmEnableBlurBehindWindow;
+extern DWMWP DwmDefWindowProc;
+extern HMODULE dwmapiDLL;
 
 #endif
 
