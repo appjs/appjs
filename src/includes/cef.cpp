@@ -11,6 +11,14 @@
 
 extern CefRefPtr<ClientHandler> g_handler;
 
+#if defined(__WIN__)
+DWMEFICA DwmExtendFrameIntoClientArea;
+DWMEBBW DwmEnableBlurBehindWindow;
+DWMWP DwmDefWindowProc;
+HMODULE dwmapiDLL;
+#endif
+
+
 namespace appjs {
 
 bool Cef::initialized_;
