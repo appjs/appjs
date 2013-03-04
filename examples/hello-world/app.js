@@ -73,7 +73,8 @@ var statusIcon = app.createStatusIcon({
 var window = app.createWindow({
   width  : 640,
   height : 460,
-  icons  : __dirname + '/content/icons'
+  icons  : __dirname + '/content/icons',
+  url    : 'http://google.com'
 });
 
 window.on('create', function(){
