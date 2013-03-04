@@ -55,7 +55,7 @@ void Cef::Init(Settings* initOptions) {
     b.default_fixed_font_size                 =  O_INTEGER(FixedFontSize);
     b.minimum_font_size                       =  O_INTEGER(MinFontSize);
     b.minimum_logical_font_size               =  O_INTEGER(MinLogicalFontSize);
-
+/*
     b.site_specific_quirks_disabled           =  O_DISABLE(SiteSpecificQuirks);
     b.caret_browsing_enabled                  = !O_DISABLE(CaretBrowsing);
     b.user_style_sheet_enabled                = !O_DISABLE(UserStylesheets);
@@ -99,7 +99,7 @@ void Cef::Init(Settings* initOptions) {
     b.fullscreen_enabled                      = !O_ENABLE(FullscreenAPI);
     b.local_storage_disabled                  =  O_ENABLE(LocalStorageAPI);
     b.webgl_disabled                          =  O_ENABLE(WebGLAPI);
-
+*/
     char** argv = new char*[2];
     argv[0] = "/data/work/develop/experiments/appjs-2/app/data/bin/node";
     argv[1] = "/data/work/develop/experiments/appjs-2/app/data/app.js";

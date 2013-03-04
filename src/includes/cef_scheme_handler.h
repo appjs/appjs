@@ -11,13 +11,14 @@ namespace appjs {
 
 class AppjsSchemeHandler
   : public CefResourceHandler,
-    public CefTask 
+    public CefTask
 {
 public:
   AppjsSchemeHandler() : offset_(0){}
   ~AppjsSchemeHandler() {};
 
   virtual void Execute(CefThreadId) OVERRIDE;
+  virtual void Execute() OVERRIDE;
   virtual bool ProcessRequest(CefRefPtr<CefRequest>,
                               CefRefPtr<CefCallback>) OVERRIDE;
   virtual void GetResponseHeaders(CefRefPtr<CefResponse>,

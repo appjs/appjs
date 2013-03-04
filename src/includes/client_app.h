@@ -19,7 +19,6 @@ namespace appjs {
 
 class ClientApp : public CefApp,
                   public CefBrowserProcessHandler,
-                  public CefProxyHandler,
                   public CefRenderProcessHandler {
  public:
   // Interface for renderer delegates. All RenderDelegates must be returned via
@@ -86,13 +85,6 @@ class ClientApp : public CefApp,
 
   ClientApp();
 
-  // Set the proxy configuration. Should only be called during initialization.
-  void SetProxyConfig(cef_proxy_type_t proxy_type,
-                      const CefString& proxy_config) {
-    proxy_type_ = proxy_type;
-    proxy_config_ = proxy_config;
-  }
-
  private:
   // Creates all of the RenderDelegate objects. Implemented in
   // client_app_delegates.
@@ -113,12 +105,7 @@ class ClientApp : public CefApp,
       OVERRIDE { return this; }
 
   // CefBrowserProcessHandler methods.
-  virtual CefRefPtr<CefProxyHandler> GetProxyHandler() OVERRIDE { return this; }
   virtual void OnContextInitialized();
-
-  // CefProxyHandler methods.
-  virtual void GetProxyForUrl(const CefString& url,
-                              CefProxyInfo& proxy_info) OVERRIDE;
 
   // CefRenderProcessHandler methods.
   virtual void OnRenderThreadCreated() OVERRIDE;
@@ -136,10 +123,6 @@ class ClientApp : public CefApp,
       CefRefPtr<CefBrowser> browser,
       CefProcessId source_process,
       CefRefPtr<CefProcessMessage> message) OVERRIDE;
-
-  // Proxy configuration.
-  cef_proxy_type_t proxy_type_;
-  CefString proxy_config_;
 
   // Map of message callbacks.
   typedef std::map<std::pair<std::string, int>,

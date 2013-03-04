@@ -83,7 +83,7 @@ static void destroy_handler(int status = 0) {
 void AddWebView(CefWindowHandle& parent, char* url, Settings* settings) {
   CefWindowInfo windowInfo;
   windowInfo.SetAsChild(parent);
-  g_handler->browserSettings_.web_security_disabled = settings->getBoolean("disableSecurity", false);
+  //g_handler->browserSettings_.web_security_disabled = settings->getBoolean("disableSecurity", false);
   CefBrowserHost::CreateBrowser(windowInfo, static_cast<CefRefPtr<CefClient>>(g_handler), url, g_handler->browserSettings_);
 
   if (!g_handler->HasMainWindow()) {

@@ -32,6 +32,9 @@ void *UnwrapObject(Handle<Value> data) {
   return obj->GetPointerFromInternalField(0);
 }
 
+void AppjsSchemeHandler::Execute() {
+}
+
 // Implementation of the schema handler for appjs:// requests.
 void AppjsSchemeHandler::Execute(CefThreadId threadId) {
 

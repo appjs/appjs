@@ -4,13 +4,17 @@ app.serveFilesFrom(__dirname + '/content');
 var window = app.createWindow({
   width  : 640,
   height : 460,
-  icons  : __dirname + '/content/icons'
+  icons  : __dirname + '/content/icons',
+  //url    : 'http://cuttherope.ie'
+ // url:'http://labs.tonybeltramelli.com/experiment/theWebCopterExperiment/'
+ // url : 'http://helloracer.com/webgl/'
+ url:'http://google.com'
 });
 
 window.on('create', function(){
   console.log("Window Created");
   window.frame.show();
-  window.frame.center();
+//  window.frame.center();
 });
 
 window.on('ready', function(){

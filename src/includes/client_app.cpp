@@ -98,8 +98,7 @@ void SetList(CefRefPtr<CefListValue> source, CefRefPtr<CefV8Value> target) {
 }
 
 namespace appjs {
-ClientApp::ClientApp()
-    : proxy_type_(CEF_PROXY_TYPE_DIRECT) {
+ClientApp::ClientApp() {
   CreateRenderDelegates(render_delegates_);
 
   // Default schemes that support cookies.
@@ -112,13 +111,6 @@ void ClientApp::OnContextInitialized() {
   CefRefPtr<CefCookieManager> manager = CefCookieManager::GetGlobalManager();
   ASSERT(manager.get());
   manager->SetSupportedSchemes(cookieable_schemes_);
-}
-
-void ClientApp::GetProxyForUrl(const CefString& url,
-                               CefProxyInfo& proxy_info) {
-  proxy_info.proxyType = proxy_type_;
-  if (!proxy_config_.empty())
-    CefString(&proxy_info.proxyList) = proxy_config_;
 }
 
 void ClientApp::OnRenderThreadCreated() {
