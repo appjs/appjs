@@ -61,7 +61,7 @@ v8::Handle<Value> Window::New(const Arguments& args) {
   NativeWindow* window = new NativeWindow(settings);
   Persistent<Object> self = Persistent<Object>::New(args.This());
   window->SetV8Handle(self);
-  self->SetPointerInInternalField(0, window);
+  self->SetAlignedPointerInInternalField(0, window);
 
   return scope.Close(args.This());
 }

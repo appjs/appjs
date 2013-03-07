@@ -108,12 +108,9 @@ void Cef::Init(Settings* initOptions) {
     b.local_storage_disabled                  =  O_ENABLE(LocalStorageAPI);
     b.webgl_disabled                          =  O_ENABLE(WebGLAPI);
 */
-    char** argv = new char*[2];
-    argv[0] = "/data/work/develop/experiments/appjs-2/app/data/bin/node";
-    argv[1] = "/data/work/develop/experiments/appjs-2/app/data/app.js";
 
     CefMainArgs main_args(0,NULL);
-    int exit_code = CefExecuteProcess(main_args, app.get());
+    CefExecuteProcess(main_args, app.get());
     CefInitialize(main_args, o, app.get());
 
     g_handler = new ClientHandler(b);

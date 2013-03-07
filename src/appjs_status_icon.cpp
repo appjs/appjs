@@ -31,7 +31,7 @@ v8::Handle<Value> StatusIcon::New(const Arguments& args) {
 
   Persistent<Object> self = Persistent<Object>::New(args.This());
   statusIcon->SetV8Handle(self);
-  self->SetPointerInInternalField(0, statusIcon);
+  self->SetAlignedPointerInInternalField(0, statusIcon);
 
   return scope.Close(args.This());
 }

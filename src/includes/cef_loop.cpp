@@ -1,6 +1,7 @@
 #include "appjs.h"
 #include "include/cef_app.h"
 #include "cef_loop.h"
+#include "node_internals.h"
 
 namespace appjs {
 
@@ -45,7 +46,7 @@ void CefLoop::Pause() {
 #else
   uv_unref(uv_default_loop());
 #endif
-  
+
   CefLoop::running_ = false;
 }
 
@@ -73,7 +74,10 @@ void CefLoop::StopLoop(uv_handle_t* handle) {
 }
 
 void CefLoop::RunLoop(uv_timer_t* handle, int status) {
-  CefDoMessageLoopWork();
+  v8::Locker locker(node::node_isolate);
+  v8::Isolate::Scope isolate_scope(node::node_isolate);
+  //CHECK_EQ(node::node_isolate, v8::internal::Isolate::Current());
+  //CefDoMessageLoopWork();
 }
 
 } /* appjs */

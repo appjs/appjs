@@ -32,7 +32,7 @@ public:
   double getNumber(const char*, double);
   int    getInteger(const char*, int);
   bool   getBoolean(const char*,bool);
-  char*  getString(const char*, char*);
+  char*  getString(const char*,const char*);
 
   #ifdef __WIN__
   TCHAR* getString(const char*,TCHAR*);

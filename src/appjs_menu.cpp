@@ -29,7 +29,7 @@ v8::Handle<Value> Menu::New(const Arguments& args) {
 
   Persistent<Object> self = Persistent<Object>::New(args.This());
   menu->SetV8Handle(self);
-  self->SetPointerInInternalField(0, menu);
+  self->SetAlignedPointerInInternalField(0, menu);
 
   return scope.Close(args.This());
 }

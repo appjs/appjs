@@ -26,4 +26,4 @@ void Init(v8::Handle<v8::Object> target) {
 
 } /* appjs */
 
-NODE_MODULE(appjs, appjs::Init)
+NODE_MODULE(node_appjs, appjs::Init)

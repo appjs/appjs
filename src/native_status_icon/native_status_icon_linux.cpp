@@ -54,7 +54,7 @@ void NativeStatusIcon::Init(Settings* settings) {
 
     GtkWidget* gtkMenu = gtk_menu_new();
 
-    nativeMenu = (NativeMenu*)menu->GetPointerFromInternalField(0);
+    nativeMenu = (NativeMenu*)menu->GetAlignedPointerFromInternalField(0);
     nativeMenu->Attach(GTK_MENU_SHELL(gtkMenu));
 
     g_signal_connect(statusIcon, "popup-menu", GTK_SIGNAL_FUNC (status_icon_show_menu), gtkMenu);

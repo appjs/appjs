@@ -1,5 +1,5 @@
-#include "appjs.h"
+#include "node.h"
 
-extern "C" void init (v8::Handle<v8::Object> target) {
-  appjs::Init (target);
+int main(int argc, char *argv[]) {
+  return node::Start(argc, argv);
 }

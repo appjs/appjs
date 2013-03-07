@@ -114,11 +114,11 @@ public:
   void OpenDialog(Settings* settings,v8::Persistent<v8::Function> cb);
   static void DialogClosed();
   static void OpenFileDialog(uv_work_t* req);
-  static void ProcessFileDialog(uv_work_t* req);
+  static void ProcessFileDialog(uv_work_t* req,int status);
   static void OpenColorDialog(uv_work_t* req);
-  static void ProcessColorDialog(uv_work_t* req);
+  static void ProcessColorDialog(uv_work_t* req,int status);
   static void OpenFontDialog(uv_work_t* req);
-  static void ProcessFontDialog(uv_work_t* req);
+  static void ProcessFontDialog(uv_work_t* req,int status);
   void OpenDevTools();
   void CloseDevTools();
   void RunInBrowser(char* script);

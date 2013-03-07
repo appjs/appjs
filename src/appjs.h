@@ -8,7 +8,7 @@
 
 #ifndef __WIN__
 typedef char TCHAR;
-#define TEXT(t) t
+#define TEXT(t) (char*)t
 #endif
 
 typedef std::basic_string<TCHAR> tstring;

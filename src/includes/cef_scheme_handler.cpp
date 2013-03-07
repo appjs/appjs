@@ -21,7 +21,7 @@ v8::Handle<Value> WrapObject(void* obj) {
 
   v8::Handle<Object> self = obj_template->NewInstance();
 
-  self->SetPointerInInternalField(0, obj);
+  self->SetAlignedPointerInInternalField(0, obj);
 
   return scope.Close(self);
 }
@@ -29,7 +29,7 @@ v8::Handle<Value> WrapObject(void* obj) {
 void *UnwrapObject(v8::Handle<Value> data) {
   v8::Handle<Object> obj = data->ToObject();
 
-  return obj->GetPointerFromInternalField(0);
+  return obj->GetAlignedPointerFromInternalField(0);
 }
 
 void AppjsSchemeHandler::Execute() {

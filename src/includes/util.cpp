@@ -75,9 +75,9 @@ int Settings::getInteger(const char* property, int defaultValue = 0) {
   return (tmp->IsNumber())? tmp->Int32Value() : defaultValue;
 }
 
-char* Settings::getString(const char* property, char* defaultValue = "") {
+char* Settings::getString(const char* property, const char* defaultValue = "") {
   Local<Value> tmp = get(property);
-  return (tmp->IsString())? V8StringToChar(get(property)->ToString()) : defaultValue;
+  return (tmp->IsString())? V8StringToChar(get(property)->ToString()) : (char*)defaultValue;
 }
 
 #ifdef __WIN__

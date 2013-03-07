@@ -33,13 +33,13 @@ static void dialog_response_handler( GtkDialog *dialog, gint response_id, gpoint
 
 static void dialog_destroy_handler( GtkDialog *dialog, gpointer data ) {
   uv_work_t* req = (uv_work_t*) data;
-  NativeWindow::ProcessFileDialog(req);
+  NativeWindow::ProcessFileDialog(req,1);
 }
 
-static void drag_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {
+/*static void drag_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {
   gtk_window_begin_move_drag(GTK_WINDOW(widget), event->type, event->button.x_root,event->button.y_root,event->button.time);
   g_signal_handler_disconnect(G_OBJECT(widget), window->GetDragHandlerId());
-}
+}*/
 
 static void configure_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {
   int x = event->configure.x;
@@ -75,16 +75,16 @@ static void state_handler( GtkWidget* widget,GdkEventWindowState* event, NativeW
     window->Emit("restore");
   }
 }
-
+/*
 static void destroy_handler(int status = 0) {
   g_handler->Shutdown();
-}
+}*/
 
 void AddWebView(CefWindowHandle& parent, char* url, Settings* settings) {
   CefWindowInfo windowInfo;
   windowInfo.SetAsChild(parent);
   //g_handler->browserSettings_.web_security_disabled = settings->getBoolean("disableSecurity", false);
-  CefBrowserHost::CreateBrowser(windowInfo, static_cast<CefRefPtr<CefClient>>(g_handler), url, g_handler->browserSettings_);
+  CefBrowserHost::CreateBrowser(windowInfo, static_cast< CefRefPtr<CefClient> >(g_handler), url, g_handler->browserSettings_);
 
   if (!g_handler->HasMainWindow()) {
     //signal(SIGINT, destroy_handler);
@@ -99,7 +99,7 @@ void NativeWindow::Init(char* url, Settings* settings) {
   // Set default icon list
   if (is_main_window_) {
 
-    GList* iconList;
+    GList* iconList = NULL;
     bool setIconFlag = false;
 
     char* smallerIconPath = icons->getString("smaller","");
@@ -218,7 +218,7 @@ void NativeWindow::SetMenuBar(NativeMenu* nativeMenu) {
 
 void NativeWindow::OpenFileDialog(uv_work_t* req) {
 
-  GtkWidget*             dialog;
+  GtkWidget*             dialog = NULL;
   GtkFileChooserAction  actions;
   AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
   GtkWindow*             parent = (GtkWindow*)settings->me->handle_;
@@ -311,7 +311,7 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
 
 }
 
-void NativeWindow::ProcessFileDialog(uv_work_t* req) {
+void NativeWindow::ProcessFileDialog(uv_work_t* req,int status) {
 
   AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
   void*                  result = settings->result;
@@ -349,16 +349,16 @@ void NativeWindow::OpenColorDialog(uv_work_t* req) {
 
 }
 
-void NativeWindow::ProcessColorDialog(uv_work_t* req) {
+void NativeWindow::ProcessColorDialog(uv_work_t* req,int status) {
 
 }
 
 void NativeWindow::OpenFontDialog(uv_work_t* req) {
   GtkWidget*             dialog;
-  GtkFileChooserAction  actions;
+  //GtkFileChooserAction  actions;
   AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
-  GtkWindow*             parent = (GtkWindow*)settings->me->handle_;
-  const int                size = settings->reserveNumber1;
+  //GtkWindow*             parent = (GtkWindow*)settings->me->handle_;
+  //const int                size = settings->reserveNumber1;
   const char*        sampleText = settings->reserveString1.c_str();
   Cef::Pause();
   gdk_threads_enter();
@@ -376,7 +376,7 @@ void NativeWindow::OpenFontDialog(uv_work_t* req) {
 
 }
 
-void NativeWindow::ProcessFontDialog(uv_work_t* req) {
+void NativeWindow::ProcessFontDialog(uv_work_t* req,int status) {
   AppjsDialogSettings* settings = (AppjsDialogSettings*)req->data;
   void*                  result = settings->result;
   Persistent<Function>       cb = settings->cb;
@@ -466,6 +466,10 @@ void NativeWindow::Resize(int width, int height) {
   rect_.width = width;
   rect_.height = height;
   gtk_window_resize((GtkWindow*)handle_,width,height);
+}
+
+void NativeWindow::SetIcon(NW_ICONSIZE size, TCHAR* path) {
+
 }
 
 const char* NativeWindow::GetTitle() {
