@@ -319,8 +319,6 @@ void NativeWindow::Init (char* url, Settings* settings) {
   // Size the window.
   //[mainWnd setFrame:[mainWnd frameRectForContentRect:[mainWnd frame]] display:YES];
   [mainWnd setDelegate:windowDelegate];
-  // Run CEF message loop
-  appjs::Cef::Run();
 
 }
 
@@ -391,7 +389,7 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     [dialog setCanCreateDirectories:dirSelect];
     [dialog setAllowsOtherFileTypes:YES];
     [dialog setAllowsMultipleSelection:multiSelect];
-    
+
     NSArray* allowedFileTypes = [[NSString stringWithUTF8String:acceptTypes.c_str()] componentsSeparatedByString:@";"];
     [dialog setAllowedFileTypes:allowedFileTypes];
     [dialog beginSheetModalForWindow:parent completionHandler:^(NSInteger result){
@@ -409,7 +407,7 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
     [dialog setAllowsOtherFileTypes:YES];
     [dialog setCanCreateDirectories:YES];
     [dialog setCanSelectHiddenExtension:YES];
-    
+
     // causes confirmation dialog which then throws exception: Invalid Window
     //NSArray* allowedFileTypes = [[NSString stringWithUTF8String:acceptTypes.c_str()] componentsSeparatedByString:@";"];
     //[dialog setAllowedFileTypes:allowedFileTypes];

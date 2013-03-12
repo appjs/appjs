@@ -68,7 +68,6 @@ public:
     return this;
   }
   virtual CefRefPtr<CefLifeSpanHandler> GetRenderProcessHandler() OVERRIDE {
-    fprintf(stderr, "%s\n", "me");
     return this;
   }
   virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE {
@@ -77,13 +76,13 @@ public:
   virtual CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE {
     return this;
   }
-  
+
   virtual bool HasMainWindow();
   virtual void Shutdown();
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
   virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
-  virtual void OnTitleChange(CefRefPtr<CefBrowserHost> browser,
+  virtual void OnTitleChange(CefRefPtr<CefBrowser> browser,
                              const CefString& title) OVERRIDE;
 
   virtual void OnContextCreated(CefRefPtr<CefBrowserHost> browser,
@@ -99,10 +98,12 @@ public:
                                     int width,
                                     int height) OVERRIDE;
 
-  virtual void OnLoadEnd(CefRefPtr<CefBrowserHost> browser,
+  virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser,
                          CefRefPtr<CefFrame> frame,
                          int httpStatusCode) OVERRIDE;
 
+virtual void OnLoadStart(CefRefPtr<CefBrowser> browser,
+                           CefRefPtr<CefFrame> frame) OVERRIDE;
   CefRefPtr<CefBrowserHost> mainBrowserHandle;
   CefBrowserSettings browserSettings_;
 

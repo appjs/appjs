@@ -1,6 +1,7 @@
 #include "includes/cef.h"
 #include "includes/cef_handler.h"
 #include "native_window/native_window.h"
+#include "node_internals.h"
 
 extern CefRefPtr<ClientHandler> g_handler;
 
@@ -40,7 +41,6 @@ NativeWindow::NativeWindow(Settings* settings){
     SetTopmost(true);
   }
 
-  Cef::Run();
 }
 
 NativeWindow::~NativeWindow(){
@@ -100,6 +100,10 @@ void NativeWindow::DialogClosed() {
 
 void NativeWindow::OpenDevTools(){
   if (browser_) {
+    std::string devtools_url = browser_->GetDevToolsURL(true);
+    fprintf(stderr, "%s\n",devtools_url.c_str() );
+    browser_->GetBrowser()->GetMainFrame()->ExecuteJavaScript(
+          "window.open('" +  devtools_url + "');", "about:blank", 0);
     //browser_->ShowDevTools();
   }
 }
@@ -237,16 +241,26 @@ appjs_rect NativeWindow::GetRect() {
 
 void NativeWindow::Emit(v8::Handle<Value>* args,int length = 1){
   if (!closed_) {
+    //v8::Locker locker(node::node_isolate);
+    //v8::Isolate::Scope isolate_scope(node::node_isolate);
+    v8::HandleScope scope;
     node::MakeCallback(v8handle_, "emit", length, args);
   }
 }
 
 void NativeWindow::Emit(const char* event){
+  //v8::Locker locker(node::node_isolate);
+  //v8::Isolate::Scope isolate_scope(node::node_isolate);
+  v8::HandleScope scope;
+  fprintf(stderr, "%s %s\n", "emitting...",event);
   v8::Handle<Value> args[1] = { String::New(event) };
   Emit(args,1);
 }
 
 void NativeWindow::Emit(const char* event, v8::Handle<Value> arg){
+  //v8::Locker locker(node::node_isolate);
+  //v8::Isolate::Scope isolate_scope(node::node_isolate);
+  v8::HandleScope scope;
   v8::Handle<Value> args[2] = {
     String::New(event),
     arg
@@ -255,6 +269,9 @@ void NativeWindow::Emit(const char* event, v8::Handle<Value> arg){
 }
 
 void NativeWindow::Emit(const char* event, v8::Handle<Value> arg1, v8::Handle<Value> arg2){
+  //v8::Locker locker(node::node_isolate);
+  //v8::Isolate::Scope isolate_scope(node::node_isolate);
+  v8::HandleScope scope;
   v8::Handle<Value> args[3] = {
     String::New(event),
     arg1,
@@ -264,6 +281,9 @@ void NativeWindow::Emit(const char* event, v8::Handle<Value> arg1, v8::Handle<Va
 }
 
 void NativeWindow::Emit(const char* event, int arg1, int arg2){
+  //v8::Locker locker(node::node_isolate);
+  //v8::Isolate::Scope isolate_scope(node::node_isolate);
+  v8::HandleScope scope;
   v8::Handle<Value> args[3] = {
     String::New(event),
     Integer::New(arg1),
@@ -273,6 +293,9 @@ void NativeWindow::Emit(const char* event, int arg1, int arg2){
 }
 
 void NativeWindow::Emit(const char* event, const int arg1, const int arg2, const int arg3){
+  //v8::Locker locker(node::node_isolate);
+  //v8::Isolate::Scope isolate_scope(node::node_isolate);
+  v8::HandleScope scope;
   v8::Handle<Value> args[4] = {
     String::New(event),
     Integer::New(arg1),
@@ -286,6 +309,9 @@ void NativeWindow::Emit(const char* event, const int arg1, const int arg2, const
 
 
 long NativeWindow::JSResult(){
+  //v8::Locker locker(node::node_isolate);
+  //v8::Isolate::Scope isolate_scope(node::node_isolate);
+  v8::HandleScope scope;
   Local<Value> result = v8handle_->Get(String::NewSymbol("result"));
   if (result->IsUndefined() || result->IsNull()) {
     return 0;

@@ -5,8 +5,9 @@
 #include "includes/cef_handler.h"
 #include "includes/cef_sync_handler.h"
 #include "native_window/native_window.h"
+#include <node_internals.h>
 #include "appjs_window.h"
-
+#include "third_party/WebKit/Source/WebKit/chromium/public/WebFrame.h"
 
 using namespace v8;
 using namespace appjs;
@@ -32,6 +33,7 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser>  browser) {
       mainBrowserHandle = browser->GetHost();
     }
     windowCount++;
+
     NativeWindow* window = NativeWindow::GetWindow(mainBrowserHandle);
     window->SetBrowser(mainBrowserHandle);
     window->Emit("create");
@@ -49,7 +51,7 @@ void ClientHandler::Shutdown() {
 }
 
 void ClientHandler::OnContextCreated(CefRefPtr<CefBrowserHost>  browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
-  fprintf(stderr, "%s\n", "here");
+  fprintf(stderr, "%s\n", "CONTEXT CREATED");
   /*REQUIRE_UI_THREAD();
   if (!browser->IsPopup() && frame->IsMain()) {
     context->Enter();
@@ -71,6 +73,7 @@ void ClientHandler::OnContextReleased(CefRefPtr<CefBrowserHost>  browser, CefRef
 
 bool ClientHandler::DoClose(CefRefPtr<CefBrowser>  browser) {
   REQUIRE_UI_THREAD();
+
   if (!browser->IsPopup() && --windowCount == 0) {
     Local<Object> global = Context::GetCurrent()->Global();
     Local<Object> emitter = global->Get(String::NewSymbol("process"))->ToObject();
@@ -90,17 +93,27 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser>  browser) {
   if(!browser->IsPopup()) {
     NativeWindow* window = NativeWindow::GetWindow(browser->GetHost());
     window->PrepareClose();
-    DoClose(browser);
+    //DoClose(browser);
 #ifdef __WIN__
     delete window;
 #endif
   }
 }
 
-void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowserHost>  browser, CefRefPtr<CefFrame> frame, int httpStatusCode) {
+void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser>  browser, CefRefPtr<CefFrame> frame, int httpStatusCode) {
   REQUIRE_UI_THREAD();
-  if (!browser->GetBrowser()->IsPopup() && frame->IsMain()) {
-    NativeWindow::GetWindow(browser)->Emit("ready");
+  v8::HandleScope scope;
+  //node::node_context->Enter();
+  //Local<Object> window = Local<Object>::Cast(node::node_context->Global()->Get(v8::String::New("Window")));
+  if (!browser->IsPopup() && frame->IsMain()) {
+    NativeWindow::GetWindow(browser->GetHost())->Emit("ready");
+  }
+}
+
+void ClientHandler::OnLoadStart(CefRefPtr<CefBrowser>  browser, CefRefPtr<CefFrame> frame) {
+  REQUIRE_UI_THREAD();
+  if (!browser->IsPopup() && frame->IsMain()) {
+    NativeWindow::GetWindow(browser->GetHost())->Emit("reloading");
   }
 }
 
@@ -114,10 +127,10 @@ void ClientHandler::OnContentsSizeChange(CefRefPtr<CefBrowserHost>  browser, Cef
   }
 }
 
-void ClientHandler::OnTitleChange(CefRefPtr<CefBrowserHost>  browser, const CefString& title) {
+void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser>  browser, const CefString& title) {
   REQUIRE_UI_THREAD();
-  if (!browser->GetBrowser()->IsPopup()) {
+  if (!browser->IsPopup()) {
     tstring titleStr(title);
-    NativeWindow::GetWindow(browser)->SetTitle(titleStr.c_str());
+    NativeWindow::GetWindow(browser->GetHost())->SetTitle(titleStr.c_str());
   }
 }

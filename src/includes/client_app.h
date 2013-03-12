@@ -14,6 +14,8 @@
 #include "include/cef_app.h"
 #include "includes/cef_sync_handler.h"
 #include "native_window/native_window.h"
+#include "node.h"
+#include "node_internals.h"
 
 namespace appjs {
 
@@ -28,10 +30,12 @@ class ClientApp : public CefApp,
    public:
     // Called after the render process main thread has been created.
     virtual void OnRenderThreadCreated(CefRefPtr<ClientApp> app) {
+      fprintf(stderr, "%s\n", "renderer created.");
     }
 
     // Called when WebKit is initialized. Used to register V8 extensions.
     virtual void OnWebKitInitialized(CefRefPtr<ClientApp> app) {
+      fprintf(stderr, "%s\n", "webkit init");
     }
 
     // Called when a V8 context is created. Used to create V8 window bindings
@@ -41,7 +45,9 @@ class ClientApp : public CefApp,
                                   CefRefPtr<CefBrowser> browser,
                                   CefRefPtr<CefFrame> frame,
                                   CefRefPtr<CefV8Context> context) {
-      if (!browser->IsPopup() && frame->IsMain()) {
+      fprintf(stderr, "%s\n", "context created");
+
+      /*if (!browser->IsPopup() && frame->IsMain()) {
         context->Enter();
         CefRefPtr<CefV8Value> appjsObj = CefV8Value::CreateObject(NULL);
         CefRefPtr<CefV8Value> func = CefV8Value::CreateFunction("send", new AppjsSyncHandler(browser->GetHost()));
@@ -50,6 +56,8 @@ class ClientApp : public CefApp,
         context->Exit();
         //NativeWindow::GetWindow(browser->GetHost())->Emit("context-created");
       }
+      v8::Unlocker unlocker(node::node_isolate);
+*/
     }
 
     // Called when a V8 context is released. Used to clean up V8 window
@@ -59,6 +67,7 @@ class ClientApp : public CefApp,
                                    CefRefPtr<CefBrowser> browser,
                                    CefRefPtr<CefFrame> frame,
                                    CefRefPtr<CefV8Context> context) {
+      fprintf(stderr, "%s\n", "context released");
     }
 
     // Called when the focused node in a frame has changed.

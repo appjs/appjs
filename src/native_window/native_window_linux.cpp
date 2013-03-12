@@ -1,19 +1,22 @@
 #include <node.h>
+#include <node_internals.h>
 #include <gtk/gtk.h>
 #include <vector>
 #include <sstream>
-
+#undef ARRAY_SIZE
 #include "appjs.h"
 #include "native_window/native_window.h"
 #include "includes/cef.h"
 #include "includes/util.h"
 #include "includes/cef_handler.h"
+#include "include/cef_task.h"
 
 extern CefRefPtr<ClientHandler> g_handler;
 
 namespace appjs {
 
 using namespace v8;
+
 
 static void dialog_response_handler( GtkDialog *dialog, gint response_id, gpointer data ) {
 
@@ -32,6 +35,7 @@ static void dialog_response_handler( GtkDialog *dialog, gint response_id, gpoint
 }
 
 static void dialog_destroy_handler( GtkDialog *dialog, gpointer data ) {
+  //v8::Locker locker(node::node_isolate);
   uv_work_t* req = (uv_work_t*) data;
   NativeWindow::ProcessFileDialog(req,1);
 }
@@ -42,6 +46,7 @@ static void dialog_destroy_handler( GtkDialog *dialog, gpointer data ) {
 }*/
 
 static void configure_handler( GtkWidget* widget, GdkEvent* event, NativeWindow* window ) {
+  //v8::Locker locker(node::node_isolate);
   int x = event->configure.x;
   int y = event->configure.y;
   int width = event->configure.width;
@@ -62,6 +67,7 @@ static void configure_handler( GtkWidget* widget, GdkEvent* event, NativeWindow*
 }
 
 static void state_handler( GtkWidget* widget,GdkEventWindowState* event, NativeWindow* window ) {
+  //v8::Locker locker(node::node_isolate);
   if( event->new_window_state & GDK_WINDOW_STATE_ICONIFIED ) {
     window->Emit("minimize");
   } else if ( event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED ) {
@@ -85,7 +91,6 @@ void AddWebView(CefWindowHandle& parent, char* url, Settings* settings) {
   windowInfo.SetAsChild(parent);
   //g_handler->browserSettings_.web_security_disabled = settings->getBoolean("disableSecurity", false);
   CefBrowserHost::CreateBrowser(windowInfo, static_cast< CefRefPtr<CefClient> >(g_handler), url, g_handler->browserSettings_);
-
   if (!g_handler->HasMainWindow()) {
     //signal(SIGINT, destroy_handler);
     //signal(SIGTERM, destroy_handler);
@@ -95,7 +100,6 @@ void AddWebView(CefWindowHandle& parent, char* url, Settings* settings) {
 void NativeWindow::Init(char* url, Settings* settings) {
   handle_ = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   GtkWindow* window = (GtkWindow*)handle_;
-
   // Set default icon list
   if (is_main_window_) {
 

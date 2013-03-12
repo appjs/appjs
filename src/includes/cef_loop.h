@@ -3,19 +3,21 @@
 #pragma once
 
 #include <node.h>
+#include "includes/util.h"
 
 namespace appjs {
 
 class CefLoop {
 
 public:
-  static uv_timer_t timer;
-  static uv_async_t g_async;
-  static void Init();
+  static uv_thread_t tid;
+  static void Init(Settings*);
+  static void Init(void* param);
   static void Run();
+  static void Run(void*);
   static void Pause();
   static void Shutdown();
-  
+
 protected:
   CefLoop (const CefLoop&);
   CefLoop& operator= (const CefLoop&);
@@ -23,6 +25,7 @@ protected:
   static void RunLoop(uv_timer_t* handle, int status);
   static bool running_;
   static bool initialized_;
+  static Settings* options_;
 
 };
 
