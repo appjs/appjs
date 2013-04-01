@@ -4,6 +4,7 @@
 
 #include <node.h>
 #include <node_version.h>
+#include <node_internals.h>
 #include <string>
 
 #ifndef __WIN__
@@ -20,7 +21,7 @@ typedef std::basic_string<TCHAR> tstring;
 #endif
 
 
-#define APPJS_PSYMBOL(s) v8::Persistent<v8::String>::New(v8::String::NewSymbol(s))
+#define APPJS_PSYMBOL(s) v8::Persistent<v8::String>::New(node::node_isolate,v8::String::NewSymbol(s))
 #define MAKE_BOOLEAN(v) (v)->BooleanValue()
 #define MAKE_INT32(v) (v)->Int32Value()
 #define MAKE_DOUBLE(v) (v)->NumberValue()
@@ -80,7 +81,7 @@ typedef std::basic_string<TCHAR> tstring;
   tpl->InstanceTemplate()->SetInternalFieldCount(1)
 
 #define END_CONSTRUCTOR() \
-  constructor = Persistent<Function>::New(tpl->GetFunction())
+  constructor = Persistent<Function>::New(node::node_isolate,tpl->GetFunction())
 
 
 #define CREATE_INSTANCE_ACCESSOR(Type, PropertyName, GetterType, SetterType) \

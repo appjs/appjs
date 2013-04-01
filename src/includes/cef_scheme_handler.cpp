@@ -16,7 +16,7 @@ v8::Handle<Value> WrapObject(void* obj) {
 
   HandleScope scope;
 
-  Persistent<ObjectTemplate> obj_template = Persistent<ObjectTemplate>::New(ObjectTemplate::New());
+  Persistent<ObjectTemplate> obj_template = Persistent<ObjectTemplate>::New(node::node_isolate,ObjectTemplate::New());
   obj_template->SetInternalFieldCount(1);
 
   v8::Handle<Object> self = obj_template->NewInstance();
@@ -37,7 +37,6 @@ void AppjsSchemeHandler::Execute() {
 
 // Implementation of the schema handler for appjs:// requests.
 void AppjsSchemeHandler::Execute(CefThreadId threadId) {
-
   REQUIRE_UI_THREAD();
 
   HandleScope scope;
@@ -144,11 +143,8 @@ v8::Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
 bool AppjsSchemeHandler::ProcessRequest(CefRefPtr<CefRequest> request,
                               CefRefPtr<CefCallback> callback)
 {
-
   REQUIRE_IO_THREAD();
-
   AutoLock lock_scope(this);
-
   status_      = 404;
   status_text_ = "Not Found";
   mime_type_   = "";
@@ -157,7 +153,6 @@ bool AppjsSchemeHandler::ProcessRequest(CefRefPtr<CefRequest> request,
   offset_      = 0;
   request_     = request;
   callback_    = callback;
-
   CefPostTask(TID_UI, this);
 
   return true;
@@ -215,7 +210,6 @@ CefRefPtr<CefResourceHandler> AppjsSchemeHandlerFactory::Create(CefRefPtr<CefBro
                                              const CefString& scheme_name,
                                              CefRefPtr<CefRequest> request)
 {
-  REQUIRE_IO_THREAD();
   return new AppjsSchemeHandler();
 }
 

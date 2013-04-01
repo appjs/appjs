@@ -46,18 +46,16 @@ class ClientApp : public CefApp,
                                   CefRefPtr<CefFrame> frame,
                                   CefRefPtr<CefV8Context> context) {
       fprintf(stderr, "%s\n", "context created");
-
-      /*if (!browser->IsPopup() && frame->IsMain()) {
+      if (!browser->IsPopup() && frame->IsMain()) {
         context->Enter();
         CefRefPtr<CefV8Value> appjsObj = CefV8Value::CreateObject(NULL);
         CefRefPtr<CefV8Value> func = CefV8Value::CreateFunction("send", new AppjsSyncHandler(browser->GetHost()));
         context->GetGlobal()->SetValue("appjs", appjsObj, V8_PROPERTY_ATTRIBUTE_NONE);
         appjsObj->SetValue("send", func, V8_PROPERTY_ATTRIBUTE_NONE);
         context->Exit();
-        //NativeWindow::GetWindow(browser->GetHost())->Emit("context-created");
+        //NativeWindow::GetWindow(browser)->Emit("context-created");
       }
-      v8::Unlocker unlocker(node::node_isolate);
-*/
+
     }
 
     // Called when a V8 context is released. Used to clean up V8 window

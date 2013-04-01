@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
   CefString(&o.product_version)  = O_STRING(ProductVersion);
   CefString(&o.locale)           = O_STRING(Locale);
 */
+  CefString(&o.javascript_flags) = "--harmony_proxies --harmony_collections --harmony_scoping";
   CefString(&o.log_file)         = "appjs.log";
   //o.pack_loading_disabled        = true;//O_ENABLE(PakLoading);
   o.multi_threaded_message_loop  = false;

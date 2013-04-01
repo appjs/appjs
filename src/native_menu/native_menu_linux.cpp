@@ -58,8 +58,8 @@ int NativeMenu::AddSubMenu(GtkWidget* menu,Settings* settings){
     label  = item->getString("label","");
     icon   = item->getString("icon","");
     actionCb = new appjs_action_callback();
-    actionCb->action = Persistent<Object>::New( item->getObject("action") );
-    actionCb->item = Persistent<Object>::New( settings->getObject( i ) );
+    actionCb->action = Persistent<Object>::New(node::node_isolate, item->getObject("action") );
+    actionCb->item = Persistent<Object>::New(node::node_isolate, settings->getObject( i ) );
     actionCb->menu = this;
 
     if( strlen( label ) == 0 ) {

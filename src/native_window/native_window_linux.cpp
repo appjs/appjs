@@ -345,7 +345,7 @@ void NativeWindow::ProcessFileDialog(uv_work_t* req,int status) {
     cb->Call( settings->me->GetV8Handle(), argc, argv );
   }
 
-  cb.Dispose();
+  cb.Dispose(node::node_isolate);
   NativeWindow::DialogClosed();
 }
 
@@ -397,7 +397,7 @@ void NativeWindow::ProcessFontDialog(uv_work_t* req,int status) {
     cb->Call( settings->me->GetV8Handle(), argc, argv );
   }
 
-  cb.Dispose();
+  cb.Dispose(node::node_isolate);
   NativeWindow::DialogClosed();
 }
 

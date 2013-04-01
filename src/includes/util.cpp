@@ -54,7 +54,7 @@ CefRefPtr<CefV8Value> V8StringToCef(Handle<Value> str){
 }
 
 Settings::Settings(Persistent<Object> settings):settings_(settings){};
-Settings::Settings(Local<Object> settings):settings_(Persistent<Object>::New(settings)){};
+Settings::Settings(Local<Object> settings):settings_(Persistent<Object>::New(node::node_isolate,settings)){};
 
 bool Settings::has(const char* property) {
   return settings_->Has(String::New(property));

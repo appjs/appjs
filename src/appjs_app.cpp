@@ -37,7 +37,7 @@ v8::Handle<Value> App::New(const Arguments& args) {
 v8::Handle<Value> App::NewInstance(const Arguments& args) {
   v8::HandleScope scope;
 
-  Persistent<Object> options = Persistent<Object>::New(args[0]->ToObject());
+  Persistent<Object> options = Persistent<Object>::New(node::node_isolate,args[0]->ToObject());
   Cef::Init(new Settings(options));
 
   v8::Handle<Value> argv[1] = { args[0] };

@@ -1,4 +1,5 @@
 #include <node.h>
+#include <node_internals.h>
 #include "appjs.h"
 #include "appjs_menu.h"
 #include "includes/cef_handler.h"
@@ -23,11 +24,11 @@ void Menu::Init() {
 v8::Handle<Value> Menu::New(const Arguments& args) {
   HandleScope scope;
 
-  Persistent<Object> options = Persistent<Object>::New(args[0]->ToObject());
+  Persistent<Object> options = Persistent<Object>::New(node::node_isolate,args[0]->ToObject());
   Settings* settings = new Settings(options);
   NativeMenu* menu = new NativeMenu(settings);
 
-  Persistent<Object> self = Persistent<Object>::New(args.This());
+  Persistent<Object> self = Persistent<Object>::New(node::node_isolate,args.This());
   menu->SetV8Handle(self);
   self->SetAlignedPointerInInternalField(0, menu);
 

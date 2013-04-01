@@ -116,7 +116,7 @@ void NativeWindow::CloseDevTools(){
 
 void NativeWindow::RunInBrowser(char* script){
   if (browser_) {
-    browser_->GetBrowser()->GetMainFrame()->ExecuteJavaScript(script, "", 0);
+    browser_->GetBrowser()->GetMainFrame()->ExecuteJavaScript(script, "about:blank", 0);
   }
 }
 

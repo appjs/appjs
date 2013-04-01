@@ -56,10 +56,10 @@ void Window::Init() {
 v8::Handle<Value> Window::New(const Arguments& args) {
   HandleScope scope;
 
-  Persistent<Object> options = Persistent<Object>::New(args[0]->ToObject());
+  Persistent<Object> options = Persistent<Object>::New(node::node_isolate,args[0]->ToObject());
   Settings* settings = new Settings(options);
   NativeWindow* window = new NativeWindow(settings);
-  Persistent<Object> self = Persistent<Object>::New(args.This());
+  Persistent<Object> self = Persistent<Object>::New(node::node_isolate,args.This());
   window->SetV8Handle(self);
   self->SetAlignedPointerInInternalField(0, window);
 
@@ -115,8 +115,8 @@ v8::Handle<Value> Window::SetMenuBar(const Arguments& args) {
 v8::Handle<Value> Window::OpenDialog(const Arguments& args) {
   HandleScope scope;
 
-  Persistent<Object> options  = Persistent<Object>::New(args[0]->ToObject());
-  Persistent<Function>    cb  = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  Persistent<Object> options  = Persistent<Object>::New(node::node_isolate,args[0]->ToObject());
+  Persistent<Function>    cb  = Persistent<Function>::New(node::node_isolate,Local<Function>::Cast(args[1]));
   Settings*          settings = new Settings(options);
 
   NativeWindow *window = ObjectWrap::Unwrap<NativeWindow>(args.This());

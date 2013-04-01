@@ -131,7 +131,6 @@ void ClientApp::OnWebKitInitialized() {
 void ClientApp::OnContextCreated(CefRefPtr<CefBrowser> browser,
                                CefRefPtr<CefFrame> frame,
                                CefRefPtr<CefV8Context> context) {
-  fprintf(stderr, "%s\n", "initialized context");
   // Execute delegate callbacks.
   RenderDelegateSet::iterator it = render_delegates_.begin();
   for (; it != render_delegates_.end(); ++it)

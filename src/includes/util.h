@@ -4,10 +4,7 @@
 #include "include/cef_base.h"
 #include "include/cef_v8.h"
 #include <node.h>
-
-#define ARRAY_SIZE(a) \
-  ((sizeof(a) / sizeof(*(a))) / \
-  static_cast<size_t>(!(sizeof(a) % sizeof(*(a)))))
+#include <node_internals.h>
 
 namespace appjs {
 
@@ -25,7 +22,7 @@ class Settings {
 public:
   Settings(v8::Persistent<v8::Object>);
   Settings(v8::Local<v8::Object>);
-  ~Settings(){settings_.Dispose();}
+  ~Settings(){settings_.Dispose(node::node_isolate);}
 
   bool   isNull(const char*);
   bool   has(const char*);

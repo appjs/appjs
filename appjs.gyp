@@ -3,6 +3,9 @@
     #'./deps/node/common.gypi',
     './deps/node/config.gypi'
   ],
+  'target_defaults': {
+    'defines': ['APPJS_BUILD'],
+  },
   'targets': [
     {
       'target_name': 'appjs_publish',
@@ -55,7 +58,7 @@
       'include_dirs': [
         '../',
         './src',
-        './deps/cef/',
+        '../cef/',
         './deps/node/src',
         './deps/node/deps/uv/src/ares',
         './deps/node/deps/uv/include',

@@ -1,4 +1,5 @@
 #include <node.h>
+#include "base/logging.h"
 #include "include/cef_base.h"
 #include "include/cef_browser.h"
 #include "include/cef_frame.h"
@@ -7,7 +8,6 @@
 #include "native_window/native_window.h"
 #include <node_internals.h>
 #include "appjs_window.h"
-#include "third_party/WebKit/Source/WebKit/chromium/public/WebFrame.h"
 
 using namespace v8;
 using namespace appjs;
@@ -46,14 +46,12 @@ bool ClientHandler::HasMainWindow() {
 
 void ClientHandler::Shutdown() {
   if ( HasMainWindow() ) {
-    mainBrowserHandle->CloseBrowser();
+    mainBrowserHandle->CloseBrowser(false);
   }
 }
 
 void ClientHandler::OnContextCreated(CefRefPtr<CefBrowserHost>  browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
-  fprintf(stderr, "%s\n", "CONTEXT CREATED");
-  /*REQUIRE_UI_THREAD();
-  if (!browser->IsPopup() && frame->IsMain()) {
+  if (!browser->GetBrowser()->IsPopup() && frame->IsMain()) {
     context->Enter();
     CefRefPtr<CefV8Value> appjsObj = CefV8Value::CreateObject(NULL);
     CefRefPtr<CefV8Value> func = CefV8Value::CreateFunction("send", new AppjsSyncHandler(browser));
@@ -61,7 +59,7 @@ void ClientHandler::OnContextCreated(CefRefPtr<CefBrowserHost>  browser, CefRefP
     appjsObj->SetValue("send", func, V8_PROPERTY_ATTRIBUTE_NONE);
     context->Exit();
     NativeWindow::GetWindow(browser)->Emit("context-created");
-  }*/
+  }
 }
 
 void ClientHandler::OnContextReleased(CefRefPtr<CefBrowserHost>  browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
@@ -102,6 +100,7 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser>  browser) {
 
 void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser>  browser, CefRefPtr<CefFrame> frame, int httpStatusCode) {
   REQUIRE_UI_THREAD();
+  //v8::Locker lock(node::node_isolate);
   v8::HandleScope scope;
   //node::node_context->Enter();
   //Local<Object> window = Local<Object>::Cast(node::node_context->Global()->Get(v8::String::New("Window")));
