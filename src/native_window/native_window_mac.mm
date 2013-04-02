@@ -399,6 +399,7 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
         settings->result =  [dialog URLs];
         ProcessFileDialog(req);
       }
+      [dialog release];
     }];
 
   } else {
@@ -418,8 +419,8 @@ void NativeWindow::OpenFileDialog(uv_work_t* req) {
         settings->result   =  [NSArray arrayWithObject: [dialog URL]];
         ProcessFileDialog(req);
       }
+      [dialog release];
     }];
-
   }
 
   [lock unlock];
@@ -450,8 +451,8 @@ void NativeWindow::ProcessFileDialog(uv_work_t* req) {
     cb->Call( settings->me->GetV8Handle(), argc, argv );
   }
 
+  NativeWindow::DialogClosed();
 }
-
 
 void NativeWindow::OpenColorDialog(uv_work_t* req) {
 
