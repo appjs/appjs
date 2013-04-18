@@ -156,7 +156,6 @@ private:
   bool auto_resize_;
   bool show_chrome_;
   bool resizable_;
-  bool show_resize_grip;
   bool fullscreen_;
   bool show_on_taskbar_;
   bool show_on_pager_;

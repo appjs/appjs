@@ -29,7 +29,6 @@ NativeWindow::NativeWindow(Settings* settings){
   show_chrome_     = settings->getBoolean("showChrome", true);
   auto_resize_     = settings->getBoolean("autoResize", false);
   resizable_       = settings->getBoolean("resizable", true);
-  show_resize_grip = settings->getBoolean("showResizeGrip", false);
   fullscreen_      = settings->getBoolean("fullscreen", false);
   show_on_taskbar_ = settings->getBoolean("showOnTaskbar", true);
   show_on_pager_   = settings->getBoolean("showOnPager", true);
