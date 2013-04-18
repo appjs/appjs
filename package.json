@@ -36,9 +36,6 @@
     "tar": ">=0.1.0",
     "request": ">=2.0.0"
   },
-  "scripts": {
-    "postinstall": "node cli/postinstall.js"
-  },
   "licenses": [{
     "type": "MIT",
     "url": "https://github.com/milani/appjs/blob/master/LICENSE"
