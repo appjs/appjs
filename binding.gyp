@@ -355,7 +355,7 @@
               'GdiPlus.lib',
               'Shlwapi.lib',
               '<(module_root_dir)/deps/cef/lib/Release/libcef.lib',
-              '<(module_root_dir)/build/Release/lib/libcef_dll_wrapper.node'
+              '<(module_root_dir)/build/Release/lib/libcef_dll_wrapper.lib'
             ],
           },
         }]
