@@ -4,6 +4,7 @@
 #include "include/cef_base.h"
 #include "include/cef_v8.h"
 #include <node.h>
+#include <memory>
 
 #define ARRAY_SIZE(a) \
   ((sizeof(a) / sizeof(*(a))) / \
@@ -11,12 +12,19 @@
 
 namespace appjs {
 
+template <class T>
+class ArrayDeleter {
+public:
+    void operator () (T* d) const
+    { delete [] d; }
+};
+
 #if defined(__WIN__)
 WCHAR* V8StringToWCHAR(v8::Handle<v8::String> str);
 #endif
 
-char* V8StringToChar(v8::Handle<v8::String> str);
-char* V8StringToChar(v8::Local<v8::Value> val);
+std::shared_ptr<char> V8StringToChar(v8::Handle<v8::String> str);
+std::shared_ptr<char> V8StringToChar(v8::Local<v8::Value> val);
 char* V8StringToFunctionChar(v8::Handle<v8::String> str);
 v8::Local<v8::String> CefStringToV8(const CefString& str);
 CefRefPtr<CefV8Value> V8StringToCef(v8::Handle<v8::Value> str);
