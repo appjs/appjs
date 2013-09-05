@@ -51,7 +51,7 @@ Local<String> CefStringToV8(const CefString& str) {
 }
 
 CefRefPtr<CefV8Value> V8StringToCef(Handle<Value> str){
-  return CefV8Value::CreateString(V8StringToChar(str->ToString()).get());
+  return CefV8Value::CreateString(V8StringToChar(str->ToString()).release());
 }
 
 Settings::Settings(Persistent<Object> settings):settings_(settings){};
@@ -78,7 +78,7 @@ int Settings::getInteger(const char* property, int defaultValue = 0) {
 
 char* Settings::getString(const char* property, char* defaultValue = "") {
   Local<Value> tmp = get(property);
-  return (tmp->IsString())? (V8StringToChar(get(property)->ToString()).get()) : defaultValue;
+  return (tmp->IsString())? (V8StringToChar(get(property)->ToString()).release()) : defaultValue;
 }
 
 #ifdef __WIN__

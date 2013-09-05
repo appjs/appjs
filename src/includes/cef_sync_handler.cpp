@@ -21,7 +21,7 @@ bool AppjsSyncHandler::Execute(const CefString& name,
     Local<Function> handler = Local<Function>::Cast(window->Get(String::NewSymbol("onmessage")));
     Local<Value> result = handler->Call(window, 1, argv);
     if (result->IsString()) {
-      char* plain = (V8StringToChar(result->ToString()).get());
+      char* plain = (V8StringToChar(result->ToString()).release());
       retval = CefV8Value::CreateString(plain);
     }
   }
