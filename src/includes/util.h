@@ -12,19 +12,12 @@
 
 namespace appjs {
 
-template <class T>
-class ArrayDeleter {
-public:
-    void operator () (T* d) const
-    { delete [] d; }
-};
-
 #if defined(__WIN__)
 WCHAR* V8StringToWCHAR(v8::Handle<v8::String> str);
 #endif
 
-std::shared_ptr<char> V8StringToChar(v8::Handle<v8::String> str);
-std::shared_ptr<char> V8StringToChar(v8::Local<v8::Value> val);
+std::unique_ptr<char[]> V8StringToChar(v8::Handle<v8::String> str);
+std::unique_ptr<char[]> V8StringToChar(v8::Local<v8::Value> val);
 char* V8StringToFunctionChar(v8::Handle<v8::String> str);
 v8::Local<v8::String> CefStringToV8(const CefString& str);
 CefRefPtr<CefV8Value> V8StringToCef(v8::Handle<v8::Value> str);
