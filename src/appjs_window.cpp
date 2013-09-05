@@ -187,7 +187,8 @@ v8::Handle<Value> Window::SendSync(const Arguments& args) {
         // convert Node V8 string to Cef V8 string
         CefV8ValueList argsOut;
         std::unique_ptr<char[]> uniPtr = V8StringToChar(args[0]->ToString());
-        argsOut.push_back(CefV8Value::CreateString(uniPtr.get());
+        argsOut.push_back(CefV8Value::CreateString(uniPtr.get()));
+
 
         // execute window.appjs fuction, passing in the string,
         // then convert the return value from a CefValue to a Node V8 string
