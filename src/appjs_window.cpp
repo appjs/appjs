@@ -187,7 +187,7 @@ v8::Handle<Value> Window::SendSync(const Arguments& args) {
 
         // convert Node V8 string to Cef V8 string
         CefV8ValueList argsOut;
-        argsOut.push_back(CefV8Value::CreateString(V8StringToChar(args[0]->ToString())));
+        argsOut.push_back(CefV8Value::CreateString(&*(V8StringToChar(args[0]->ToString()))));
 
         // execute window.appjs fuction, passing in the string,
         // then convert the return value from a CefValue to a Node V8 string
@@ -218,7 +218,7 @@ v8::Handle<Value> Window::SetIcon(const Arguments& args) {
 #if defined(__WIN__)
   window->SetIcon(enumVal, V8StringToWCHAR(args[1]->ToString()));
 #else
-  window->SetIcon(enumVal, V8StringToChar(args[1]->ToString()));
+  window->SetIcon(enumVal, (&*V8StringToChar(args[1]->ToString()));
 #endif
 
   return scope.Close(args.This());

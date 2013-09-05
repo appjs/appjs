@@ -115,8 +115,8 @@ v8::Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
   AutoLock lock_scope(me);
 
   me->status_      = args[0]->NumberValue();
-  me->status_text_ = V8StringToChar(args[1]->ToString());
-  me->mime_type_   = V8StringToChar(args[2]->ToString());
+  me->status_text_ = (&*V8StringToChar(args[1]->ToString()));
+  me->mime_type_   = (&*V8StringToChar(args[2]->ToString()));
   me->data_        = node::Buffer::Data(args[4]->ToObject());
   me->data_length_ = node::Buffer::Length(args[4]->ToObject());
 
@@ -127,8 +127,8 @@ v8::Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
   for(uint i = 0; i < names->Length(); i++) {
     me->headers_.insert(
       std::pair<CefString,CefString>(
-        V8StringToChar(names->Get(i)),
-        V8StringToChar(headers->Get(i))
+        (&*V8StringToChar(names->Get(i))),
+        (&*V8StringToChar(headers->Get(i)))
       )
     );
   }
