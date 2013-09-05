@@ -125,10 +125,12 @@ v8::Handle<Value> AppjsSchemeHandler::NodeCallback(const Arguments& args) {
   Local<Array> headers = Local<Array>::Cast(headerSets->Get(String::NewSymbol("headers")));
 
   for(uint i = 0; i < names->Length(); i++) {
+    std::unique_ptr<char[]> uniPtrName = V8StringToChar(names->Get(i));
+    std::unique_ptr<char[]> uniPtrHeader = V8StringToChar(headers->Get(i));
     me->headers_.insert(
       std::pair<CefString,CefString>(
-        V8StringToChar(names->Get(i)).release(),
-        V8StringToChar(headers->Get(i)).release()
+        uniPtrName.get(),
+        uniPtrHeader.get()
       )
     );
   }

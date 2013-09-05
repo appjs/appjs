@@ -51,7 +51,8 @@ Local<String> CefStringToV8(const CefString& str) {
 }
 
 CefRefPtr<CefV8Value> V8StringToCef(Handle<Value> str){
-  return CefV8Value::CreateString(V8StringToChar(str->ToString()).release());
+  std::unique_ptr<char[]> uniPtr = V8StringToChar(str->ToString());
+  return CefV8Value::CreateString(uniPtr.get());
 }
 
 Settings::Settings(Persistent<Object> settings):settings_(settings){};
