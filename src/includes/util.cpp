@@ -5,13 +5,13 @@ namespace appjs {
 
 using namespace v8;
 
-std::shared_ptr<char> V8StringToChar(Handle<String> str) {
+std::unique_ptr<char[]> V8StringToChar(Handle<String> str) {
   int len = str->Utf8Length();
-  char* buf = new char[len + 1];
-  str->WriteUtf8(buf, len + 1);
-  return std::shared_ptr<char>(buf, ArrayDeleter<char>());
+  std::unique_ptr<char[]> buf(new char[len + 1]);
+  str->WriteUtf8(buf.get(), len + 1);
+  return buf;
 }
-std::shared_ptr<char> V8StringToChar(Local<Value> val) {
+std::unique_ptr<char[]> V8StringToChar(Local<Value> val) {
   return V8StringToChar(val->ToString());
 }
 
@@ -51,7 +51,8 @@ Local<String> CefStringToV8(const CefString& str) {
 }
 
 CefRefPtr<CefV8Value> V8StringToCef(Handle<Value> str){
-  return CefV8Value::CreateString(&*V8StringToChar(str->ToString()));
+  std::unique_ptr<char[]> uniPtr = V8StringToChar(str->ToString());
+  return CefV8Value::CreateString(uniPtr.get());
 }
 
 Settings::Settings(Persistent<Object> settings):settings_(settings){};
@@ -78,7 +79,7 @@ int Settings::getInteger(const char* property, int defaultValue = 0) {
 
 char* Settings::getString(const char* property, char* defaultValue = "") {
   Local<Value> tmp = get(property);
-  return (tmp->IsString())? (&*V8StringToChar(get(property)->ToString())) : defaultValue;
+  return (tmp->IsString())? (V8StringToChar(get(property)->ToString()).release()) : defaultValue;
 }
 
 #ifdef __WIN__

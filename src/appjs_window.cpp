@@ -3,6 +3,7 @@
 #include "appjs_window.h"
 #include "includes/cef_handler.h"
 #include "includes/util.h"
+#include <memory>
 
 extern CefRefPtr<ClientHandler> g_handler;
 
@@ -154,8 +155,6 @@ v8::Handle<Value> Window::Resize(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-
-
 v8::Handle<Value> Window::RunInBrowser(const Arguments& args) {
   HandleScope scope;
 
@@ -187,7 +186,8 @@ v8::Handle<Value> Window::SendSync(const Arguments& args) {
 
         // convert Node V8 string to Cef V8 string
         CefV8ValueList argsOut;
-        argsOut.push_back(CefV8Value::CreateString(&*(V8StringToChar(args[0]->ToString()))));
+        std::unique_ptr<char[]> uniPtr = V8StringToChar(args[0]->ToString());
+        argsOut.push_back(CefV8Value::CreateString(uniPtr.get()));
 
         // execute window.appjs fuction, passing in the string,
         // then convert the return value from a CefValue to a Node V8 string
@@ -218,7 +218,8 @@ v8::Handle<Value> Window::SetIcon(const Arguments& args) {
 #if defined(__WIN__)
   window->SetIcon(enumVal, V8StringToWCHAR(args[1]->ToString()));
 #else
-  window->SetIcon(enumVal, (&*V8StringToChar(args[1]->ToString()));
+  std::unique_ptr<char[]> uniPtr = V8StringToChar(args[1]->ToString());
+  window->SetIcon(enumVal, uniPtr.get());
 #endif
 
   return scope.Close(args.This());
