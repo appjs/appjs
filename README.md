@@ -9,7 +9,7 @@ AppJS is an SDK to develop desktop applications using Node.js melded with Chromi
 
 ---
 
-* __Site: [appjs.org](http://appjs.org)__
+* __Site: [appjs.com](http://appjs.com)__
 * __[Google+](https://plus.google.com/u/0/112803615725562877790/posts)__
 * __Mailing List: [mailing list](https://groups.google.com/forum/#!forum/appjs-dev)__
 * __IRC: #appjs at irc.freenode.net__
@@ -19,9 +19,9 @@ The below packages include everything needed to get started with AppJS, includin
 
 __AppJS 0.0.20 Distributables:__
 
-* Linux [32 bit](http://dists.appjs.org/0.0.20/appjs-0.0.20-linux-ia32.tar.gz) / [64 bit](http://dists.appjs.org/0.0.20/appjs-0.0.20-linux-x64.tar.gz) -> app.sh
-* [Mac](http://dists.appjs.org/0.0.20/appjs-0.0.20-darwin-ia32.zip) -> app.sh
-* [Windows](http://dists.appjs.org/0.0.20/appjs-0.0.20-win32-ia32.zip) -> app.exe
+* Linux [32 bit](http://dl.bintray.com/sihorton/appjs/appjs-0.0.20-linux-ia32.tar.gz) / [64 bit](http://dl.bintray.com/sihorton/appjs/appjs-0.0.20-linux-x64.tar.gz) -> app.sh
+* [Mac](http://dl.bintray.com/sihorton/appjs/appjs-0.0.20-darwin-ia32.zip) -> app.sh
+* [Windows](http://dl.bintray.com/sihorton/appjs/appjs-0.0.20-win32-ia32.zip) -> app.exe
 
 __npm install__
 *OS X install is currently broken*
