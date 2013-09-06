@@ -3,7 +3,6 @@
 #include "includes/cef_sync_handler.h"
 #include "includes/util.h"
 #include "native_window/native_window.h"
-#include <memory>
 
 namespace appjs {
 
