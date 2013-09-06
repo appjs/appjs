@@ -3,7 +3,6 @@
 #include "appjs_window.h"
 #include "includes/cef_handler.h"
 #include "includes/util.h"
-#include <memory>
 
 extern CefRefPtr<ClientHandler> g_handler;
 
