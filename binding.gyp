@@ -325,6 +325,7 @@
               'EnableIntrinsicFunctions': 'true',
               'RuntimeTypeInfo': 'false',
               'ExceptionHandling': '1',
+			  'AdditionalOptions': [ '/EHsc' ]
             },
             'VCLibrarianTool': {
               'AdditionalOptions': [
