@@ -135,4 +135,37 @@ It may give some warnings but as long as it does not show any red colours then i
       
 	  node-gyp rebuild > build.log
 
-	  
+#### Recommended section for windows
+
+Use [node version 0.8.0](http://nodejs.org/dist/v0.8.0/node-v0.8.0-x86.msi)
+
+Follow the following instructions in the *specified order* :
+
+If you already have Microsoft Visual Studio C++ 2010 or SP1 or Windows 7 SDK [this means any of them] before trying to build appjs then **Uninstall** the following from the control panel:
+ 
+	1. Microsoft Visual Studio 2010 Service Pack 1
+	2. “Microsoft Visual C++ 2010 x86 Redistributable” and "Microsoft Visual C++ 2010 x64 Redistributable"
+	3. Microsoft Visual Studio C++ 2010
+	4. Windows SDK 7.1 and its Service Pack 1
+
+Then **install** in the *specified order* only:
+
+	1. Microsoft Visual Studio C++ 2010 
+	2. Windows SDK 7.1
+	3. Visual Studio 2010 Service Pack 1
+	4. Visual C++ 2010 SP1 Compiler Update for the Windows SDK 7.1
+
+##### Build Errors
+If build fails with `Linker Errors with native_menu.obj`
+
+Add `/FORCE:MULTIPLE` as an additional option in the Linker Properties of *binding.gyp*, like:
+        
+    'VCLinkerTool': {
+	'LinkTimeCodeGeneration': 1, # link-time code generation
+	'OptimizeReferences': 2, # /OPT:REF
+	'AdditionalOptions': "/FORCE:MULTIPLE",   # <- add this line
+	'EnableCOMDATFolding': 2, # /OPT:ICF
+	'LinkIncremental': 1, # disable incremental linking
+	},	  
+ 
+
