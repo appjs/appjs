@@ -135,7 +135,7 @@ It may give some warnings but as long as it does not show any red colours then i
       
 	  node-gyp rebuild > build.log
 
-#### Recommended section for windows
+#### Recommendations for building in windows
 
 Use [node version 0.8.0](http://nodejs.org/dist/v0.8.0/node-v0.8.0-x86.msi)
 
