@@ -164,15 +164,10 @@ size_t Launch(wstring exe, wstring params) {
   if (params.size() != 0 && params[0] != L' ') {
     params.insert(0, L" ");
   }
-
+  
   size_t ret = 0, lastSlash = 0;
   DWORD exitCode = 0;
   wstring temp = L"";
-
-  temp = exe;
-  lastSlash = temp.find_last_of(L"\\");
-  temp.erase(0, lastSlash + 1);
-  params = temp.append(params);
 
   wchar_t* paramCopy = new wchar_t[params.size() + 1];
   if (paramCopy == 0)
@@ -219,13 +214,18 @@ wstring GetString(int id){
 
 int WINAPI WinMain(HINSTANCE hinst, HINSTANCE, LPTSTR args, int nCmdShow){
   wstring workingdirectory= ExecutablePath().substr(0, ExecutablePath().find_last_of(L"\\") );
-  _wchdir(workingdirectory.c_str());	
-	
+  //_wchdir(workingdirectory.c_str());	
+  wstring nodePath = workingdirectory;
+  nodePath.append(GetString(NODE_EXECUTABLE));	
+
   wstring path = ExecutablePath();
-  path.resize(path.length() - 4);
-  path.erase(0, path.find_last_of(L"\\") + 1);
-  path.insert(0, GetString(DEFAULT_PARAMS));
+  path.resize(path.length() - 4);//cut off .exe
+  path.append(L".js");//add .js
+  path.erase(0, path.find_last_of(L"\\") + 1);//cut off path
+  path.insert(0, GetString(DEFAULT_PARAMS));//add in default params.
   path.append(L" ");
   path.append(ToWString(args));
-  return Launch(GetString(NODE_EXECUTABLE), path);
+
+  
+  return Launch(nodePath, path);
 }
