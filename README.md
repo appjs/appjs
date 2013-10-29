@@ -1,10 +1,14 @@
 # Attention
 
-AppJS project is no longer maintained and is closed as [node-webkit](https://github.com/rogerwang/node-webkit) fulfilled the purpose.
+AppJS project has not been actively developed for several months. However ownership of the project has now changed
+and the future is being discussed.
 
-If anyone wants to take ownership please send pull requests so I can evaluate the abilities then I willingly pass the ownership.
+An offshoot project [deskshell](https://github.com/sihorton/appjs-deskshell/) has been very actively developed. 
+It is a javascript based SDK for building applications that uses an off the shelf nodejs and chromium to
+build html5 / css / js applications.
 
-Special thanks to everyone contributed in the project by coding, brainstorming or supporting us.
+The future will probably involve appjs being able to be run stand alone or as a frontend to deskshell. Please contribute
+to the discussions on our mailing list: https://groups.google.com/forum/#!forum/appjs-dev
 
 # AppJS
 AppJS is an SDK to develop desktop applications using Node.js melded with Chromium. With AppJS you can develop desktop tools and applications using the same libraries and knowledge used to build websites. You get all the following in one package:
