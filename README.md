@@ -16,7 +16,7 @@ AppJS is an SDK to develop desktop applications using Node.js melded with Chromi
 * JS, HTML5, CSS, SVG, WebGL provided by Chromium
 * mature http/https servers and client APIs - Node
 * filesystem, dns, cryptography, subprocesses, OS APIs - Node
-* sandboxed code execution environements virtual machines - Node
+* sandboxed code execution environments virtual machines - Node
 * tools for exposing native C++ bindings to JavaScript- Node
 
 ---
