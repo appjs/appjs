@@ -1,3 +1,4 @@
 #!/bin/sh
 
-./data/bin/node --harmony ./data/app.js 
+DIR="$( cd "$( dirname "$0" )" && pwd )"
+$DIR/data/bin/node --harmony $DIR/data/app.js $1
