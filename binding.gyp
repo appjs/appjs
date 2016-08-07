@@ -335,6 +335,7 @@
             'VCLinkerTool': {
               'LinkTimeCodeGeneration': 1, # link-time code generation
               'OptimizeReferences': 2, # /OPT:REF
+              'AdditionalOptions': "/FORCE:MULTIPLE",
               'EnableCOMDATFolding': 2, # /OPT:ICF
               'LinkIncremental': 1, # disable incremental linking
             },
@@ -356,7 +357,7 @@
               'GdiPlus.lib',
               'Shlwapi.lib',
               '<(module_root_dir)/deps/cef/lib/Release/libcef.lib',
-              '<(module_root_dir)/build/Release/lib/libcef_dll_wrapper.lib'
+              '<(module_root_dir)/build/Release/libcef_dll_wrapper.lib'
             ],
           },
         }]

@@ -4,6 +4,7 @@
 #include "include/cef_base.h"
 #include "include/cef_v8.h"
 #include <node.h>
+#include <memory>
 
 #define ARRAY_SIZE(a) \
   ((sizeof(a) / sizeof(*(a))) / \
@@ -15,8 +16,8 @@ namespace appjs {
 WCHAR* V8StringToWCHAR(v8::Handle<v8::String> str);
 #endif
 
-char* V8StringToChar(v8::Handle<v8::String> str);
-char* V8StringToChar(v8::Local<v8::Value> val);
+std::unique_ptr<char[]> V8StringToChar(v8::Handle<v8::String> str);
+std::unique_ptr<char[]> V8StringToChar(v8::Local<v8::Value> val);
 char* V8StringToFunctionChar(v8::Handle<v8::String> str);
 v8::Local<v8::String> CefStringToV8(const CefString& str);
 CefRefPtr<CefV8Value> V8StringToCef(v8::Handle<v8::Value> str);
